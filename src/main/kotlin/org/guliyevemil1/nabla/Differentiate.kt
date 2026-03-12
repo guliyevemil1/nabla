@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla
 
-fun Base.differentiate(): Base {
+fun Base.differentiate(): Base =
     when (this) {
         is Integer -> Zero
         is Rational -> Zero
@@ -18,8 +18,6 @@ fun Base.differentiate(): Base {
         is X -> One
         is Illegal -> Illegal
     }
-}
 
 fun List<Base>.differentiate(): Base =
     add(map { it.differentiate() })
-}
