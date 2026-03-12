@@ -1,5 +1,12 @@
 package org.guliyevemil1.nabla
 
+fun add(l: Base, r: Base): Base {
+    if (l is Constant && r is Constant) {
+        return add(l, r)
+    }
+    TODO()
+}
+
 fun add(l: Constant, r: Constant): Constant {
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integer && r is Integer) return Integer(l.n + r.n)
@@ -20,6 +27,13 @@ fun add(summands: List<Constant>): Constant {
         1 -> summands[0]
         else -> summands.reduce(::add)
     }
+}
+
+fun multiply(l: Base, r: Base): Base {
+    if (l is Constant && r is Constant) {
+        return multiply(l, r)
+    }
+    TODO()
 }
 
 fun multiply(l: Constant, r: Constant): Constant {

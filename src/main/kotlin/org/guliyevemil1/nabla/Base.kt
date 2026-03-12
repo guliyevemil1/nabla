@@ -4,6 +4,12 @@ sealed interface Base {
     fun toConstant(): Constant = this as? Constant ?: Illegal
 }
 
+val Start = listOf(
+    One,
+    X,
+    X2
+)
+
 object X : Base
 
 object X2 : Multiply(X, X)

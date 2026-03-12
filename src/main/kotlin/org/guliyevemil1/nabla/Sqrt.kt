@@ -1,5 +1,7 @@
 package org.guliyevemil1.nabla
 
+import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
+
 fun sqrt(c: Int): Int = TODO()
 
 fun sqrt(c: Constant): Constant {
