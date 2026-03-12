@@ -1,7 +1,5 @@
 package org.guliyevemil1.nabla
 
-import kotlin.collections.map
-
 fun differentiate(b: Base): Base =
     when (b) {
         is Illegal -> Illegal
@@ -12,7 +10,17 @@ fun differentiate(b: Base): Base =
         is ExpX -> ExpX
 
         is Add -> b.map { differentiate(it) }
-        is Multiply -> TODO()
+        is Multiply -> Add(
+            Multiply(
+                differentiate(b.l),
+                b.r,
+            ),
+            Multiply(
+                b.l,
+                differentiate(b.r),
+            ),
+        )
+
         is Divide -> TODO()
         is Differentiate -> Differentiate(b)
         is Integrate -> b.base
