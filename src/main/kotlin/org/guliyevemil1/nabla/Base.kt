@@ -8,6 +8,12 @@ object X : Base
 
 object X2 : Multiply(X, X)
 
+class Add(val summands: List<Base>) : Base
+
+open class Multiply(val l: Base, val r: Base) : Base
+
+class Divide(val numerator: Base, val denominator: Base) : Base
+
 object CosX : Base
 
 object SinX : Base
@@ -23,5 +29,3 @@ class Sqrt(val base: Base) : Base
 class Log(val base: Base) : Base
 
 class Invert(val base: Base) : Base
-
-class Inverse(val base: Base) : Base

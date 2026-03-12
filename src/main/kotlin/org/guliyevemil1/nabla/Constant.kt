@@ -14,14 +14,14 @@ sealed interface Constant : Base {
     fun isNonPositive(): Boolean = !isPositive()
     fun isNonNegative(): Boolean = !isNegative()
 
-    fun toRational(): Rational
+    fun toRational(): Rational?
     fun inverse(): Constant
 }
 
 object Illegal : Constant {
     override fun isPositive(): Boolean = false
     override fun isZero(): Boolean = false
-    override fun toRational(): Rational = TODO()
+    override fun toRational(): Rational? = null
     override fun inverse() = Illegal
 }
 
@@ -69,18 +69,41 @@ class Rational internal constructor(val numerator: Int, val denominator: Int) : 
     override fun toRational() = this
 }
 
-fun sqrt(c: Int): Int = TODO()
+fun constExpr(b: Base): Constant {
+    when (b) {
+        Illegal -> b
+        is ConstExpr -> b
+        is Integer -> b
+        is Rational -> b
 
-fun sqrt(c: Constant): Constant {
-    if (c.isNegative()) {
-        return Illegal
+        X -> Illegal
+        CosX -> Illegal
+        ExpX -> Illegal
+
+        is Add -> TODO()
+        is Differentiate -> TODO()
+        is Integrate -> TODO()
+
+        is Invert -> TODO()
+        is Log -> TODO()
+        is Multiply -> TODO()
+        SinX -> TODO()
+        is Sqrt -> TODO()
     }
-    if (c.isZero()) {
-        return Zero
+}
+
+class ConstExpr private constructor(b: Base) : Constant {
+    override fun isPositive(): Boolean {
+        TODO("Not yet implemented")
     }
-    return when (c) {
-        is Illegal -> Illegal
-        is Integer -> c
-        is Rational -> c
+
+    override fun isZero(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun toRational(): Rational? = null
+
+    override fun inverse(): Constant {
+        TODO("Not yet implemented")
     }
 }
