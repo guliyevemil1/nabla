@@ -8,7 +8,10 @@ object X : Base
 
 object X2 : Multiply(X, X)
 
-class Add(val summands: List<Base>) : Base
+class Add(val summands: List<Base>) : Base {
+    fun map(f: (Base) -> Base): Base =
+        Add(summands.map(f))
+}
 
 open class Multiply(val l: Base, val r: Base) : Base
 

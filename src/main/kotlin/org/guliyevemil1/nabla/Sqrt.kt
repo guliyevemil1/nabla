@@ -11,7 +11,6 @@ fun sqrt(c: Constant): Constant {
     }
     return when (c) {
         is Illegal -> Illegal
-        is Integer -> c
-        is Rational -> c
+        else -> constExpr(Sqrt(c))
     }
 }
