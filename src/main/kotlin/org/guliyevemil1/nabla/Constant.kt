@@ -69,28 +69,30 @@ class Rational internal constructor(val numerator: Int, val denominator: Int) : 
     override fun toRational() = this
 }
 
-fun constExpr(b: Base): Constant =
-    when (b) {
-        Illegal -> b
-        is Constant -> b
+class ConstExpr private constructor(b: Base) : Constant {
+    companion object {
+        fun constExpr(b: Base): Constant =
+            when (b) {
+                Illegal -> Illegal
+                is Constant -> b
 
-        X -> Illegal
-        CosX -> Illegal
-        ExpX -> Illegal
-        SinX -> Illegal
+                X -> Illegal
+                CosX -> Illegal
+                ExpX -> Illegal
+                SinX -> Illegal
 
-        is Add -> TODO()
-        is Differentiate -> TODO()
-        is Integrate -> TODO()
+                is Add -> TODO()
+                is Differentiate -> TODO()
+                is Integrate -> TODO()
 
-        is Invert -> TODO()
-        is Log -> TODO()
-        is Multiply -> TODO()
-        is Sqrt -> TODO()
-        is Divide -> TODO()
+                is Invert -> TODO()
+                is Log -> TODO()
+                is Multiply -> TODO()
+                is Sqrt -> TODO()
+                is Divide -> TODO()
+            }
     }
 
-class ConstExpr private constructor(b: Base) : Constant {
     override fun isPositive(): Boolean {
         TODO("Not yet implemented")
     }
