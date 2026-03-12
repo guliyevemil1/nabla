@@ -21,7 +21,21 @@ fun differentiate(b: Base): Base =
             ),
         )
 
-        is Divide -> TODO()
+        is Divide -> Divide(
+            Add(
+                Multiply(
+                    differentiate(b.numerator),
+                    b.denominator,
+                ),
+                Multiply(
+                    NegOne,
+                    b.numerator,
+                    differentiate(b.denominator),
+                ),
+            ),
+            Multiply(b.denominator, b.denominator)
+        )
+
         is Differentiate -> Differentiate(b)
         is Integrate -> b.base
         is Invert -> TODO()

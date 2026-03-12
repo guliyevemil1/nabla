@@ -25,6 +25,16 @@ object Illegal : Constant {
     override fun inverse() = Illegal
 }
 
+private val integerMap = HashMap<Int, Integer>()
+
+fun integer(n: Int): Integer = when (n) {
+    0 -> Zero
+    1 -> One
+    2 -> Two
+    -1 -> NegOne
+    else -> integerMap.computeIfAbsent(n, ::Integer)
+}
+
 class Integer(val n: Int) : Constant {
     override fun isPositive(): Boolean = n > 0
     override fun isZero(): Boolean = n == 0
@@ -51,8 +61,7 @@ fun rational(numerator: Int, denominator: Int): Constant {
             abs(denominator),
         )
     if (denominator == 0) return Illegal
-    if (numerator == 0) return Zero
-    if (denominator == 1) return Integer(numerator)
+    if (denominator == 1) return integer(numerator)
     val g = gcd(numerator, denominator)
     if (g == 1) return Rational(numerator, denominator)
     return rational(numerator / g, denominator / g)
@@ -73,22 +82,27 @@ class ConstExpr private constructor(b: Base) : Constant {
     companion object {
         fun constExpr(b: Base): Constant =
             when (b) {
-                Illegal -> Illegal
-                is Constant -> b
-
                 X -> Illegal
                 CosX -> Illegal
                 ExpX -> Illegal
                 SinX -> Illegal
 
-                is Add -> TODO()
-                is Differentiate -> TODO()
-                is Integrate -> TODO()
+                Illegal -> Illegal
+                is Constant -> b
+
+                is Differentiate -> Illegal
+                is Integrate -> Illegal
 
                 is Invert -> TODO()
-                is Log -> TODO()
+
+                is Log ->
+                    ConstExpr(Log(constExpr(b.base)))
+
+                is Sqrt ->
+                    ConstExpr(Sqrt(constExpr(b.base)))
+
+                is Add -> TODO()
                 is Multiply -> TODO()
-                is Sqrt -> TODO()
                 is Divide -> TODO()
             }
     }

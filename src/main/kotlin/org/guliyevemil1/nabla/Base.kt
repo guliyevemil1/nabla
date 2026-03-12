@@ -19,11 +19,15 @@ fun Add(l: Base, r: Base): Add = Add(
 )
 
 class Add(val summands: List<Base>) : Base {
+    constructor(vararg summands: Base) : this(summands.toList())
+
     fun map(f: (Base) -> Base): Base =
         Add(summands.map(f))
 }
 
-open class Multiply(val l: Base, val r: Base) : Base
+open class Multiply(val summands: List<Base>) : Base {
+    constructor(vararg summands: Base) : this(summands.toList())
+}
 
 class Divide(val numerator: Base, val denominator: Base) : Base
 
