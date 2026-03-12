@@ -12,8 +12,8 @@ private enum class Limit {
 private fun lim(b: Base, x: Limit): Constant =
     when (b) {
         is Constant -> b
-        is Add -> add(b.summands.map { lim(it, x) })
-        is Multiply -> multiply(lim(b.l, x), lim(b.r, x))
+        is Add -> add(*b.summands.map { lim(it, x) }.toTypedArray())
+        is Multiply -> multiply(*b.summands.map { lim(it, x) }.toTypedArray())
         is Divide -> divide(lim(b.numerator, x), lim(b.denominator, x))
         is Sqrt -> sqrt(lim(b.base, x))
         is Log -> log(lim(b.base, x))

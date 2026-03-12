@@ -1,10 +1,28 @@
 package org.guliyevemil1.nabla
 
+import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
+
 fun add(l: Base, r: Base): Base {
+    if (l is Illegal || r is Illegal) return Illegal
     if (l is Constant && r is Constant) {
         return add(l, r)
     }
     TODO()
+}
+
+fun add(vararg summands: Base) = add(summands.asList())
+
+fun add(summands: List<Base>): Base {
+    return when (summands.size) {
+        0 -> Zero
+        1 -> summands[0]
+        else -> summands.sortedBy {
+            when (it) {
+                is Constant -> 0
+                else -> 1
+            }
+        }.reduce(::add)
+    }
 }
 
 fun add(l: Constant, r: Constant): Constant {
@@ -13,13 +31,15 @@ fun add(l: Constant, r: Constant): Constant {
     val ratL = l.toRational()
     val ratR = l.toRational()
     if (ratL == null || ratR == null) {
-        TODO()
+        return constExpr(Add(l, r))
     }
     return rational(
         numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
         denominator = ratL.denominator * ratR.denominator,
     )
 }
+
+fun add(vararg summands: Constant) = add(summands.asList())
 
 fun add(summands: List<Constant>): Constant {
     return when (summands.size) {
@@ -30,10 +50,38 @@ fun add(summands: List<Constant>): Constant {
 }
 
 fun multiply(l: Base, r: Base): Base {
+    if (l is Illegal || r is Illegal) return Illegal
     if (l is Constant && r is Constant) {
         return multiply(l, r)
     }
     TODO()
+}
+
+fun multiply(vararg multiplicants: Base) = multiply(multiplicants.asList())
+
+fun multiply(multiplicants: List<Base>): Base {
+    return when (multiplicants.size) {
+        0 -> One
+        1 -> multiplicants[0]
+        else -> multiplicants.sortedBy {
+            when (it) {
+                is Integer -> 0
+                is Rational -> 1
+                is ConstExpr -> 2
+                else -> 3
+            }
+        }.reduce(::multiply)
+    }
+}
+
+fun multiply(vararg multiplicants: Constant) = multiply(multiplicants.asList())
+
+fun multiply(multiplicants: List<Constant>): Constant {
+    return when (multiplicants.size) {
+        0 -> One
+        1 -> multiplicants[0]
+        else -> multiplicants.reduce(::multiply)
+    }
 }
 
 fun multiply(l: Constant, r: Constant): Constant {

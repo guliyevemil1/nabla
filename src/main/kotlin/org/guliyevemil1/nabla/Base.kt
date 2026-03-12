@@ -14,10 +14,6 @@ object X : Base
 
 object X2 : Multiply(X, X)
 
-fun Add(l: Base, r: Base): Add = Add(
-    listOf(l, r)
-)
-
 class Add(val summands: List<Base>) : Base {
     constructor(vararg summands: Base) : this(summands.toList())
 

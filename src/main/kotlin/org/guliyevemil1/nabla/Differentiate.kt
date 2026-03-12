@@ -27,7 +27,7 @@ fun differentiate(b: Base): Base =
                     differentiate(b.numerator),
                     b.denominator,
                 ),
-                Multiply(
+                multiply(
                     NegOne,
                     b.numerator,
                     differentiate(b.denominator),
