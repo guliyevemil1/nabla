@@ -1,6 +1,5 @@
 package org.guliyevemil1.nabla
 
-
 sealed interface Base {
     fun toConstant(): Constant = this as? Constant ?: Illegal
 }
