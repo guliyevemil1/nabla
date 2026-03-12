@@ -1,23 +1,23 @@
 package org.guliyevemil1.nabla
 
-fun Base.differentiate(): Base =
-    when (this) {
+fun differentiate(b: Base): Base =
+    when (b) {
         is Integer -> Zero
         is Rational -> Zero
-        is Add -> this.summands.differentiate()
+        is Add -> b.summands.differentiate()
         is Multiply -> TODO()
-        is Differentiate -> Differentiate(this)
+        is Differentiate -> Differentiate(b)
         is SinX -> CosX
         is CosX -> Multiply(NegOne, SinX)
         is ExpX -> ExpX
-        is Integrate -> this.base
+        is Integrate -> b.base
         is Inverse -> TODO()
         is Invert -> TODO()
-        is Log -> TODO()
+        is Log -> Multiply(Inverse(b.base), differentiate(b.base))
         is Sqrt -> TODO()
         is X -> One
         is Illegal -> Illegal
     }
 
 fun List<Base>.differentiate(): Base =
-    add(map { it.differentiate() })
+    Add(map { differentiate(it) })
