@@ -28,6 +28,28 @@ object ExpX : BaseCard(NablaExpX)
 object SinX : BaseCard(NablaSinX)
 object CosX : BaseCard(NablaCosX)
 
+sealed interface AllOperator : Card
+
+object Nabla : AllOperator
+object Nabla2 : AllOperator
+
 sealed interface Operator : Card
 
+object DDx : Operator
+object Integral : Operator
+
 sealed interface BinaryOperator : Card
+
+class Times : BinaryOperator
+class Over : BinaryOperator
+
+sealed interface SingleOperator : Card
+
+object Lim0 : SingleOperator
+object LimInf : SingleOperator
+object LimNegInf : SingleOperator
+object LimSupremum : SingleOperator
+object LimInfimum : SingleOperator
+object Sqrt : SingleOperator
+object Log : SingleOperator
+object Inverse : SingleOperator
