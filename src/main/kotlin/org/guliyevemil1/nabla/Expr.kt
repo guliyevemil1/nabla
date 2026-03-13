@@ -4,15 +4,35 @@ sealed interface Expr<out T>
 
 object Illegal : Expr<Nothing>
 
-class Add<T : Base>(val summands: List<Expr<T>>) : Expr<T> {
-    constructor(vararg summands: Expr<T>) : this(summands.asList())
+class Add<T : Base>(s: List<Expr<T>>) : Expr<T> {
+    constructor(vararg s: Expr<T>) : this(s.asList())
+
+    val summands: List<Expr<T>> by lazy {
+        s.flatMap {
+            if (it is Add) {
+                it.summands
+            } else {
+                listOf(it)
+            }
+        }
+    }
 
     fun <U : Base> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         add(summands.map(f))
 }
 
-open class Multiply<T : Base>(val multiplicants: List<Expr<T>>) : Expr<T> {
-    constructor(vararg multiplicants: Expr<T>) : this(multiplicants.asList())
+class Multiply<T : Base>(m: List<Expr<T>>) : Expr<T> {
+    constructor(vararg m: Expr<T>) : this(m.asList())
+
+    val multiplicants: List<Expr<T>> by lazy {
+        m.flatMap {
+            if (it is Multiply) {
+                it.multiplicants
+            } else {
+                listOf(it)
+            }
+        }
+    }
 
     fun <U : Base> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         multiply(multiplicants.map(f))
