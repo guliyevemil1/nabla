@@ -18,7 +18,7 @@ fun invert(b: Expr<Base>): Expr<Base> = when (b) {
     }
 
     is Invert -> b.base
-    is Sqrt -> Multiply(b.base, b.base)
+    is Sqrt -> TODO()
 
     is Differentiate -> TODO()
     is Integrate -> TODO()

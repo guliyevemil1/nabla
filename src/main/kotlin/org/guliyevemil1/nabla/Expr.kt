@@ -50,4 +50,4 @@ data class Sqrt<T>(val base: Expr<T>) : Expr<T>
 
 data class Log<T>(val base: Expr<T>) : Expr<T>
 
-data class Invert<T>(val base: Expr<T>) : Expr<T>
+data class Invert(val base: Expr<Base>) : Expr<Base>
