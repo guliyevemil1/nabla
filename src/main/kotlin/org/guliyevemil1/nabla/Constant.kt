@@ -1,5 +1,7 @@
 package org.guliyevemil1.nabla
 
+import org.guliyevemil1.nabla.Bool.Companion.toBool
+import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
 import kotlin.math.abs
 
 val Zero = Integer(0)
@@ -7,20 +9,72 @@ val One = Integer(1)
 val Two = Integer(2)
 val NegOne = Integer(-1)
 
+enum class Bool {
+    True,
+    False,
+    Unknown;
+
+    companion object {
+        fun Boolean.toBool() = when (this) {
+            true -> True
+            false -> False
+        }
+    }
+
+    operator fun not() = when (this) {
+        True -> False
+        False -> True
+        Unknown -> Unknown
+    }
+
+    infix fun and(that: Bool) =
+        if (this == True && that == True) True
+        else if (this == Unknown || that == Unknown) Unknown
+        else False
+
+}
+
 sealed interface Constant : Base {
-    fun isPositive(): Boolean
-    fun isZero(): Boolean
-    fun isNegative(): Boolean = !isZero() && !isPositive()
-    fun isNonPositive(): Boolean = !isPositive()
-    fun isNonNegative(): Boolean = !isNegative()
+    val sign: Sign
+
+    fun isPositive(): Bool = when (sign) {
+        Sign.Positive -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+    fun isZero(): Bool = when (sign) {
+        Sign.Zero -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+    fun isNegative(): Bool = when (sign) {
+        Sign.Negative -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+    fun isNonPositive(): Bool = !isPositive()
+    fun isNonNegative(): Bool = !isNegative()
 
     fun toRational(): Rational?
-    fun inverse(): Constant
+    fun inverse(): Constant = when (isZero()) {
+        Bool.True -> Illegal
+        Bool.False -> constExpr(Divide(One, this))
+        else -> TODO()
+    }
+}
+
+enum class Sign {
+    Zero,
+    Positive,
+    Negative,
+    Unknown,
 }
 
 object Illegal : Constant {
-    override fun isPositive(): Boolean = false
-    override fun isZero(): Boolean = false
+    override val sign: Sign = Sign.Unknown
     override fun toRational(): Rational? = null
     override fun inverse() = Illegal
 }
@@ -36,12 +90,19 @@ fun integer(n: Int): Integer = when (n) {
 }
 
 class Integer(val n: Int) : Constant {
-    override fun isPositive(): Boolean = n > 0
-    override fun isZero(): Boolean = n == 0
+    override val sign: Sign = when {
+        n < 0 -> Sign.Negative
+        n == 0 -> Sign.Zero
+        else -> Sign.Positive
+    }
+
     override fun toRational() = Rational(n, 1)
 
-    override fun inverse(): Constant =
-        if (!isZero()) Rational(1, n) else Illegal
+    override fun inverse(): Constant = when (isZero()) {
+        Bool.True -> Illegal
+        Bool.False -> Rational(1, n)
+        else -> TODO()
+    }
 }
 
 fun gcd(a: Int, b: Int): Int {
@@ -68,12 +129,17 @@ fun rational(numerator: Int, denominator: Int): Constant {
 }
 
 class Rational internal constructor(val numerator: Int, val denominator: Int) : Constant {
-    override fun isPositive(): Boolean = numerator > 0
-    override fun isZero(): Boolean = numerator == 0
+    override val sign: Sign = when {
+        numerator == 0 -> Sign.Zero
+        numerator > 0 -> Sign.Positive
+        else -> Sign.Negative
+    }
 
-    override fun inverse(): Constant =
-        if (!isZero()) rational(denominator, numerator)
-        else Illegal
+    override fun inverse(): Constant = when (isZero()) {
+        Bool.True -> Illegal
+        Bool.False -> Rational(numerator, denominator)
+        else -> TODO()
+    }
 
     override fun toRational() = this
 }
@@ -107,17 +173,7 @@ class ConstExpr private constructor(b: Base) : Constant {
             }
     }
 
-    override fun isPositive(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun isZero(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override val sign: Sign = Sign.Unknown
 
     override fun toRational(): Rational? = null
-
-    override fun inverse(): Constant {
-        TODO("Not yet implemented")
-    }
 }
