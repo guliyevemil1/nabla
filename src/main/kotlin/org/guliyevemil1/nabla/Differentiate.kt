@@ -4,7 +4,7 @@ fun differentiate(m: Multiply): Base = add(
     List(m.multiplicants.size) { index ->
         val mm = m.multiplicants.toMutableList()
         mm[index] = differentiate(mm[index])
-        Multiply(mm)
+        multiply(mm)
     }
 )
 
@@ -21,8 +21,8 @@ fun differentiate(b: Base): Base =
         is Multiply -> differentiate(b)
 
         is Divide -> Divide(
-            Add(
-                Multiply(
+            add(
+                multiply(
                     differentiate(b.numerator),
                     b.denominator,
                 ),
@@ -32,7 +32,7 @@ fun differentiate(b: Base): Base =
                     differentiate(b.denominator),
                 ),
             ),
-            Multiply(b.denominator, b.denominator)
+            multiply(b.denominator, b.denominator)
         )
 
         is Differentiate -> Differentiate(b)
