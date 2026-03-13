@@ -1,5 +1,13 @@
 package org.guliyevemil1.nabla
 
+fun differentiate(m: Multiply): Base = add(
+    List(m.multiplicants.size) { index ->
+        val mm = m.multiplicants.toMutableList()
+        mm[index] = differentiate(mm[index])
+        Multiply(mm)
+    }
+)
+
 fun differentiate(b: Base): Base =
     when (b) {
         is Illegal -> Illegal
@@ -10,16 +18,7 @@ fun differentiate(b: Base): Base =
         is ExpX -> ExpX
 
         is Add -> b.map { differentiate(it) }
-        is Multiply -> Add(
-            Multiply(
-                differentiate(b.l),
-                b.r,
-            ),
-            Multiply(
-                b.l,
-                differentiate(b.r),
-            ),
-        )
+        is Multiply -> differentiate(b)
 
         is Divide -> Divide(
             Add(

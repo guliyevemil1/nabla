@@ -15,14 +15,14 @@ object X : Base
 object X2 : Multiply(X, X)
 
 class Add(val summands: List<Base>) : Base {
-    constructor(vararg summands: Base) : this(summands.toList())
+    constructor(vararg summands: Base) : this(summands.asList())
 
     fun map(f: (Base) -> Base): Base =
         Add(summands.map(f))
 }
 
-open class Multiply(val summands: List<Base>) : Base {
-    constructor(vararg summands: Base) : this(summands.toList())
+open class Multiply(val multiplicants: List<Base>) : Base {
+    constructor(vararg multiplicants: Base) : this(multiplicants.asList())
 }
 
 class Divide(val numerator: Base, val denominator: Base) : Base
