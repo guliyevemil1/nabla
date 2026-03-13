@@ -2,14 +2,6 @@ package org.guliyevemil1.nabla
 
 import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
 
-fun add(l: Base, r: Base): Base {
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Constant && r is Constant) {
-        return add(l, r)
-    }
-    TODO()
-}
-
 fun add(vararg summands: Base) = add(summands.asList())
 
 fun add(summands: List<Base>): Base {
@@ -21,22 +13,14 @@ fun add(summands: List<Base>): Base {
                 is Constant -> 0
                 else -> 1
             }
-        }.reduce(::add)
+        }.reduce { l, r ->
+            if (l is Illegal || r is Illegal) return@reduce Illegal
+            if (l is Constant && r is Constant) {
+                return@reduce add(l, r)
+            }
+            TODO()
+        }
     }
-}
-
-fun add(l: Constant, r: Constant): Constant {
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Integer && r is Integer) return Integer(l.n + r.n)
-    val ratL = l.toRational()
-    val ratR = l.toRational()
-    if (ratL == null || ratR == null) {
-        return constExpr(Add(l, r))
-    }
-    return rational(
-        numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
-        denominator = ratL.denominator * ratR.denominator,
-    )
 }
 
 fun add(vararg summands: Constant) = add(summands.asList())
@@ -45,16 +29,20 @@ fun add(summands: List<Constant>): Constant {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
-        else -> summands.reduce(::add)
+        else -> summands.reduce { l, r ->
+            if (l is Illegal || r is Illegal) return@reduce Illegal
+            if (l is Integer && r is Integer) return@reduce Integer(l.n + r.n)
+            val ratL = l.toRational()
+            val ratR = l.toRational()
+            if (ratL == null || ratR == null) {
+                return@reduce constExpr(Add(l, r))
+            }
+            return@reduce rational(
+                numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
+                denominator = ratL.denominator * ratR.denominator,
+            )
+        }
     }
-}
-
-fun multiply(l: Base, r: Base): Base {
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Constant && r is Constant) {
-        return multiply(l, r)
-    }
-    TODO()
 }
 
 fun multiply(vararg multiplicants: Base) = multiply(multiplicants.asList())
@@ -70,7 +58,13 @@ fun multiply(multiplicants: List<Base>): Base {
                 is ConstExpr -> 2
                 else -> 3
             }
-        }.reduce(::multiply)
+        }.reduce { l, r ->
+            if (l is Illegal || r is Illegal) return@reduce Illegal
+            if (l is Constant && r is Constant) {
+                return@reduce multiply(l, r)
+            }
+            TODO()
+        }
     }
 }
 
@@ -80,22 +74,20 @@ fun multiply(multiplicants: List<Constant>): Constant {
     return when (multiplicants.size) {
         0 -> One
         1 -> multiplicants[0]
-        else -> multiplicants.reduce(::multiply)
+        else -> multiplicants.reduce { l, r ->
+            if (l is Illegal || r is Illegal) return@reduce Illegal
+            if (l is Integer && r is Integer) return@reduce Integer(l.n * r.n)
+            val ratL = l.toRational()
+            val ratR = l.toRational()
+            if (ratL == null || ratR == null) {
+                TODO()
+            }
+            return@reduce rational(
+                numerator = ratL.numerator * ratR.numerator,
+                denominator = ratL.denominator * ratR.denominator,
+            )
+        }
     }
-}
-
-fun multiply(l: Constant, r: Constant): Constant {
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Integer && r is Integer) return Integer(l.n * r.n)
-    val ratL = l.toRational()
-    val ratR = l.toRational()
-    if (ratL == null || ratR == null) {
-        TODO()
-    }
-    return rational(
-        numerator = ratL.numerator * ratR.numerator,
-        denominator = ratL.denominator * ratR.denominator,
-    )
 }
 
 fun divide(l: Constant, r: Constant): Constant {
