@@ -29,7 +29,7 @@ enum class Bool {
 
 }
 
-sealed interface Constant : Base<Constant> {
+sealed interface Constant : Base, Expr<Nothing> {
     val sign: Sign
 
     fun isPositive(): Bool = when (sign) {

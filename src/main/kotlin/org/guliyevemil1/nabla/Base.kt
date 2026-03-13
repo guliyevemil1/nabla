@@ -1,11 +1,11 @@
 package org.guliyevemil1.nabla
 
-sealed interface Base<out T : Expr<T>> : Expr<T>
+sealed interface Base
 
-object X : Base<X>
+object X : Expr<Base>
 
-object CosX : Base<CosX>
+object CosX : Expr<Base>
 
-object SinX : Base<SinX>
+object SinX : Expr<Base>
 
-object ExpX : Base<ExpX>
+object ExpX : Expr<Base>

@@ -5,13 +5,10 @@ import kotlin.math.abs
 sealed interface Integral : Constant {
     fun toRational(): Rational? = null
 
-    override fun inverse(): Integral
+    override fun inverse(): Expr<Nothing>
 }
 
-object Illegal : Integral {
-    override val sign: Sign = Sign.Unknown
-    override fun inverse() = Illegal
-}
+object Illegal : Expr<Nothing>
 
 private val integerMap = HashMap<Int, Integer>()
 
@@ -26,7 +23,7 @@ data class Integer(val n: Int) : Integral {
 
     override fun toRational() = Rational(n, 1)
 
-    override fun inverse(): Integral = when (isZero()) {
+    override fun inverse(): Expr<Nothing> = when (isZero()) {
         Bool.True -> Illegal
         Bool.False -> Rational(1, n)
         Bool.Unknown -> throw IllegalStateException()
@@ -41,7 +38,7 @@ private fun gcdInner(a: Int, b: Int): Int {
     return if (b == 0) a else gcdInner(b, a % b)
 }
 
-fun rational(numerator: Int, denominator: Int): Expr<Constant> {
+fun rational(numerator: Int, denominator: Int): Expr<Nothing> {
     if (numerator < 0 && denominator < 0)
         return rational(-numerator, -denominator)
     if (numerator < 0 || denominator < 0)
@@ -63,7 +60,7 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
         else -> Sign.Negative
     }
 
-    override fun inverse(): Integral = when (isZero()) {
+    override fun inverse(): Expr<Nothing> = when (isZero()) {
         Bool.True -> Illegal
         Bool.False -> Rational(numerator, denominator)
         Bool.Unknown -> throw IllegalStateException()
