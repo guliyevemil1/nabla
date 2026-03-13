@@ -1,58 +1,11 @@
 package org.guliyevemil1.nabla
 
-sealed interface Base {
-    fun toConstant(): Constant = this as? Constant ?: Illegal
-}
+sealed interface Base<out T : Expr<T>> : Expr<T>
 
-val baseComparator: Comparator<Base> =
-    compareBy<Base> {
-        it is Integer || it is Rational
-    }.thenBy {
-        it is Constant
-    }.thenBy {
-        it is X
-    }.thenBy {
-        it is Multiply
-    }
+object X : Base<X>
 
-object X : Base
+object CosX : Base<CosX>
 
-class Add(val summands: List<Base>) : Base {
-    constructor(vararg summands: Base) : this(summands.asList())
+object SinX : Base<SinX>
 
-    fun mapConst(f: (Base) -> Constant): Constant =
-        add(summands.map(f))
-
-    fun map(f: (Base) -> Base): Base =
-        add(summands.map(f))
-}
-
-open class Multiply(val multiplicants: List<Base>) : Base {
-    constructor(vararg multiplicants: Base) : this(multiplicants.asList())
-
-    fun mapConst(f: (Base) -> Constant): Constant =
-        multiply(multiplicants.map(f))
-
-    fun map(f: (Base) -> Base): Base =
-        multiply(multiplicants.map(f))
-}
-
-data class Pow(val base: Base, val pow: Int) : Base
-
-data class Divide(val numerator: Base, val denominator: Base) : Base
-
-object CosX : Base
-
-object SinX : Base
-
-object ExpX : Base
-
-data class Differentiate(val base: Base) : Base
-
-data class Integrate(val base: Base) : Base
-
-data class Sqrt(val base: Base) : Base
-
-data class Log(val base: Base) : Base
-
-data class Invert(val base: Base) : Base
+object ExpX : Base<ExpX>

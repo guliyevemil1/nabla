@@ -1,6 +1,3 @@
 package org.guliyevemil1.nabla
 
-fun log(c: Constant): Constant {
-    if (c.isNonPositive()) return Illegal
-    TODO()
-}
+fun <T> log(c: Expr<T>): Expr<T> = TODO()

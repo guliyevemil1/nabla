@@ -1,96 +1,56 @@
 package org.guliyevemil1.nabla
 
-import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
+fun <T> add(vararg summands: Expr<T>): Expr<Any?> = add(summands.asList())
 
-fun add(vararg summands: Base) = add(summands.asList())
-
-fun add(summands: List<Base>): Base {
-    return when (summands.size) {
-        0 -> Zero
-        1 -> summands[0]
-        else -> summands.sortedBy {
-            when (it) {
-                is Constant -> 0
-                else -> 1
-            }
-        }.reduce { l, r ->
-            if (l is Illegal || r is Illegal) return@reduce Illegal
-            if (l is Constant && r is Constant) {
-                return@reduce add(l, r)
-            }
-            TODO()
-        }
-    }
-}
-
-fun add(vararg summands: Constant) = add(summands.asList())
-
-fun add(summands: List<Constant>): Constant {
+fun add(summands: List<Expr<*>>): Expr<Any?> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
         else -> summands.reduce { l, r ->
             if (l is Illegal || r is Illegal) return@reduce Illegal
-            if (l is Integer && r is Integer) return@reduce Integer(l.n + r.n)
-            val ratL = l.toRational()
-            val ratR = l.toRational()
-            if (ratL == null || ratR == null) {
-                return@reduce constExpr(Add(l, r))
-            }
-            return@reduce rational(
-                numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
-                denominator = ratL.denominator * ratR.denominator,
-            )
-        }
-    }
-}
-
-fun multiply(vararg multiplicants: Base) = multiply(multiplicants.asList())
-
-fun multiply(multiplicants: List<Base>): Base {
-    return when (multiplicants.size) {
-        0 -> One
-        1 -> multiplicants[0]
-        else -> multiplicants.sortedBy {
-            when (it) {
-                is Integer -> 0
-                is Rational -> 1
-                is ConstExpr -> 2
-                else -> 3
-            }
-        }.reduce { l, r ->
-            if (l is Illegal || r is Illegal) return@reduce Illegal
-            if (l is Constant && r is Constant) {
-                return@reduce multiply(l, r)
+            if (l is Integral && r is Integral) {
+                if (l is Integer && r is Integer) return@reduce Integer(l.n + r.n)
+                val ratL = l.toRational()
+                val ratR = l.toRational()
+                if (ratL == null || ratR == null) {
+                    return@reduce Illegal
+                }
+                return@reduce rational(
+                    numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
+                    denominator = ratL.denominator * ratR.denominator,
+                )
             }
             TODO()
         }
     }
 }
 
-fun multiply(vararg multiplicants: Constant) = multiply(multiplicants.asList())
+fun <T> multiply(vararg multiplicants: Expr<T>): Expr<Any?> = multiply(multiplicants.asList())
 
-fun multiply(multiplicants: List<Constant>): Constant {
+fun multiply(multiplicants: List<Expr<*>>): Expr<Any?> {
     return when (multiplicants.size) {
         0 -> One
         1 -> multiplicants[0]
         else -> multiplicants.reduce { l, r ->
             if (l is Illegal || r is Illegal) return@reduce Illegal
-            if (l is Integer && r is Integer) return@reduce Integer(l.n * r.n)
-            val ratL = l.toRational()
-            val ratR = l.toRational()
-            if (ratL == null || ratR == null) {
-                TODO()
+            if (l is Integral && r is Integral) {
+                if (l is Integer && r is Integer) return@reduce Integer(l.n * r.n)
+                val ratL = l.toRational()
+                val ratR = l.toRational()
+                if (ratL == null || ratR == null) {
+                    return@reduce Illegal
+                }
+                return@reduce rational(
+                    numerator = ratL.numerator * ratR.numerator,
+                    denominator = ratL.denominator * ratR.denominator,
+                )
             }
-            return@reduce rational(
-                numerator = ratL.numerator * ratR.numerator,
-                denominator = ratL.denominator * ratR.denominator,
-            )
+            TODO()
         }
     }
 }
 
-fun divide(l: Constant, r: Constant): Constant {
+fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integer && r is Integer) return rational(l.n, r.n)
     val ratL = l.toRational()

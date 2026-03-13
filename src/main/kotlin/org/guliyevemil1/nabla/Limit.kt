@@ -9,15 +9,15 @@ private enum class Limit {
     Infimum,
 }
 
-private fun lim(b: Base, x: Limit): Constant =
+private fun lim(b: Expr<Base<*>>, x: Limit): Expr<Constant> =
     when (b) {
         is Constant -> b
-        is Add -> b.mapConst { lim(it, x) }
-        is Multiply -> b.mapConst { lim(it, x) }
-        is Divide -> divide(lim(b.numerator, x), lim(b.denominator, x))
+//        is Add -> b.mapConst { lim(it, x) }
+//        is Multiply -> b.mapConst { lim(it, x) }
+//        is Divide -> divide(lim(b.numerator, x), lim(b.denominator, x))
         is Sqrt -> sqrt(lim(b.base, x))
         is Log -> log(lim(b.base, x))
-        is Pow -> pow(lim(b.base, x), b.pow)
+//        is Pow -> pow(lim(b.base, x), b.pow)
 
         is Differentiate -> TODO()
         is Integrate -> TODO()
@@ -54,4 +54,6 @@ private fun lim(b: Base, x: Limit): Constant =
             Limit.Supremum -> Illegal
             Limit.Infimum -> Illegal
         }
+
+        else -> Illegal
     }
