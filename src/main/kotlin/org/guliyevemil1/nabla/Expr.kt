@@ -7,14 +7,14 @@ object Illegal : Expr<Nothing>
 class Add<T : Base>(val summands: List<Expr<T>>) : Expr<T> {
     constructor(vararg summands: Expr<T>) : this(summands.asList())
 
-    fun <U : T> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
+    fun <U : Base> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         add(summands.map(f))
 }
 
 open class Multiply<T : Base>(val multiplicants: List<Expr<T>>) : Expr<T> {
     constructor(vararg multiplicants: Expr<T>) : this(multiplicants.asList())
 
-    fun <U : T> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
+    fun <U : Base> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         multiply(multiplicants.map(f))
 }
 

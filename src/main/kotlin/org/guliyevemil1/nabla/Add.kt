@@ -8,25 +8,30 @@ fun <T : Base> add(summands: List<Expr<T>>): Expr<T> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
-        else -> summands.reduce(::add)
+        else -> summands
+            .reduce(::add)
     }
 }
 
 fun <T : Base> add(l: Expr<T>, r: Expr<T>): Expr<T> {
+    if (l == Zero) return r
+    if (r == Zero) return l
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
         if (l is Integer && r is Integer) return integer(l.n + r.n)
-        val ratL = l.toRational()
-        val ratR = l.toRational()
-        if (ratL == null || ratR == null) {
-            return Illegal
-        }
+        val ratL = l.toRational() ?: return Add(l, r)
+        val ratR = r.toRational() ?: return Add(l, r)
         return rational(
             numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
             denominator = ratL.denominator * ratR.denominator,
         )
     }
-    TODO()
+    return when {
+        l is Add && r is Add -> add(l.summands + r.summands)
+        l is Add -> add(l.summands + r)
+        r is Add -> add(r.summands + l)
+        else -> Add(l, r)
+    }
 }
 
 fun <T : Base> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
@@ -40,6 +45,8 @@ fun <T : Base> multiply(multiplicants: List<Expr<T>>): Expr<T> {
 }
 
 fun <T : Base> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
+    if (l == One) return r
+    if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
         if (l is Integer && r is Integer) return integer(l.n * r.n)
@@ -50,15 +57,20 @@ fun <T : Base> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
             denominator = ratL.denominator * ratR.denominator,
         )
     }
-    TODO()
+    return when {
+        l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
+        l is Multiply -> multiply(l.multiplicants + r)
+        r is Multiply -> multiply(r.multiplicants + l)
+        else -> Multiply(l, r)
+    }
 }
 
 fun <T : Base> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
         if (l is Integer && r is Integer) return rational(l.n, r.n)
-        val ratL = l.toRational() ?: return Illegal
-        val ratR = l.toRational() ?: return Illegal
+        val ratL = l.toRational() ?: return Divide(l, r)
+        val ratR = l.toRational() ?: return Divide(l, r)
         return rational(
             numerator = ratL.numerator * ratR.denominator,
             denominator = ratL.denominator * ratR.numerator,
