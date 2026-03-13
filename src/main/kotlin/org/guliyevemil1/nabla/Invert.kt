@@ -21,4 +21,5 @@ fun invert(b: Base): Base = when (b) {
 
     is Differentiate -> TODO()
     is Integrate -> TODO()
+    is Pow -> TODO()
 }

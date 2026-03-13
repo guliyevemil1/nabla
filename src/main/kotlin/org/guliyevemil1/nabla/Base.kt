@@ -4,6 +4,17 @@ sealed interface Base {
     fun toConstant(): Constant = this as? Constant ?: Illegal
 }
 
+val baseComparator: Comparator<Base> =
+    compareBy<Base> {
+        it is Integer || it is Rational
+    }.thenBy {
+        it is Constant
+    }.thenBy {
+        it is X
+    }.thenBy {
+        it is Multiply
+    }
+
 object X : Base
 
 class Add(val summands: List<Base>) : Base {
@@ -26,7 +37,9 @@ open class Multiply(val multiplicants: List<Base>) : Base {
         multiply(multiplicants.map(f))
 }
 
-class Divide(val numerator: Base, val denominator: Base) : Base
+data class Pow(val base: Base, val pow: Int) : Base
+
+data class Divide(val numerator: Base, val denominator: Base) : Base
 
 object CosX : Base
 
@@ -34,12 +47,12 @@ object SinX : Base
 
 object ExpX : Base
 
-class Differentiate(val base: Base) : Base
+data class Differentiate(val base: Base) : Base
 
-class Integrate(val base: Base) : Base
+data class Integrate(val base: Base) : Base
 
-class Sqrt(val base: Base) : Base
+data class Sqrt(val base: Base) : Base
 
-class Log(val base: Base) : Base
+data class Log(val base: Base) : Base
 
-class Invert(val base: Base) : Base
+data class Invert(val base: Base) : Base

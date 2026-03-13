@@ -40,4 +40,5 @@ fun differentiate(b: Base): Base =
         is Invert -> TODO()
         is Log -> Divide(differentiate(b.base), b.base)
         is Sqrt -> Divide(differentiate(b.base), Multiply(Two, b))
+        is Pow -> TODO()
     }

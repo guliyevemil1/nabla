@@ -1,13 +1,11 @@
 package org.guliyevemil1.nabla
 
-import org.guliyevemil1.nabla.Bool.Companion.toBool
 import org.guliyevemil1.nabla.ConstExpr.Companion.constExpr
 import kotlin.math.abs
 
-val Zero = Integer(0)
-val One = Integer(1)
-val Two = Integer(2)
-val NegOne = Integer(-1)
+val Zero = integer(0)
+val One = integer(1)
+val NegOne = integer(-1)
 
 enum class Bool {
     True,
@@ -81,15 +79,9 @@ object Illegal : Constant {
 
 private val integerMap = HashMap<Int, Integer>()
 
-fun integer(n: Int): Integer = when (n) {
-    0 -> Zero
-    1 -> One
-    2 -> Two
-    -1 -> NegOne
-    else -> integerMap.computeIfAbsent(n, ::Integer)
-}
+fun integer(n: Int): Integer = integerMap.computeIfAbsent(n, ::Integer)
 
-class Integer(val n: Int) : Constant {
+data class Integer(val n: Int) : Constant {
     override val sign: Sign = when {
         n < 0 -> Sign.Negative
         n == 0 -> Sign.Zero
@@ -128,7 +120,7 @@ fun rational(numerator: Int, denominator: Int): Constant {
     return rational(numerator / g, denominator / g)
 }
 
-class Rational internal constructor(val numerator: Int, val denominator: Int) : Constant {
+data class Rational(val numerator: Int, val denominator: Int) : Constant {
     override val sign: Sign = when {
         numerator == 0 -> Sign.Zero
         numerator > 0 -> Sign.Positive
@@ -144,7 +136,7 @@ class Rational internal constructor(val numerator: Int, val denominator: Int) : 
     override fun toRational() = this
 }
 
-class ConstExpr private constructor(b: Base) : Constant {
+data class ConstExpr(val b: Base) : Constant {
     companion object {
         fun constExpr(b: Base): Constant =
             when (b) {
@@ -170,6 +162,7 @@ class ConstExpr private constructor(b: Base) : Constant {
                 is Add -> TODO()
                 is Multiply -> TODO()
                 is Divide -> TODO()
+                is Pow -> TODO()
             }
     }
 

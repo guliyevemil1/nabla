@@ -9,6 +9,7 @@ import org.guliyevemil1.nabla.ExpX as NablaExpX
 import org.guliyevemil1.nabla.SinX as NablaSinX
 import org.guliyevemil1.nabla.CosX as NablaCosX
 import org.guliyevemil1.nabla.Multiply
+import org.guliyevemil1.nabla.Pow
 
 sealed interface Card
 
@@ -23,7 +24,7 @@ val Start: List<Card> = listOf(
 object Zero : BaseCard(NablaZero)
 object One : BaseCard(NablaOne)
 object X : BaseCard(NablaX)
-object X2 : BaseCard(Multiply(NablaX, NablaX))
+object X2 : BaseCard(Pow(NablaX, 2))
 object ExpX : BaseCard(NablaExpX)
 object SinX : BaseCard(NablaSinX)
 object CosX : BaseCard(NablaCosX)

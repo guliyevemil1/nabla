@@ -103,3 +103,18 @@ fun divide(l: Constant, r: Constant): Constant {
         denominator = ratL.denominator * ratR.numerator,
     )
 }
+
+private val powMap = HashMap<Int, Pow>()
+
+fun pow(base: Constant, n: Int): Constant {
+    if (n < 0) return Illegal
+    if (n == 0) return One
+    return multiply(base, pow(base, n - 1))
+}
+
+fun pow(base: Base, n: Int): Pow {
+    if (base is X) {
+        return powMap.computeIfAbsent(n) { Pow(X, n) }
+    }
+    return Pow(base, n)
+}
