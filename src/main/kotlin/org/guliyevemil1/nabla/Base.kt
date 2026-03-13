@@ -9,12 +9,21 @@ object X : Base
 class Add(val summands: List<Base>) : Base {
     constructor(vararg summands: Base) : this(summands.asList())
 
+    fun map(f: (Base) -> Constant): Constant =
+        add(summands.map(f))
+
     fun map(f: (Base) -> Base): Base =
-        Add(summands.map(f))
+        add(summands.map(f))
 }
 
 open class Multiply(val multiplicants: List<Base>) : Base {
     constructor(vararg multiplicants: Base) : this(multiplicants.asList())
+
+    fun map(f: (Base) -> Constant): Constant =
+        multiply(multiplicants.map(f))
+
+    fun map(f: (Base) -> Base): Base =
+        multiply(multiplicants.map(f))
 }
 
 class Divide(val numerator: Base, val denominator: Base) : Base
