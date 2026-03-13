@@ -20,7 +20,7 @@ fun differentiate(b: Expr<Base>): Expr<Base> =
         is Add -> b.map { differentiate(it) }
         is Multiply -> differentiate(b)
 
-        is Divide<*> -> Divide(
+        is Divide<*> -> divide(
             add(
                 multiply(
                     differentiate(b.numerator),

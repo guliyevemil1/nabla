@@ -66,6 +66,9 @@ fun <T : Base> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
 }
 
 fun <T : Base> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
+    if (r == Zero) return Illegal
+    if (l == Zero) return Zero
+    if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
         if (l is Integer && r is Integer) return rational(l.n, r.n)
@@ -76,7 +79,14 @@ fun <T : Base> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
             denominator = ratL.denominator * ratR.numerator,
         )
     }
-    TODO()
+    return when {
+        l is Pow && r is X -> TODO()
+        l is Multiply && r is Multiply -> TODO()
+        l is Multiply -> TODO()
+        r is Multiply -> TODO()
+        l == r -> One
+        else -> Divide(l, r)
+    }
 }
 
 private val powMap = HashMap<Int, Pow<Base>>()
