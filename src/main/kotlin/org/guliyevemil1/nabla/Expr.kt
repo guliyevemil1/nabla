@@ -2,6 +2,8 @@ package org.guliyevemil1.nabla
 
 sealed interface Expr<out T>
 
+object Illegal : Expr<Nothing>
+
 class Add<T : Base>(val summands: List<Expr<T>>) : Expr<T> {
     constructor(vararg summands: Expr<T>) : this(summands.asList())
 

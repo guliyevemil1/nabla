@@ -14,7 +14,7 @@ fun differentiate(b: Expr<Base>): Expr<Base> =
         is Constant -> Zero
         is X -> One
         is SinX -> CosX
-        is CosX -> Multiply(NegOne, SinX)
+        is CosX -> multiply(NegOne, SinX)
         is ExpX -> ExpX
 
         is Add -> b.map { differentiate(it) }
