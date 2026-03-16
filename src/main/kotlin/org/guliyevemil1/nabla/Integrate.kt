@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla
 
-fun integrate(b: Expr<Base>): Expr<Base> = when (b) {
+fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal
     is Constant -> multiply(b, X)
     CosX -> SinX

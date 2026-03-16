@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla
 
-fun <T : Base> sqrt(c: Expr<T>): Expr<T> {
+fun <T> sqrt(c: Expr<T>): Expr<T> {
     if (c is Constant) {
         TODO()
     }

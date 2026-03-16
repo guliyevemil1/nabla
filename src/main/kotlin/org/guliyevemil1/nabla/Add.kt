@@ -2,9 +2,9 @@
 
 package org.guliyevemil1.nabla
 
-fun <T : Base> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())
+fun <T> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())
 
-fun <T : Base> add(summands: List<Expr<T>>): Expr<T> {
+fun <T> add(summands: List<Expr<T>>): Expr<T> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
@@ -13,7 +13,7 @@ fun <T : Base> add(summands: List<Expr<T>>): Expr<T> {
     }
 }
 
-fun <T : Base> add(l: Expr<T>, r: Expr<T>): Expr<T> {
+fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l == Zero) return r
     if (r == Zero) return l
     if (l is Illegal || r is Illegal) return Illegal
@@ -34,9 +34,9 @@ fun <T : Base> add(l: Expr<T>, r: Expr<T>): Expr<T> {
     }
 }
 
-fun <T : Base> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
+fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
 
-fun <T : Base> multiply(multiplicants: List<Expr<T>>): Expr<T> {
+fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
         1 -> multiplicants[0]
@@ -44,7 +44,7 @@ fun <T : Base> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     }
 }
 
-fun <T : Base> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
+fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l == One) return r
     if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
@@ -65,7 +65,7 @@ fun <T : Base> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
     }
 }
 
-fun <T : Base> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
+fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (r == Zero) return Illegal
     if (l == Zero) return Zero
     if (r == One) return l
@@ -89,9 +89,9 @@ fun <T : Base> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     }
 }
 
-private val powMap = HashMap<Int, Pow<Base>>()
+private val powMap = HashMap<Int, Pow<Any?>>()
 
-fun <T : Base> pow(base: Expr<T>, n: Int): Expr<T> {
+fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
     if (base is X) {
         return powMap.computeIfAbsent(n) { Pow(X, n) } as Expr<T>
     }

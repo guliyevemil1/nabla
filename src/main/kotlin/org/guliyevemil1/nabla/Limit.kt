@@ -9,7 +9,7 @@ private enum class Limit {
     Infimum,
 }
 
-private fun lim(b: Expr<Base>, x: Limit): Expr<Nothing> =
+private fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
     when (b) {
         Illegal -> Illegal
         is Constant -> b
@@ -56,4 +56,5 @@ private fun lim(b: Expr<Base>, x: Limit): Expr<Nothing> =
             Limit.Infimum -> Illegal
         }
 
+        else -> TODO()
     }

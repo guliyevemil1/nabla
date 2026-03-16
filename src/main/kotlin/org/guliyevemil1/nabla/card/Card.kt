@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.Base
+import org.guliyevemil1.nabla.Expr
 
 import org.guliyevemil1.nabla.Zero as NablaZero
 import org.guliyevemil1.nabla.One as NablaOne
@@ -13,7 +13,7 @@ import org.guliyevemil1.nabla.Pow
 
 sealed interface Card
 
-sealed class BaseCard(val b: Base) : Card
+sealed class BaseCard(val b: Expr<Any?>) : Card
 
 val Start: List<Card> = listOf(
     One,

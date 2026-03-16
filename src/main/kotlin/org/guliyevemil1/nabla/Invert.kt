@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla
 
-fun invert(b: Expr<Base>): Expr<Base> = when (b) {
+fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal
     is Constant -> Illegal
     is CosX -> Illegal
