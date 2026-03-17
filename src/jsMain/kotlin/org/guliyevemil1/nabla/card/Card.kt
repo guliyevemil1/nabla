@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.card
 
-sealed interface Card
+sealed interface Card {
+    fun render(): String
+}
 
 sealed interface BaseCard : Card
 
@@ -10,37 +12,95 @@ val Start: List<Card> = listOf(
     X2,
 )
 
-object Zero : BaseCard
-object One : BaseCard
-object X : BaseCard
-object X2 : BaseCard
-object ExpX : BaseCard
-object SinX : BaseCard
-object CosX : BaseCard
+object Zero : BaseCard {
+    override fun render(): String = """0"""
+}
+
+object One : BaseCard {
+    override fun render(): String = """1"""
+}
+
+object X : BaseCard {
+    override fun render(): String = """x"""
+}
+
+object X2 : BaseCard {
+    override fun render(): String = """x^2"""
+}
+
+object ExpX : BaseCard {
+    override fun render(): String = """e^x"""
+}
+
+object SinX : BaseCard {
+    override fun render(): String = """\sin x"""
+}
+
+object CosX : BaseCard {
+    override fun render(): String = """\cos x"""
+}
 
 sealed interface AllOperator : Card
 
-object Nabla : AllOperator
-object Nabla2 : AllOperator
+object Nabla : AllOperator {
+    override fun render(): String = TODO()
+}
+
+object Nabla2 : AllOperator {
+    override fun render(): String = TODO()
+}
 
 sealed interface Operator : Card
 
-object DDx : Operator
-object Integrate : Operator
+object DDx : Operator {
+    override fun render(): String = """\frac{d}{dx}"""
+}
+
+object Integrate : Operator {
+    override fun render(): String = """\int"""
+}
 
 sealed interface BinaryOperator : Card
 
-object Times : BinaryOperator
-object Over : BinaryOperator
+object Times : BinaryOperator {
+    override fun render(): String = """\times"""
+}
 
-object Lim0 : Operator
-object LimInf : Operator
-object LimNegInf : Operator
-object LimSupremum : Operator
-object LimInfimum : Operator
-object Sqrt : Operator
-object Log : Operator
-object Inverse : Operator
+object Over : BinaryOperator {
+    override fun render(): String = """/"""
+}
+
+object Lim0 : Operator {
+    override fun render(): String = """\lim_{x \arrow 0}"""
+}
+
+object LimInf : Operator {
+    override fun render(): String = """\lim_{x \arrow 0}"""
+}
+
+object LimNegInf : Operator {
+    override fun render(): String = """\lim_{x \arrow 0}"""
+}
+
+object LimSupremum : Operator {
+    override fun render(): String = """\lim_{x \arrow 0}"""
+}
+
+object LimInfimum : Operator {
+    override fun render(): String = """\lim_{x \arrow 0}"""
+}
+
+object Sqrt : Operator {
+    override fun render(): String = """\sqrt"""
+}
+
+object Log : Operator {
+    override fun render(): String = """\log"""
+}
+
+object Inverse : Operator {
+    override fun render(): String = """f^{-1}"""
+}
 
 val deck = buildList<Card> {
     repeat(times = 2) { add(Zero) }

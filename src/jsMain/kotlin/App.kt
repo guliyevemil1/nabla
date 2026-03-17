@@ -3,11 +3,16 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
-import org.guliyevemil1.nabla.ExpX
 import org.guliyevemil1.nabla.Expr
-import org.guliyevemil1.nabla.Multiply
-import org.guliyevemil1.nabla.One
 import org.guliyevemil1.nabla.Zero
+import org.guliyevemil1.nabla.card.Card
+import org.guliyevemil1.nabla.card.CosX
+import org.guliyevemil1.nabla.card.ExpX
+import org.guliyevemil1.nabla.card.One
+import org.guliyevemil1.nabla.card.SinX
+import org.guliyevemil1.nabla.card.X
+import org.guliyevemil1.nabla.card.X2
+import org.guliyevemil1.nabla.card.Zero
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
@@ -15,8 +20,6 @@ data class StateItem(
     val id: String,
     val value: Expr<Any?>,
 )
-
-data class Card(val id: Int, val name: String)
 
 // KaTeX external interface
 @JsName("katex")
@@ -32,18 +35,15 @@ fun renderMath(formula: Expr<*>, element: HTMLElement) {
     KaTeX.render(formula.render(), element)
 }
 
-val expr = Multiply<Any?>(
-    One,
-    One,
-    Zero,
-    ExpX,
-)
+fun renderMath(card: Card, element: HTMLElement) {
+    KaTeX.render(card.render(), element)
+}
 
 object GameState {
     val items = mutableListOf(
-        StateItem("item1", expr),
-        StateItem("item2", expr),
-        StateItem("item3", expr)
+        StateItem("item1", Zero),
+        StateItem("item2", Zero),
+        StateItem("item3", Zero)
     )
     val hand = mutableListOf<Card>()
 }
@@ -67,26 +67,25 @@ fun renderHand() {
     val handDiv = document.getElementById("hand") as HTMLDivElement
     handDiv.innerHTML = ""
 
-    GameState.hand.forEach { card ->
+    GameState.hand.forEachIndexed { index, card ->
         handDiv.append {
             val b = button {
-                +card.name
-                onClickFunction = { playCard(card.id) }
+                onClickFunction = { playCard(index) }
             }
-            renderMath(card.name, b)
+            renderMath(card, b)
         }
     }
 }
 
 fun playCard(cardId: Int) {
-    val card = GameState.hand.find { it.id == cardId }
-    if (card != null) {
-        // Apply your card effect here
-        console.log("Playing card: ${card.name}")
-
-        GameState.hand.remove(card)
-        renderHand()
-    }
+//    val card = GameState.hand.find { it.id == cardId }
+//    if (card != null) {
+//        // Apply your card effect here
+//        console.log("Playing card: ${card.name}")
+//
+//        GameState.hand.remove(card)
+//        renderHand()
+//    }
 }
 
 fun addCard(card: Card) {
@@ -106,7 +105,10 @@ fun main() {
     renderHand()
 
     // Example: Add some cards
-    addCard(Card(1, """\frac{1}{2}"""))
-    addCard(Card(2, """\int_0^\infty"""))
-    addCard(Card(3, """\frac{d}{dx}"""))
+    addCard(One)
+    addCard(X)
+    addCard(X2)
+    addCard(ExpX)
+    addCard(SinX)
+    addCard(CosX)
 }
