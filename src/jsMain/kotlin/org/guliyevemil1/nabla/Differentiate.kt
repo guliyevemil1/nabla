@@ -41,5 +41,4 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Log -> Divide(differentiate(b.base), b.base)
         is Sqrt -> Divide(differentiate(b.base), Multiply(integer(2), b))
         is Pow -> TODO()
-        else -> TODO()
     }
