@@ -1,32 +1,79 @@
-package org.guliyevemil1
+import kotlinx.browser.document
+import kotlinx.html.dom.append
+import kotlinx.html.js.div
+import kotlinx.html.js.button
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.HTMLDivElement
+
+data class StateItem(val id: String, var value: Int)
+
+data class Card(val id: Int, val name: String)
+
+object GameState {
+    val items = mutableListOf(
+        StateItem("item1", 0),
+        StateItem("item2", 0),
+        StateItem("item3", 0)
+    )
+    val hand = mutableListOf<Card>()
+}
+
+fun renderState() {
+    val stateDiv = document.getElementById("gameState") as HTMLDivElement
+    stateDiv.innerHTML = ""
+
+    GameState.items.forEach { item ->
+        stateDiv.append {
+            div {
+                +"${item.id}: ${item.value}"
+            }
+        }
+    }
+}
+
+fun renderHand() {
+    val handDiv = document.getElementById("hand") as HTMLDivElement
+    handDiv.innerHTML = ""
+
+    GameState.hand.forEach { card ->
+        handDiv.append {
+            button {
+                +card.name
+                onClickFunction = { playCard(card.id) }
+            }
+        }
+    }
+}
+
+fun playCard(cardId: Int) {
+    val card = GameState.hand.find { it.id == cardId }
+    if (card != null) {
+        // Apply your card effect here
+        console.log("Playing card: ${card.name}")
+
+        GameState.hand.remove(card)
+        renderHand()
+    }
+}
+
+fun addCard(card: Card) {
+    GameState.hand.add(card)
+    renderHand()
+}
+
+fun updateState(newItems: List<StateItem>) {
+    GameState.items.clear()
+    GameState.items.addAll(newItems)
+    renderState()
+}
 
 fun main() {
-    println("Hello from Kotlin/JS!")
+    // Initial render
+    renderState()
+    renderHand()
 
-    // DOM manipulation example
-    val element = kotlinx.browser.document.getElementById("app")
-    element?.innerHTML = "<h1>Welcome to Kotlin/JS!</h1>"
-
-    // Call a custom function
-    greetUser("Developer")
-}
-
-fun greetUser(name: String) {
-    println("Hello, $name!")
-
-    // You can use Kotlin features like string templates, data classes, etc.
-    val message = "Kotlin compiles to: ${getTargetPlatform()}"
-    kotlinx.browser.window.alert(message)
-}
-
-fun getTargetPlatform(): String {
-    return "JavaScript"
-}
-
-// Data classes work great
-data class User(val name: String, val age: Int)
-
-fun exampleWithDataClass() {
-    val user = User("Alice", 30)
-    println("User: ${user.name}, Age: ${user.age}")
+    // Example: Add some cards
+    addCard(Card(1, "Card 1"))
+    addCard(Card(2, "Card 2"))
+    addCard(Card(3, "Card 3"))
 }

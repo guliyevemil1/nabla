@@ -15,6 +15,21 @@ kotlin {
         }
         binaries.executable()
     }
+
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.9.1")
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
+    }
 }
 
 dependencies {
