@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("multiplatform") version "2.3.20"
 }
 
 group = "org.guliyevemil1"
@@ -9,14 +9,16 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
 kotlin {
-    jvmToolchain(24)
+    js {
+        browser {
+        }
+        binaries.executable()
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
+dependencies {
+//    implementation(kotlin("stdlib-js"))
+//
+//    testImplementation(kotlin("test"))
 }
