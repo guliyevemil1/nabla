@@ -4,10 +4,21 @@ import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
 
 data class StateItem(val id: String, var value: Int)
 
 data class Card(val id: Int, val name: String)
+
+// KaTeX external interface
+@JsName("katex")
+external object KaTeX {
+    fun render(tex: String, element: HTMLElement, options: dynamic = definedExternally)
+}
+
+fun renderMath(formula: String, element: HTMLElement) {
+    KaTeX.render(formula, element)
+}
 
 object GameState {
     val items = mutableListOf(
@@ -37,10 +48,11 @@ fun renderHand() {
 
     GameState.hand.forEach { card ->
         handDiv.append {
-            button {
+            val b = button {
                 +card.name
                 onClickFunction = { playCard(card.id) }
             }
+            renderMath(card.name, b)
         }
     }
 }
@@ -73,7 +85,7 @@ fun main() {
     renderHand()
 
     // Example: Add some cards
-    addCard(Card(1, "Card 1"))
-    addCard(Card(2, "Card 2"))
-    addCard(Card(3, "Card 3"))
+    addCard(Card(1, """\frac{1}{2}"""))
+    addCard(Card(2, """\int_0^\infty"""))
+    addCard(Card(3, """\frac{d}{dx}"""))
 }
