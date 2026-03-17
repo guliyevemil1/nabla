@@ -3,10 +3,18 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
+import org.guliyevemil1.nabla.ExpX
+import org.guliyevemil1.nabla.Expr
+import org.guliyevemil1.nabla.Multiply
+import org.guliyevemil1.nabla.One
+import org.guliyevemil1.nabla.Zero
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
-data class StateItem(val id: String, var value: Int)
+data class StateItem(
+    val id: String,
+    val value: Expr<Any?>,
+)
 
 data class Card(val id: Int, val name: String)
 
@@ -20,11 +28,22 @@ fun renderMath(formula: String, element: HTMLElement) {
     KaTeX.render(formula, element)
 }
 
+fun renderMath(formula: Expr<*>, element: HTMLElement) {
+    KaTeX.render(formula.render(), element)
+}
+
+val expr = Multiply<Any?>(
+    One,
+    One,
+    Zero,
+    ExpX,
+)
+
 object GameState {
     val items = mutableListOf(
-        StateItem("item1", 0),
-        StateItem("item2", 0),
-        StateItem("item3", 0)
+        StateItem("item1", expr),
+        StateItem("item2", expr),
+        StateItem("item3", expr)
     )
     val hand = mutableListOf<Card>()
 }
@@ -36,7 +55,9 @@ fun renderState() {
     GameState.items.forEach { item ->
         stateDiv.append {
             div {
-                +"${item.id}: ${item.value}"
+                +"${item.id}: "
+                val v = div {}
+                renderMath(item.value.render(), v)
             }
         }
     }

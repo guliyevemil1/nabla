@@ -1,9 +1,17 @@
 package org.guliyevemil1.nabla
 
-object X : Expr<Any?>
+object X : Expr<Any?> {
+    override fun render(): String = "x"
+}
 
-object CosX : Expr<Any?>
+object CosX : Expr<Any?> {
+    override fun render(): String = """\sin(x)"""
+}
 
-object SinX : Expr<Any?>
+object SinX : Expr<Any?> {
+    override fun render(): String = """\cos(x)"""
+}
 
-object ExpX : Expr<Any?>
+object ExpX : Expr<Any?> {
+    override fun render(): String = """e^x"""
+}

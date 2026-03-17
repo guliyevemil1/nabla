@@ -26,6 +26,8 @@ data class Integer(val n: Int) : Integral {
         Bool.False -> Rational(1, n)
         Bool.Unknown -> throw IllegalStateException()
     }
+
+    override fun render(): String = """$n"""
 }
 
 fun gcd(a: Int, b: Int): Int {
