@@ -1,19 +1,8 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.Expr
-
-import org.guliyevemil1.nabla.Zero as NablaZero
-import org.guliyevemil1.nabla.One as NablaOne
-import org.guliyevemil1.nabla.X as NablaX
-import org.guliyevemil1.nabla.ExpX as NablaExpX
-import org.guliyevemil1.nabla.SinX as NablaSinX
-import org.guliyevemil1.nabla.CosX as NablaCosX
-import org.guliyevemil1.nabla.Multiply
-import org.guliyevemil1.nabla.Pow
-
 sealed interface Card
 
-sealed class BaseCard(val b: Expr<Any?>) : Card
+sealed interface BaseCard : Card
 
 val Start: List<Card> = listOf(
     One,
@@ -21,13 +10,13 @@ val Start: List<Card> = listOf(
     X2,
 )
 
-object Zero : BaseCard(NablaZero)
-object One : BaseCard(NablaOne)
-object X : BaseCard(NablaX)
-object X2 : BaseCard(Pow(NablaX, 2))
-object ExpX : BaseCard(NablaExpX)
-object SinX : BaseCard(NablaSinX)
-object CosX : BaseCard(NablaCosX)
+object Zero : BaseCard
+object One : BaseCard
+object X : BaseCard
+object X2 : BaseCard
+object ExpX : BaseCard
+object SinX : BaseCard
+object CosX : BaseCard
 
 sealed interface AllOperator : Card
 
@@ -37,20 +26,47 @@ object Nabla2 : AllOperator
 sealed interface Operator : Card
 
 object DDx : Operator
-object Integral : Operator
+object Integrate : Operator
 
 sealed interface BinaryOperator : Card
 
-class Times : BinaryOperator
-class Over : BinaryOperator
+object Times : BinaryOperator
+object Over : BinaryOperator
 
-sealed interface SingleOperator : Card
+object Lim0 : Operator
+object LimInf : Operator
+object LimNegInf : Operator
+object LimSupremum : Operator
+object LimInfimum : Operator
+object Sqrt : Operator
+object Log : Operator
+object Inverse : Operator
 
-object Lim0 : SingleOperator
-object LimInf : SingleOperator
-object LimNegInf : SingleOperator
-object LimSupremum : SingleOperator
-object LimInfimum : SingleOperator
-object Sqrt : SingleOperator
-object Log : SingleOperator
-object Inverse : SingleOperator
+val deck = buildList<Card> {
+    repeat(times = 2) { add(Zero) }
+    repeat(times = 2) { add(One) }
+    repeat(times = 8) { add(X) }
+    repeat(times = 3) { add(X2) }
+    repeat(times = 4) { add(SinX) }
+    repeat(times = 4) { add(CosX) }
+    repeat(times = 4) { add(ExpX) }
+
+    repeat(times = 10) { add(Nabla) }
+    repeat(times = 2) { add(Nabla2) }
+
+    repeat(times = 8) { add(Integrate) }
+    repeat(times = 8) { add(DDx) }
+
+    repeat(times = 2) { add(Inverse) }
+    repeat(times = 2) { add(Sqrt) }
+    repeat(times = 3) { add(Log) }
+
+    repeat(times = 5) { add(Times) }
+    repeat(times = 5) { add(Over) }
+
+    repeat(times = 2) { add(Lim0) }
+    repeat(times = 2) { add(LimInf) }
+    repeat(times = 2) { add(LimNegInf) }
+    add(LimSupremum)
+    add(LimInfimum)
+}
