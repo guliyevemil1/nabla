@@ -36,6 +36,14 @@ data class Players(
         1 -> player2
         else -> throw IndexOutOfBoundsException()
     }
+
+    fun update(
+        turn: Int,
+        transform: (Expr<Any?>) -> Expr<Any?> = { it },
+        removedCards: List<Card> = emptyList(),
+    ) {
+
+    }
 }
 
 class Player(
@@ -93,7 +101,7 @@ class Board(
 ) {
     fun copy(
         state: BoardState,
-        players: Players,
+        players: Players = this.players,
     ): Board = Board(
         shuffler = shuffler,
         previous = this,
@@ -172,14 +180,12 @@ class Board(
                     is Operator -> {
                         return copy(
                             state = StateOperator(clickedCard, playedCards = playedCards!!),
-                            players = null,
                         )
                     }
 
                     is BinaryOperator -> {
                         return copy(
                             state = StateBinaryOperator(clickedCard, playedCards = playedCards!!),
-                            players = null,
                         )
                     }
                 }
@@ -189,10 +195,13 @@ class Board(
                 val base =
                     clickable as? HandCard ?: throw IllegalStateException("did not get a hand card as expected")
 
-                state = StateBinaryOperatorPartial(
-                    binaryOperator = s.binaryOperator,
-                    rhs = base.card as? BaseCard ?: throw IllegalStateException("did not get a base card as expected"),
-                    playedCards = s.playedCards + playedCards,
+                return copy(
+                    state = StateBinaryOperatorPartial(
+                        binaryOperator = s.binaryOperator,
+                        rhs = base.card as? BaseCard
+                            ?: throw IllegalStateException("did not get a base card as expected"),
+                        playedCards = s.playedCards + playedCards!!,
+                    ),
                 )
             }
 
@@ -200,8 +209,9 @@ class Board(
                 val fieldItem = clickable as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
                 fieldItem.expr = s.card.transformExpr(fieldItem.expr)
-                s.finalize()
-                state = None
+                return copy(
+                    state = None,
+                )
             }
 
             is StateBinaryOperatorPartial -> {
