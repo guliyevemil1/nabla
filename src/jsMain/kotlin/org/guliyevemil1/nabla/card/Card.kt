@@ -1,16 +1,10 @@
 package org.guliyevemil1.nabla.card
 
-sealed interface Card {
+interface NablaCard : Card {
     fun render(): String
 }
 
-sealed interface BaseCard : Card
-
-val Start: List<Card> = listOf(
-    One,
-    X,
-    X2,
-)
+sealed interface BaseCard : NablaCard
 
 object Zero : BaseCard {
     override fun render(): String = """0"""
@@ -40,7 +34,7 @@ object CosX : BaseCard {
     override fun render(): String = """\cos x"""
 }
 
-sealed interface AllOperator : Card
+sealed interface AllOperator : NablaCard
 
 object Nabla : AllOperator {
     override fun render(): String = """\nabla"""
@@ -50,7 +44,7 @@ object Nabla2 : AllOperator {
     override fun render(): String = """\triangle"""
 }
 
-sealed interface Operator : Card
+sealed interface Operator : NablaCard
 
 object DDx : Operator {
     override fun render(): String = """\frac{d}{dx}"""
@@ -60,7 +54,7 @@ object Integrate : Operator {
     override fun render(): String = """\int"""
 }
 
-sealed interface BinaryOperator : Card
+sealed interface BinaryOperator : NablaCard
 
 object Times : BinaryOperator {
     override fun render(): String = """\times"""
@@ -102,31 +96,34 @@ object Inverse : Operator {
     override fun render(): String = """f^{-1}"""
 }
 
-val deck = buildList<Card> {
-    repeat(times = 2) { add(Zero) }
-    repeat(times = 2) { add(One) }
-    repeat(times = 8) { add(X) }
-    repeat(times = 3) { add(X2) }
-    repeat(times = 4) { add(SinX) }
-    repeat(times = 4) { add(CosX) }
-    repeat(times = 4) { add(ExpX) }
+class NablaDeck : Deck {
 
-    repeat(times = 10) { add(Nabla) }
-    repeat(times = 2) { add(Nabla2) }
+    override val cards: List<NablaCard> = buildList {
+        repeat(times = 2) { add(Zero) }
+        repeat(times = 2) { add(One) }
+        repeat(times = 8) { add(X) }
+        repeat(times = 3) { add(X2) }
+        repeat(times = 4) { add(SinX) }
+        repeat(times = 4) { add(CosX) }
+        repeat(times = 4) { add(ExpX) }
 
-    repeat(times = 8) { add(Integrate) }
-    repeat(times = 8) { add(DDx) }
+        repeat(times = 10) { add(Nabla) }
+        repeat(times = 2) { add(Nabla2) }
 
-    repeat(times = 2) { add(Inverse) }
-    repeat(times = 2) { add(Sqrt) }
-    repeat(times = 3) { add(Log) }
+        repeat(times = 8) { add(Integrate) }
+        repeat(times = 8) { add(DDx) }
 
-    repeat(times = 5) { add(Times) }
-    repeat(times = 5) { add(Over) }
+        repeat(times = 2) { add(Inverse) }
+        repeat(times = 2) { add(Sqrt) }
+        repeat(times = 3) { add(Log) }
 
-    repeat(times = 2) { add(Lim0) }
-    repeat(times = 2) { add(LimInf) }
-    repeat(times = 2) { add(LimNegInf) }
-    add(LimSupremum)
-    add(LimInfimum)
+        repeat(times = 5) { add(Times) }
+        repeat(times = 5) { add(Over) }
+
+        repeat(times = 2) { add(Lim0) }
+        repeat(times = 2) { add(LimInf) }
+        repeat(times = 2) { add(LimNegInf) }
+        add(LimSupremum)
+        add(LimInfimum)
+    }
 }

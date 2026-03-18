@@ -29,7 +29,7 @@ fun renderMath(formula: Expr<*>, element: HTMLElement) {
     KaTeX.render(formula.render(), element)
 }
 
-fun renderMath(card: Card, element: HTMLElement) {
+fun renderMath(card: NablaCard, element: HTMLElement) {
     KaTeX.render(card.render(), element)
 }
 
@@ -39,7 +39,7 @@ object GameState {
         StateItem("item2", Zero),
         StateItem("item3", Zero)
     )
-    val hand = mutableListOf<Card>()
+    val hand = mutableListOf<NablaCard>()
 }
 
 fun renderState() {
@@ -83,7 +83,7 @@ fun playCard(cardId: Int) {
 //    }
 }
 
-fun addCard(card: Card) {
+fun addCard(card: NablaCard) {
     GameState.hand.add(card)
     renderHand()
 }
