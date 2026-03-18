@@ -172,6 +172,18 @@ class Board(
         else -> throw IllegalStateException("unrecognized turn: $turn")
     }
 
+    fun Players.checkGameOver() = if (player1.field.contains(Illegal) || player2.field.contains(Illegal)) {
+        update(
+            transform = {
+                copy(
+                    field = emptyList(),
+                )
+            },
+        )
+    } else {
+        this
+    }
+
     fun play(clickable: Clickable): Board {
         val s = state
 
@@ -281,7 +293,7 @@ class Board(
                                 this
                             }
                         }
-                    ),
+                    ).checkGameOver(),
                 )
             }
 
@@ -307,7 +319,7 @@ class Board(
                                 this
                             }
                         },
-                    ),
+                    ).checkGameOver(),
                 )
             }
 
