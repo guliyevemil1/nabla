@@ -4,11 +4,14 @@ import org.guliyevemil1.nabla.math.CosX
 import org.guliyevemil1.nabla.math.ExpX
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Limit
+import org.guliyevemil1.nabla.math.Multiply
 import org.guliyevemil1.nabla.math.SinX
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.differentiate
+import org.guliyevemil1.nabla.math.divide
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.lim
+import org.guliyevemil1.nabla.math.multiply
 import org.guliyevemil1.nabla.math.pow
 
 sealed interface NablaCard : Card {
@@ -58,14 +61,24 @@ object Integrate : Operator {
     override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = TODO()
 }
 
-sealed interface BinaryOperator : NablaCard
+sealed interface BinaryOperator : NablaCard {
+    fun transformExpr(expr: Expr<Any?>, rhs: Expr<Any?>): Expr<Any?>
+}
 
 object Times : BinaryOperator {
     override fun render(): String = """\times"""
+    override fun transformExpr(
+        expr: Expr<Any?>,
+        rhs: Expr<Any?>,
+    ): Expr<Any?> = multiply(expr, rhs)
 }
 
 object Over : BinaryOperator {
     override fun render(): String = """\div"""
+    override fun transformExpr(
+        expr: Expr<Any?>,
+        rhs: Expr<Any?>,
+    ): Expr<Any?> = divide(expr, rhs)
 }
 
 object Lim0 : Operator {

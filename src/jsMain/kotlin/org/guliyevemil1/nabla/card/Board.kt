@@ -79,9 +79,22 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
         val s = state
         when (clickable) {
             is Base -> {
-                if (s !is StateOperator && s !is StateBinaryOperatorPartial) {
-                    println("Awaiting hand card")
-                    return
+                val base = clickable
+                when (s) {
+                    is StateOperator -> {
+                        base.expr = s.card.transformExpr(base.expr)
+                        s.finalize()
+                    }
+
+                    is StateBinaryOperatorPartial -> {
+                        base.expr = s.binaryOperator.transformExpr(base.expr, s.rhs.expr)
+                        s.finalize()
+                    }
+
+                    else -> {
+                        println("Awaiting hand card")
+                        return
+                    }
                 }
                 state = None
                 advanceTurn()
@@ -149,8 +162,8 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                     }
 
                     is AllOperator -> {
-                        players[turn].field.forEachIndexed { index, base ->
-                            players[turn].field[index].expr = clickedCard.transformExpr(base.expr)
+                        players[turn].field.forEach { base ->
+                            base.expr = clickedCard.transformExpr(base.expr)
                         }
                         advanceTurn()
                     }
