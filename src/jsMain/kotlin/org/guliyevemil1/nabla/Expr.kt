@@ -2,6 +2,13 @@ package org.guliyevemil1.nabla
 
 sealed interface Expr<out T> {
     fun render(): String = "TODO()"
+
+    val isSimple
+        get() = when (this) {
+            is X -> true
+            is Constant -> true
+            else -> false
+        }
 }
 
 object Illegal : Expr<Nothing>
@@ -71,8 +78,14 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 }
 
 data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
-    override fun render(): String =
-        """\left(${base.render()}\right)^$pow"""
+    override fun render(): String {
+        return when {
+            base.isSimple -> """${base.render()}^$pow"""
+            base is CosX -> """\cos^$pow x"""
+            base is SinX -> """\sin^$pow x"""
+            else -> """\left(${base.render()}\right)^$pow"""
+        }
+    }
 }
 
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
