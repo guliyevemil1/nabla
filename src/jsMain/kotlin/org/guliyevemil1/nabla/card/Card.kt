@@ -147,7 +147,7 @@ class NablaDeck : Deck<NablaCard> {
         repeat(times = 8) { add(Integrate) }
         repeat(times = 8) { add(DDx) }
 
-        repeat(times = 2) { add(Inverse) }
+//        repeat(times = 2) { add(Inverse) }
         repeat(times = 2) { add(Sqrt) }
         repeat(times = 3) { add(Log) }
 

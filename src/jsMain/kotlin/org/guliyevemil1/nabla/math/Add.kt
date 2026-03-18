@@ -81,10 +81,10 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
-        l is Pow && r is X -> TODO()
-        l is Multiply && r is Multiply -> TODO()
-        l is Multiply -> TODO()
-        r is Multiply -> TODO()
+//        l is Pow && r is X -> TODO()
+//        l is Multiply && r is Multiply -> TODO()
+//        l is Multiply -> TODO()
+//        r is Multiply -> TODO()
         l == r -> One
         else -> Divide(l, r)
     }
