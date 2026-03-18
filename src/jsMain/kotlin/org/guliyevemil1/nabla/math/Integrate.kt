@@ -17,4 +17,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Multiply<*> -> TODO()
     is Sqrt -> TODO()
     is Pow -> TODO()
+    is Scale -> {
+        Scale(b.factor, integrate(b.expr))
+    }
 }

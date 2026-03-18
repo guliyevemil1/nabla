@@ -40,5 +40,11 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Invert -> TODO()
         is Log -> Divide(differentiate(b.base), b.base)
         is Sqrt -> Divide(differentiate(b.base), Multiply(integer(2), b))
-        is Pow -> TODO()
+        is Pow -> {
+            multiply(Scale(integer(b.pow), b.base), differentiate(b.base))
+        }
+
+        is Scale -> {
+            Scale(b.factor, differentiate(b.expr))
+        }
     }

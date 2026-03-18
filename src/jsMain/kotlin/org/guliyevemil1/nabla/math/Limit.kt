@@ -55,4 +55,8 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
             Limit.Supremum -> Illegal
             Limit.Infimum -> Illegal
         }
+
+        is Scale -> {
+            multiply(b.factor, lim(b.expr, x))
+        }
     }

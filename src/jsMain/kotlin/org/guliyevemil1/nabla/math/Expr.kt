@@ -47,6 +47,8 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     }
 }
 
+class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?>
+
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     constructor(vararg m: Expr<T>) : this(m.asList())
 
