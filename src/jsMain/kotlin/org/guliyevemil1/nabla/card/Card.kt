@@ -15,35 +15,17 @@ sealed interface NablaCard : Card {
     fun render(): String
 }
 
-sealed class BaseCard(val expr: Expr<Any?>) : NablaCard
-
-object CardZero : BaseCard(integer(0)) {
-    override fun render(): String = """0"""
+sealed class BaseCard(val expr: Expr<Any?>) : NablaCard {
+    override fun render(): String = expr.render()
 }
 
-object CardOne : BaseCard(integer(1)) {
-    override fun render(): String = """1"""
-}
-
-object CardX : BaseCard(X) {
-    override fun render(): String = """x"""
-}
-
-object CardX2 : BaseCard(pow(X, 2)) {
-    override fun render(): String = """x^2"""
-}
-
-object CardExpX : BaseCard(ExpX) {
-    override fun render(): String = """e^x"""
-}
-
-object CardSinX : BaseCard(SinX) {
-    override fun render(): String = """\sin x"""
-}
-
-object CardCosX : BaseCard(CosX) {
-    override fun render(): String = """\cos x"""
-}
+object CardZero : BaseCard(integer(0))
+object CardOne : BaseCard(integer(1))
+object CardX : BaseCard(X)
+object CardX2 : BaseCard(pow(X, 2))
+object CardExpX : BaseCard(ExpX)
+object CardSinX : BaseCard(SinX)
+object CardCosX : BaseCard(CosX)
 
 sealed interface AllOperator : NablaCard {
     fun transformExpr(expr: Expr<Any?>): Expr<Any?>

@@ -120,7 +120,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                                 throw IllegalStateException()
                             }
 
-                            is BoardState.AwaitingBaseCard -> {
+                            is BoardState.StateBinaryOperator -> {
                                 state = BoardState.None
                                 advanceTurn()
                             }

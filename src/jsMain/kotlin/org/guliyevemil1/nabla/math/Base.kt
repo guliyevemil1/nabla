@@ -5,11 +5,11 @@ object X : Expr<Any?> {
 }
 
 object CosX : Expr<Any?> {
-    override fun render(): String = """\sin(x)"""
+    override fun render(): String = """\cos(x)"""
 }
 
 object SinX : Expr<Any?> {
-    override fun render(): String = """\cos(x)"""
+    override fun render(): String = """\sin(x)"""
 }
 
 object ExpX : Expr<Any?> {
