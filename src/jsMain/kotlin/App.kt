@@ -36,26 +36,39 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
     KaTeX.render(card.render(), element)
 }
 
-val board = NablaBoard()
+object GameState {
+    val board = NablaBoard()
+}
 
-fun renderState() {
-    val stateDiv = document.getElementById("gameState") as HTMLDivElement
-    stateDiv.innerHTML = ""
+fun renderState(element: HTMLDivElement, field: NablaField) {
+    element.innerHTML = ""
 
-    board.fields[0].bases.forEach { item ->
-        stateDiv.append {
-            div {
-                renderMath(item.render(), div {})
+    field.bases.forEach { item ->
+        element.append {
+            val d = button {
+                classes = setOf("field-button")
             }
+            renderMath(item, d)
         }
     }
+}
+
+fun renderState() {
+    renderState(
+        document.getElementById("gameState1") as HTMLDivElement,
+        GameState.board.fields[0],
+    )
+    renderState(
+        document.getElementById("gameState2") as HTMLDivElement,
+        GameState.board.fields[1],
+    )
 }
 
 fun renderHand() {
     val handDiv = document.getElementById("hand") as HTMLDivElement
     handDiv.innerHTML = ""
 
-    board.players[0].hand.forEachIndexed { index, card ->
+    GameState.board.players[0].hand.forEachIndexed { index, card ->
         handDiv.append {
             val b = button {
                 classes += setOf("card-button")

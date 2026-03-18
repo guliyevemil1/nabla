@@ -1,3 +1,13 @@
+#gameStates {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+#gameStates > div {
+    flex: 1;
+}
+
 #hand {
     display: flex;
     gap: 12px;
@@ -15,6 +25,18 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
+    flex-shrink: 0; /* Prevents cards from shrinking */
+}
+
+.field-button .katex {
+    font-size: 14px;
+}
+
+.field-button {
+    width: 40px;
+    height: 42px;
+    border: 2px solid #333;
+    border-radius: 2px;
     flex-shrink: 0; /* Prevents cards from shrinking */
 }
 
