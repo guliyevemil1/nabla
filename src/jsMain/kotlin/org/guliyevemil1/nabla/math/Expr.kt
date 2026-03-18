@@ -7,6 +7,7 @@ sealed interface Expr<out T> {
         get() = when (this) {
             is X -> true
             is Constant -> true
+            is ExpX -> true
             else -> false
         }
 }

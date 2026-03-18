@@ -86,7 +86,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateBinaryOperator -> {
-                clickable is BaseCard && clickable.player == players[turn]
+                clickable is HandCard<*> && clickable.card is BaseCard && clickable.player == players[turn]
             }
 
             is StateBinaryOperatorPartial, is StateOperator -> {
@@ -152,11 +152,12 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateBinaryOperator -> {
-                val base = clickable as? BaseCard ?: throw IllegalStateException()
+                val base =
+                    clickable as? HandCard<*> ?: throw IllegalStateException("did not get a hand card as expected")
 
                 state = StateBinaryOperatorPartial(
                     binaryOperator = s.binaryOperator,
-                    rhs = base,
+                    rhs = base.card as? BaseCard ?: throw IllegalStateException("did not get a base card as expected"),
                     finalize = {
                         s.finalize()
                         finalize!!.invoke()
@@ -165,7 +166,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateOperator -> {
-                val base = clickable as? Base ?: throw IllegalStateException()
+                val base = clickable as? Base ?: throw IllegalStateException("did not get a base input as expected")
                 base.expr = s.card.transformExpr(base.expr)
                 s.finalize()
                 state = None
@@ -173,7 +174,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateBinaryOperatorPartial -> {
-                val base = clickable as? Base ?: throw IllegalStateException()
+                val base = clickable as? Base ?: throw IllegalStateException("did not get a base input as expected")
                 base.expr = s.binaryOperator.transformExpr(base.expr, s.rhs.expr)
                 s.finalize()
                 state = None
