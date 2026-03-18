@@ -11,7 +11,9 @@ sealed interface Expr<out T> {
         }
 }
 
-object Illegal : Expr<Nothing>
+object Illegal : Expr<Nothing> {
+    override fun render(): String = """\bot"""
+}
 
 class Add<T>(s: List<Expr<T>>) : Expr<T> {
     constructor(vararg s: Expr<T>) : this(s.asList())
