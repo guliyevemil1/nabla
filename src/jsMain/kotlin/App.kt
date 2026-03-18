@@ -54,13 +54,13 @@ fun Board.renderState() {
     renderState(
         document.getElementById("gameState1") as HTMLDivElement,
         players[0].let { p ->
-            p.field.map { FieldItem(p, it) }
+            p.field.mapIndexed { index, expr -> FieldItem(p, index, expr) }
         }
     )
     renderState(
         document.getElementById("gameState2") as HTMLDivElement,
         players[1].let { p ->
-            p.field.map { FieldItem(p, it) }
+            p.field.mapIndexed { index, expr -> FieldItem(p, index, expr) }
         }
     )
 }
@@ -84,13 +84,13 @@ fun Board.renderHand() {
     renderHand(
         document.getElementById("hand1") as HTMLDivElement,
         players[0].let { p ->
-            p.hand.map { HandCard(p, it) }
+            p.hand.mapIndexed { index, card -> HandCard(p, index, card) }
         },
     )
     renderHand(
         document.getElementById("hand2") as HTMLDivElement,
         players[1].let { p ->
-            p.hand.map { HandCard(p, it) }
+            p.hand.mapIndexed { index, card -> HandCard(p, index, card) }
         },
     )
 }
@@ -101,5 +101,5 @@ fun Board.render() {
 }
 
 fun main() {
-    board(rng = ImmutableRNG(seed = Random.nextLong())).render()
+    board(rng = ImmutableRNG(seed = Random.nextInt())).render()
 }

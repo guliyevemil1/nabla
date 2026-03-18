@@ -3,6 +3,7 @@ package org.guliyevemil1.nabla.card
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.X
+import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.pow
 
@@ -12,11 +13,13 @@ interface Clickable {
 
 class HandCard(
     override val player: Player,
+    val idx: Int,
     val card: NablaCard,
 ) : Clickable
 
 data class FieldItem(
     override val player: Player,
+    val idx: Int,
     val expr: Expr<Any?>,
 ) : Clickable
 
@@ -27,8 +30,8 @@ val startingField: List<Expr<Any?>> = listOf(
 )
 
 data class Players(
-    val player1: Player = Player(),
-    val player2: Player = Player(),
+    val player1: Player = Player(idx = 0),
+    val player2: Player = Player(idx = 1),
 ) {
     operator fun get(index: Int): Player = when (index) {
         0 -> player1
@@ -47,6 +50,7 @@ data class Players(
 }
 
 data class Player(
+    val idx: Int,
     val hand: List<NablaCard> = listOf(),
     val field: List<Expr<Any?>> = startingField,
 ) {
@@ -63,19 +67,19 @@ sealed interface BoardState {
 
     class StateBinaryOperator(
         val binaryOperator: BinaryOperator,
-        val playedCard: HandCard,
+        val playedCard: Int,
     ) : BoardState
 
     class StateBinaryOperatorPartial(
         val binaryOperator: BinaryOperator,
         val rhs: BaseCard,
-        val playedCards: List<HandCard>,
+        val playedCards: List<Int>,
     ) :
         BoardState
 
     class StateOperator(
         val card: Operator,
-        val playedCard: HandCard,
+        val playedCard: Int,
     ) : BoardState
 }
 
@@ -83,6 +87,12 @@ fun board(rng: ImmutableRNG): Board {
     val s = shuffler(rng = rng, cards = NablaDeck.cards)
     return Board(shuffler = s).draw()
 }
+
+fun <T, U : T> List<U>.replaceAt(index: Int, item: U): List<T> =
+    this.toMutableList().apply { set(index, item) }.toList()
+
+fun <T, U : T> List<U>.replaceAt(index: Int, transform: (U) -> T): List<T> =
+    this.replaceAt(index, transform(this[index]))
 
 class Board(
     private val shuffler: Shuffler<NablaCard>,
@@ -96,6 +106,8 @@ class Board(
         return Board(
             shuffler = s1,
             players = ps,
+            state = state,
+            previous = previous,
         )
     }
 
@@ -108,7 +120,7 @@ class Board(
         previous = this,
         state = state,
         players = players,
-    )
+    ).draw()
 
     private val turn: Int = when {
         previous == null -> 0
@@ -135,12 +147,15 @@ class Board(
     }
 
     fun Players.update(
+        turn: Int,
         transform: Player.() -> Player,
     ): Players = when (turn) {
         0 -> copy(player1 = player1.transform())
         1 -> copy(player2 = player2.transform())
         else -> throw IllegalStateException("unrecognized turn: $turn")
     }
+
+    fun Players.update(transform: Player.() -> Player) = update(turn, transform)
 
     fun play(clickable: Clickable): Board {
         val s = state
@@ -175,7 +190,8 @@ class Board(
                             players = players.update(
                                 transform = {
                                     copy(
-                                        hand = hand - clickedCard,
+                                        hand = hand.filterIndexed { index, _ -> handCard.idx != index },
+                                        field = field + clickedCard.expr,
                                     )
                                 },
                             ),
@@ -186,8 +202,11 @@ class Board(
                         return copy(
                             state = None,
                             players = players.update(
+                                turn = 1 - turn,
                                 transform = {
-                                    copy(field = field.map { clickedCard.transformExpr(it) })
+                                    copy(field = field.map {
+                                        clickedCard.transformExpr(it).takeIf { it != Zero }
+                                    }.filterNotNull())
                                 }
                             ),
                         )
@@ -195,13 +214,13 @@ class Board(
 
                     is Operator -> {
                         return copy(
-                            state = StateOperator(clickedCard, playedCard = handCard),
+                            state = StateOperator(clickedCard, playedCard = handCard.idx),
                         )
                     }
 
                     is BinaryOperator -> {
                         return copy(
-                            state = StateBinaryOperator(clickedCard, playedCard = handCard),
+                            state = StateBinaryOperator(clickedCard, playedCard = handCard.idx),
                         )
                     }
                 }
@@ -216,7 +235,7 @@ class Board(
                         binaryOperator = s.binaryOperator,
                         rhs = base.card as? BaseCard
                             ?: throw IllegalStateException("did not get a base card as expected"),
-                        playedCards = listOf(s.playedCard, handCard!!),
+                        playedCards = listOf(s.playedCard, handCard!!.idx),
                     ),
                 )
             }
@@ -226,15 +245,12 @@ class Board(
                     ?: throw IllegalStateException("did not get a base input as expected")
                 return copy(
                     state = None,
-                    players = players.update {
+                    players = players.update(fieldItem.player.idx) {
                         copy(
-//                            field = field.map { expr ->
-//                                if (expr == fieldItem.expr) {
-//                                    s.card.transformExpr(expr)
-//                                } else {
-//                                    expr
-//                                }
-//                            }
+                            hand = hand.filterIndexed { index, _ -> s.playedCard != index },
+                            field = field.replaceAt(fieldItem.idx) {
+                                s.card.transformExpr(fieldItem.expr).takeIf { it != Zero }
+                            }.filterNotNull()
                         )
                     }
                 )
@@ -243,18 +259,17 @@ class Board(
             is StateBinaryOperatorPartial -> {
                 val fieldItem = clickable as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
-//                val newField = fieldItem.player.field.map {
-//                    if (it == fieldItem) {
-//                        fieldItem.copy(
-//                            expr = s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
-//                        )
-//                    } else {
-//                        fieldItem.player
-//                    }
-//                }
-//                s.finalize()
-//                state = None
-                return this
+                return copy(
+                    state = None,
+                    players = players.update(fieldItem.player.idx) {
+                        copy(
+                            hand = hand.filterIndexed { index, _ -> index !in s.playedCards },
+                            field = field.replaceAt(fieldItem.idx) {
+                                s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr).takeIf { it != Zero }
+                            }.filterNotNull()
+                        )
+                    }
+                )
             }
 
             GameOver -> throw IllegalStateException("game is over")
