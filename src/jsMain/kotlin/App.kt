@@ -49,23 +49,32 @@ fun renderState() {
     )
 }
 
-fun renderHand() {
-    val handDiv = document.getElementById("hand") as HTMLDivElement
-    handDiv.innerHTML = ""
+fun renderHand(element: HTMLDivElement, hand: MutableList<NablaCard>) {
+    element.innerHTML = ""
 
-    GameState.board.players[0].hand.forEach { card ->
-        handDiv.append {
+    hand.forEach { card ->
+        element.append {
             val b = button {
                 classes += setOf("card-button")
-                onClickFunction = { playCard(card) }
+                onClickFunction = { playCard(hand, card) }
             }
             renderMath(card, b)
         }
     }
 }
 
-fun playCard(card: Card) {
-    val hand = GameState.board.players[0].hand
+fun renderHand() {
+    renderHand(
+        document.getElementById("hand1") as HTMLDivElement,
+        GameState.board.players[0].hand,
+    )
+    renderHand(
+        document.getElementById("hand2") as HTMLDivElement,
+        GameState.board.players[1].hand,
+    )
+}
+
+fun playCard(hand: MutableList<out Card>, card: Card) {
     val card = hand.find { it == card }
     if (card != null) {
         // Apply your card effect here
