@@ -111,6 +111,10 @@ class Board(
         )
     }
 
+    fun undo(): Board {
+        return previous ?: this
+    }
+
     fun copy(
         shuffler: Shuffler<NablaCard> = this.shuffler,
         state: BoardState,
@@ -204,9 +208,12 @@ class Board(
                             players = players.update(
                                 turn = 1 - turn,
                                 transform = {
-                                    copy(field = field.map {
-                                        clickedCard.transformExpr(it).takeIf { it != Zero }
-                                    }.filterNotNull())
+                                    copy(
+                                        hand = hand.filterIndexed { index, _ -> handCard.idx != index },
+                                        field = field.map {
+                                            clickedCard.transformExpr(it).takeIf { it != Zero }
+                                        }.filterNotNull()
+                                    )
                                 }
                             ),
                         )

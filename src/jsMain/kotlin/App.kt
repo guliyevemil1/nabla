@@ -95,7 +95,22 @@ fun Board.renderHand() {
     )
 }
 
+fun Board.renderUndo(element: HTMLDivElement) {
+    val b = this
+    element.innerHTML = ""
+    element.append {
+        button {
+            classes = setOf("field-button")
+            +"Undo"
+            onClickFunction = {
+                b.undo().render()
+            }
+        }
+    }
+}
+
 fun Board.render() {
+    renderUndo(document.getElementById("undo") as HTMLDivElement)
     renderState()
     renderHand()
 }
