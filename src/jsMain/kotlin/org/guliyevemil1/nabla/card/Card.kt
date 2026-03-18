@@ -130,7 +130,7 @@ object Inverse : Operator {
     }
 }
 
-class NablaDeck : Deck<NablaCard> {
+object NablaDeck : Deck<NablaCard> {
 
     override val cards: List<NablaCard> = buildList {
         repeat(times = 2) { add(CardZero) }

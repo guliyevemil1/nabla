@@ -69,24 +69,31 @@ sealed interface BoardState {
     ) : BoardState
 }
 
-class Board(
-    seed: Long? = null,
-    private val shuffler: Shuffler<NablaCard> = Shuffler(
-        deck = NablaDeck(),
-        rng = seed?.let(::Random) ?: Random.Default
-    ),
-    private val previous: Board? = null,
-    private val state: BoardState = None,
-    private val players: Array<Player> = Array(2) {
-        Player(
-            hand = shuffler.draw(7),
-            field = startingField,
+fun board(rng: ImmutableRNG): Board {
+    val s0 = shuffler(
+        rng = rng,
+        cards = NablaDeck.cards,
+    )
+    val (p1, s1) = s0.draw(7)
+    val (p2, s2) = s1.draw(7)
+    return Board(
+        shuffler = s2,
+        players = Players(
+            player1 = Player(p1, startingField),
+            player2 = Player(p2, startingField),
         )
-    },
+    )
+}
+
+class Board(
+    private val shuffler: Shuffler<NablaCard>,
+    private val state: BoardState = None,
+    private val players: Players,
+    private val previous: Board? = null,
 ) {
     fun copy(
         state: BoardState,
-        players: Array<Player>,
+        players: Players,
     ): Board = Board(
         shuffler = shuffler,
         previous = this,
