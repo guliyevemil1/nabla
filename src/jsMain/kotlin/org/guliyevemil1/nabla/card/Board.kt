@@ -27,8 +27,8 @@ val startingField: List<Expr<Any?>> = listOf(
 )
 
 data class Players(
-    val player1: Player,
-    val player2: Player,
+    val player1: Player = Player(),
+    val player2: Player = Player(),
 ) {
     operator fun get(index: Int): Player = when (index) {
         0 -> player1
@@ -36,20 +36,25 @@ data class Players(
         else -> throw IndexOutOfBoundsException()
     }
 
-    fun update(
-        turn: Int,
-        transform: Player.() -> Player,
-    ): Players = when (turn) {
-        0 -> copy(player1 = player1.transform())
-        1 -> copy(player2 = player2.transform())
-        else -> throw IllegalStateException("unrecognized turn: $turn")
+    fun draw(s0: Shuffler<NablaCard>): Pair<Players, Shuffler<NablaCard>> {
+        val (p1, s1) = player1.draw(s0)
+        val (p2, s2) = player2.draw(s1)
+        return Players(
+            player1 = p1,
+            player2 = p2,
+        ) to s2
     }
 }
 
 data class Player(
     val hand: List<NablaCard> = listOf(),
-    val field: List<Expr<Any?>> = listOf(),
-)
+    val field: List<Expr<Any?>> = startingField,
+) {
+    fun draw(s: Shuffler<NablaCard>): Pair<Player, Shuffler<NablaCard>> {
+        val (cs, s2) = s.draw(7 - hand.size)
+        return copy(hand = hand + cs) to s2
+    }
+}
 
 sealed interface BoardState {
 
@@ -75,27 +80,25 @@ sealed interface BoardState {
 }
 
 fun board(rng: ImmutableRNG): Board {
-    val s0 = shuffler(
-        rng = rng,
-        cards = NablaDeck.cards,
-    )
-    val (p1, s1) = s0.draw(7)
-    val (p2, s2) = s1.draw(7)
-    return Board(
-        shuffler = s2,
-        players = Players(
-            player1 = Player(p1, startingField),
-            player2 = Player(p2, startingField),
-        )
-    )
+    val s = shuffler(rng = rng, cards = NablaDeck.cards)
+    return Board(shuffler = s).draw()
 }
 
 class Board(
     private val shuffler: Shuffler<NablaCard>,
     private val state: BoardState = None,
-    val players: Players,
+    val players: Players = Players(),
     val previous: Board? = null,
 ) {
+
+    fun draw(): Board {
+        val (ps, s1) = players.draw(shuffler)
+        return Board(
+            shuffler = s1,
+            players = ps,
+        )
+    }
+
     fun copy(
         shuffler: Shuffler<NablaCard> = this.shuffler,
         state: BoardState,
@@ -131,13 +134,21 @@ class Board(
         }
     }
 
+    fun Players.update(
+        transform: Player.() -> Player,
+    ): Players = when (turn) {
+        0 -> copy(player1 = player1.transform())
+        1 -> copy(player2 = player2.transform())
+        else -> throw IllegalStateException("unrecognized turn: $turn")
+    }
+
     fun play(clickable: Clickable): Board {
         val s = state
 
         if (!canReceive(clickable)) return this
 
         val handCard: HandCard? = (clickable as? HandCard)?.let { card ->
-            players[turn].hand.indexOfFirst { it.card == card.card }
+            players[turn].hand.indexOfFirst { it == card.card }
                 .takeIf { it != -1 }
                 ?: run {
                     println("can't find card")
@@ -162,26 +173,21 @@ class Board(
                             state = None,
                             shuffler = shuffler.discard(clickedCard),
                             players = players.update(
-                                turn = turn,
                                 transform = {
+                                    copy(
+                                        hand = hand - clickedCard,
+                                    )
                                 },
                             ),
                         )
                     }
 
                     is AllOperator -> {
-                        players[1 - turn].field.forEach { base ->
-                            base.expr = clickedCard.transformExpr(base.expr)
-                        }
-                        finalize!!.invoke()
                         return copy(
                             state = None,
                             players = players.update(
-                                turn = turn,
                                 transform = {
-                                    copy(
-                                        field = field.map { FieldItem(this, clickedCard.transformExpr(it.expr)) }
-                                    )
+                                    copy(field = field.map { clickedCard.transformExpr(it) })
                                 }
                             ),
                         )
@@ -218,26 +224,37 @@ class Board(
             is StateOperator -> {
                 val fieldItem = clickable as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
-                fieldItem.expr = s.card.transformExpr(fieldItem.expr)
                 return copy(
                     state = None,
+                    players = players.update {
+                        copy(
+//                            field = field.map { expr ->
+//                                if (expr == fieldItem.expr) {
+//                                    s.card.transformExpr(expr)
+//                                } else {
+//                                    expr
+//                                }
+//                            }
+                        )
+                    }
                 )
             }
 
             is StateBinaryOperatorPartial -> {
                 val fieldItem = clickable as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
-                val newField = fieldItem.player.field.map {
-                    if (it == fieldItem) {
-                        fieldItem.copy(
-                            expr = s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
-                        )
-                    } else {
-                        fieldItem.player
-                    }
-                }
-                s.finalize()
-                state = None
+//                val newField = fieldItem.player.field.map {
+//                    if (it == fieldItem) {
+//                        fieldItem.copy(
+//                            expr = s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
+//                        )
+//                    } else {
+//                        fieldItem.player
+//                    }
+//                }
+//                s.finalize()
+//                state = None
+                return this
             }
 
             GameOver -> throw IllegalStateException("game is over")

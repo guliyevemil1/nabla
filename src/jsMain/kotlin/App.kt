@@ -24,13 +24,7 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
     KaTeX.render(card.render(), element)
 }
 
-object GameState {
-    val board = board(
-        rng = ImmutableRNG(seed = Random.nextLong()),
-    )
-}
-
-fun renderState(element: HTMLDivElement, bases: List<FieldItem>) {
+fun Board.renderState(element: HTMLDivElement, bases: List<FieldItem>) {
     element.innerHTML = ""
 
     if (bases.isEmpty()) {
@@ -46,9 +40,9 @@ fun renderState(element: HTMLDivElement, bases: List<FieldItem>) {
         element.append {
             div {
                 val d = button {
-                    disabled = !GameState.board.canReceive(base)
+                    disabled = !canReceive(base)
                     classes = setOf("field-button")
-                    onClickFunction = { play(base) }
+                    onClickFunction = { play(base).render() }
                 }
                 renderMath(base.expr, d)
             }
@@ -56,62 +50,56 @@ fun renderState(element: HTMLDivElement, bases: List<FieldItem>) {
     }
 }
 
-fun renderState() {
+fun Board.renderState() {
     renderState(
         document.getElementById("gameState1") as HTMLDivElement,
-        GameState.board.players[0].let { p ->
+        players[0].let { p ->
             p.field.map { FieldItem(p, it) }
         }
     )
     renderState(
         document.getElementById("gameState2") as HTMLDivElement,
-        GameState.board.players[1].let { p ->
+        players[1].let { p ->
             p.field.map { FieldItem(p, it) }
         }
     )
 }
 
-fun renderHand(element: HTMLDivElement, hand: List<HandCard>) {
+fun Board.renderHand(element: HTMLDivElement, hand: List<HandCard>) {
     element.innerHTML = ""
 
     hand.forEach { card ->
         element.append {
             val b = button {
-                disabled = !GameState.board.canReceive(card)
+                disabled = !canReceive(card)
                 classes += setOf("card-button")
-                onClickFunction = { play(card) }
+                onClickFunction = { play(card).render() }
             }
             renderMath(card.card, b)
         }
     }
 }
 
-fun renderHand() {
+fun Board.renderHand() {
     renderHand(
         document.getElementById("hand1") as HTMLDivElement,
-        GameState.board.players[0].let { p ->
+        players[0].let { p ->
             p.hand.map { HandCard(p, it) }
         },
     )
     renderHand(
         document.getElementById("hand2") as HTMLDivElement,
-        GameState.board.players[1].let { p ->
+        players[1].let { p ->
             p.hand.map { HandCard(p, it) }
         },
     )
 }
 
-fun render() {
+fun Board.render() {
     renderState()
     renderHand()
 }
 
-fun play(card: Clickable) {
-    GameState.board.play(card)
-    render()
-}
-
 fun main() {
-    // Initial render
-    render()
+    board(rng = ImmutableRNG(seed = Random.nextLong())).render()
 }
