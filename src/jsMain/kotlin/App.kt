@@ -31,6 +31,7 @@ fun renderState(element: HTMLDivElement, bases: MutableList<Base>) {
     bases.forEach { base ->
         element.append {
             val d = button {
+                disabled = !GameState.board.canReceive(base)
                 classes = setOf("field-button")
                 onClickFunction = { play(base) }
             }
@@ -56,6 +57,7 @@ fun <C : NablaCard> renderHand(element: HTMLDivElement, hand: MutableList<HandCa
     hand.forEach { card ->
         element.append {
             val b = button {
+                disabled = !GameState.board.canReceive(card)
                 classes += setOf("card-button")
                 onClickFunction = { play(card) }
             }

@@ -48,28 +48,17 @@ class NablaPlayer : Player<NablaCard> {
 
 sealed interface BoardState {
 
-    fun canReceive(clickable: Clickable): Boolean
-
-    object None : BoardState {
-        override fun canReceive(clickable: Clickable): Boolean =
-            clickable is HandCard<*>
-    }
+    object None : BoardState
 
     class StateBinaryOperator(
         val binaryOperator: BinaryOperator,
         val finalize: () -> Unit,
-    ) : BoardState {
-        override fun canReceive(clickable: Clickable): Boolean = clickable is BaseCard
-    }
+    ) : BoardState
 
     class StateBinaryOperatorPartial(val binaryOperator: BinaryOperator, val rhs: BaseCard, val finalize: () -> Unit) :
-        BoardState {
-        override fun canReceive(clickable: Clickable): Boolean = clickable is Base
-    }
+        BoardState
 
-    class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState {
-        override fun canReceive(clickable: Clickable): Boolean = clickable is Base
-    }
+    class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState
 }
 
 class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
@@ -90,10 +79,26 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
 
     private var state: BoardState = None
 
+    fun canReceive(clickable: Clickable): Boolean {
+        return when (state) {
+            None -> {
+                clickable is HandCard<*> && clickable.player == players[turn]
+            }
+
+            is StateBinaryOperator -> {
+                clickable is BaseCard && clickable.player == players[turn]
+            }
+
+            is StateBinaryOperatorPartial, is StateOperator -> {
+                clickable is Base
+            }
+        }
+    }
+
     fun play(clickable: Clickable) {
         val s = state
 
-        if (!s.canReceive(clickable)) return
+        if (!canReceive(clickable)) return
 
         val finalize = (clickable as? HandCard<*>)?.let { card ->
             val cardIndex: Int = players[turn].hand.indexOfFirst { it.card == card.card }
