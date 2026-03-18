@@ -93,7 +93,13 @@ private val powMap = HashMap<Int, Pow<Any?>>()
 
 fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
     if (base is X) {
-//        return powMap.computeIfAbsent(n) { Pow(X, n) } as Expr<T>
+        return if (!powMap.containsKey(n)) {
+            Pow(X, n).also {
+                powMap[n] = it
+            }
+        } else {
+            powMap[n]
+        } as Expr<T>
     }
     if (n < 0) return Illegal
     if (n == 0) return One

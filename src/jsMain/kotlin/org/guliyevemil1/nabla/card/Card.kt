@@ -6,19 +6,19 @@ interface NablaCard : Card {
 
 sealed interface BaseCard : NablaCard
 
-object Zero : BaseCard {
+object CardZero : BaseCard {
     override fun render(): String = """0"""
 }
 
-object One : BaseCard {
+object CardOne : BaseCard {
     override fun render(): String = """1"""
 }
 
-object X : BaseCard {
+object CardX : BaseCard {
     override fun render(): String = """x"""
 }
 
-object X2 : BaseCard {
+object CardX2 : BaseCard {
     override fun render(): String = """x^2"""
 }
 
@@ -99,10 +99,10 @@ object Inverse : Operator {
 class NablaDeck : Deck {
 
     override val cards: List<NablaCard> = buildList {
-        repeat(times = 2) { add(Zero) }
-        repeat(times = 2) { add(One) }
-        repeat(times = 8) { add(X) }
-        repeat(times = 3) { add(X2) }
+        repeat(times = 2) { add(CardZero) }
+        repeat(times = 2) { add(CardOne) }
+        repeat(times = 8) { add(CardX) }
+        repeat(times = 3) { add(CardX2) }
         repeat(times = 4) { add(SinX) }
         repeat(times = 4) { add(CosX) }
         repeat(times = 4) { add(ExpX) }

@@ -5,8 +5,11 @@ import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
 import org.guliyevemil1.nabla.Expr
-import org.guliyevemil1.nabla.Zero
+import org.guliyevemil1.nabla.Pow
+import org.guliyevemil1.nabla.X
 import org.guliyevemil1.nabla.card.*
+import org.guliyevemil1.nabla.integer
+import org.guliyevemil1.nabla.pow
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
@@ -35,9 +38,9 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
 
 object GameState {
     val items = mutableListOf(
-        StateItem("item1", Zero),
-        StateItem("item2", Zero),
-        StateItem("item3", Zero)
+        StateItem("item1", integer(1)),
+        StateItem("item2", X),
+        StateItem("item3", pow(X, 2))
     )
     val hand = mutableListOf<NablaCard>()
 }
@@ -98,26 +101,4 @@ fun main() {
     // Initial render
     renderState()
     renderHand()
-
-    // Example: Add some cards
-    addCard(One)
-    addCard(X)
-    addCard(X2)
-    addCard(ExpX)
-    addCard(SinX)
-    addCard(CosX)
-    addCard(Nabla)
-    addCard(Nabla2)
-    addCard(DDx)
-    addCard(Integrate)
-    addCard(Times)
-    addCard(Over)
-    addCard(Sqrt)
-    addCard(Log)
-    addCard(Inverse)
-    addCard(Lim0)
-    addCard(LimInf)
-    addCard(LimNegInf)
-    addCard(LimSupremum)
-    addCard(LimInfimum)
 }
