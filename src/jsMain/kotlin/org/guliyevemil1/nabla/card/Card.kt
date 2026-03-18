@@ -1,14 +1,14 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.math.Constant
 import org.guliyevemil1.nabla.math.CosX
 import org.guliyevemil1.nabla.math.ExpX
 import org.guliyevemil1.nabla.math.Expr
+import org.guliyevemil1.nabla.math.Limit
 import org.guliyevemil1.nabla.math.SinX
 import org.guliyevemil1.nabla.math.X
-import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.differentiate
 import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.math.lim
 import org.guliyevemil1.nabla.math.pow
 
 sealed interface NablaCard : Card {
@@ -62,14 +62,18 @@ object Nabla2 : AllOperator {
         differentiate(differentiate(expr))
 }
 
-sealed interface Operator : NablaCard
+sealed interface Operator : NablaCard {
+    fun transformExpr(expr: Expr<Any?>): Expr<Any?>
+}
 
 object DDx : Operator {
     override fun render(): String = """\frac{d}{dx}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = differentiate(expr)
 }
 
 object Integrate : Operator {
     override fun render(): String = """\int"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = TODO()
 }
 
 sealed interface BinaryOperator : NablaCard
@@ -84,34 +88,53 @@ object Over : BinaryOperator {
 
 object Lim0 : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to 0}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        lim(expr, Limit.Zero)
 }
 
 object LimInf : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to \infty}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        lim(expr, Limit.Infinity)
 }
 
 object LimNegInf : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to -\infty}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        lim(expr, Limit.NegativeInfinity)
 }
 
 object LimSupremum : Operator {
     override fun render(): String = """\displaystyle\limsup_{x \to 0}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        lim(expr, Limit.Supremum)
 }
 
 object LimInfimum : Operator {
     override fun render(): String = """\displaystyle\liminf_{x \to 0}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        lim(expr, Limit.Infimum)
 }
 
 object Sqrt : Operator {
     override fun render(): String = """\sqrt{}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
+        TODO("Not yet implemented")
+    }
 }
 
 object Log : Operator {
     override fun render(): String = """\log"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
+        TODO("Not yet implemented")
+    }
 }
 
 object Inverse : Operator {
     override fun render(): String = """f^{-1}"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
+        TODO("Not yet implemented")
+    }
 }
 
 class NablaDeck : Deck<NablaCard> {

@@ -48,9 +48,9 @@ class NablaPlayer : Player<NablaCard> {
 sealed interface BoardState {
     object None : BoardState
 
-    class AwaitingBaseCard(card: NablaCard) : BoardState
+    class StateBinaryOperator(val card: BinaryOperator) : BoardState
 
-    class AwaitingBase(card: NablaCard) : BoardState
+    class StateOperator(val card: Operator) : BoardState
 }
 
 class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
@@ -72,24 +72,25 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
     private var state: BoardState = BoardState.None
 
     fun play(clickable: Clickable) {
+        val s = state
         when (clickable) {
             is Base -> {
-                if (state is BoardState.AwaitingBase) {
+                if (s !is BoardState.StateOperator) {
                     println("Awaiting hand card")
                     return
                 }
+                s.card
                 state = BoardState.None
-                println("resetting state $state")
                 advanceTurn()
             }
 
             is HandCard<*> -> {
-                if (state is BoardState.AwaitingBase) {
+                if (state is BoardState.StateOperator) {
                     println("Awaiting base")
                     return
                 }
 
-                if (state is BoardState.AwaitingBaseCard && clickable.card !is BaseCard) {
+                if (state is BoardState.StateBinaryOperator && clickable.card !is BaseCard) {
                     println("Awaiting base card")
                     return
                 }
@@ -115,7 +116,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                                 advanceTurn()
                             }
 
-                            is BoardState.AwaitingBase -> {
+                            is BoardState.StateOperator -> {
                                 throw IllegalStateException()
                             }
 
@@ -135,11 +136,11 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                     }
 
                     is Operator -> {
-                        state = BoardState.AwaitingBase(clickedCard)
+                        state = BoardState.StateOperator(clickedCard)
                     }
 
                     is BinaryOperator -> {
-                        state = BoardState.AwaitingBaseCard(clickedCard)
+                        state = BoardState.StateBinaryOperator(clickedCard)
                     }
                 }
 

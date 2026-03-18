@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-private enum class Limit {
+enum class Limit {
     Zero,
     Infinity,
     NegativeInfinity,
@@ -9,7 +9,7 @@ private enum class Limit {
     Infimum,
 }
 
-private fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
+fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
     when (b) {
         Illegal -> Illegal
         is Constant -> b
