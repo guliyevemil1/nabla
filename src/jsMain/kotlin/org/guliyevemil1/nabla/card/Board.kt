@@ -5,7 +5,6 @@ import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.pow
-import kotlin.random.Random
 
 interface Clickable {
     val player: Player
@@ -39,20 +38,18 @@ data class Players(
 
     fun update(
         turn: Int,
-        transform: (Expr<Any?>) -> Expr<Any?> = { it },
-        removedCards: List<Card> = emptyList(),
-    ) {
-
+        transform: Player.() -> Player,
+    ): Players = when (turn) {
+        0 -> copy(player1 = player1.transform())
+        1 -> copy(player2 = player2.transform())
+        else -> throw IllegalStateException("unrecognized turn: $turn")
     }
 }
 
-class Player(
-    hand: List<NablaCard> = listOf(),
-    field: List<Expr<Any?>> = listOf(),
-) {
-    val hand = hand.map { HandCard(this, it) }
-    val field = field.map { FieldItem(this, it) }
-}
+data class Player(
+    val hand: List<NablaCard> = listOf(),
+    val field: List<Expr<Any?>> = listOf(),
+)
 
 sealed interface BoardState {
 
@@ -61,19 +58,19 @@ sealed interface BoardState {
 
     class StateBinaryOperator(
         val binaryOperator: BinaryOperator,
-        val playedCards: List<NablaCard>,
+        val playedCard: HandCard,
     ) : BoardState
 
     class StateBinaryOperatorPartial(
         val binaryOperator: BinaryOperator,
         val rhs: BaseCard,
-        val playedCards: List<NablaCard>,
+        val playedCards: List<HandCard>,
     ) :
         BoardState
 
     class StateOperator(
         val card: Operator,
-        val playedCards: List<NablaCard>,
+        val playedCard: HandCard,
     ) : BoardState
 }
 
@@ -96,10 +93,11 @@ fun board(rng: ImmutableRNG): Board {
 class Board(
     private val shuffler: Shuffler<NablaCard>,
     private val state: BoardState = None,
-    private val players: Players,
-    private val previous: Board? = null,
+    val players: Players,
+    val previous: Board? = null,
 ) {
     fun copy(
+        shuffler: Shuffler<NablaCard> = this.shuffler,
         state: BoardState,
         players: Players = this.players,
     ): Board = Board(
@@ -138,22 +136,20 @@ class Board(
 
         if (!canReceive(clickable)) return this
 
-        val playedCards: List<NablaCard>? = (clickable as? HandCard)?.let { card ->
+        val handCard: HandCard? = (clickable as? HandCard)?.let { card ->
             players[turn].hand.indexOfFirst { it.card == card.card }
                 .takeIf { it != -1 }
                 ?: run {
                     println("can't find card")
-                    return@let emptyList()
+                    return@let null
                 }
 
-            return@let listOf(card.card)
+            return@let card
         }
 
         when (s) {
             is None -> {
-                val handCard = clickable as? HandCard ?: throw IllegalStateException()
-
-                if (handCard.player != players[turn]) {
+                if (handCard!!.player != players[turn]) {
                     println("It is $turn player's turn")
                     return this
                 }
@@ -162,8 +158,15 @@ class Board(
 
                 when (clickedCard) {
                     is BaseCard -> {
-                        handCard.player.addBase(clickedCard.expr)
-                        finalize!!.invoke()
+                        return copy(
+                            state = None,
+                            shuffler = shuffler.discard(clickedCard),
+                            players = players.update(
+                                turn = turn,
+                                transform = {
+                                },
+                            ),
+                        )
                     }
 
                     is AllOperator -> {
@@ -173,19 +176,26 @@ class Board(
                         finalize!!.invoke()
                         return copy(
                             state = None,
-                            players = players,
+                            players = players.update(
+                                turn = turn,
+                                transform = {
+                                    copy(
+                                        field = field.map { FieldItem(this, clickedCard.transformExpr(it.expr)) }
+                                    )
+                                }
+                            ),
                         )
                     }
 
                     is Operator -> {
                         return copy(
-                            state = StateOperator(clickedCard, playedCards = playedCards!!),
+                            state = StateOperator(clickedCard, playedCard = handCard),
                         )
                     }
 
                     is BinaryOperator -> {
                         return copy(
-                            state = StateBinaryOperator(clickedCard, playedCards = playedCards!!),
+                            state = StateBinaryOperator(clickedCard, playedCard = handCard),
                         )
                     }
                 }
@@ -200,7 +210,7 @@ class Board(
                         binaryOperator = s.binaryOperator,
                         rhs = base.card as? BaseCard
                             ?: throw IllegalStateException("did not get a base card as expected"),
-                        playedCards = s.playedCards + playedCards!!,
+                        playedCards = listOf(s.playedCard, handCard!!),
                     ),
                 )
             }

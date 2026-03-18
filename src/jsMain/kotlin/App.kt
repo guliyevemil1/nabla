@@ -9,6 +9,7 @@ import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import kotlin.random.Random
 
 @JsName("katex")
 external object KaTeX {
@@ -24,10 +25,12 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
 }
 
 object GameState {
-    val board = Board()
+    val board = board(
+        rng = ImmutableRNG(seed = Random.nextLong()),
+    )
 }
 
-fun renderState(element: HTMLDivElement, bases: MutableList<FieldItem>) {
+fun renderState(element: HTMLDivElement, bases: List<FieldItem>) {
     element.innerHTML = ""
 
     if (bases.isEmpty()) {
@@ -56,15 +59,19 @@ fun renderState(element: HTMLDivElement, bases: MutableList<FieldItem>) {
 fun renderState() {
     renderState(
         document.getElementById("gameState1") as HTMLDivElement,
-        GameState.board.players[0].field,
+        GameState.board.players[0].let { p ->
+            p.field.map { FieldItem(p, it) }
+        }
     )
     renderState(
         document.getElementById("gameState2") as HTMLDivElement,
-        GameState.board.players[1].field,
+        GameState.board.players[1].let { p ->
+            p.field.map { FieldItem(p, it) }
+        }
     )
 }
 
-fun <C : NablaCard> renderHand(element: HTMLDivElement, hand: MutableList<HandCard<C>>) {
+fun renderHand(element: HTMLDivElement, hand: List<HandCard>) {
     element.innerHTML = ""
 
     hand.forEach { card ->
@@ -82,11 +89,15 @@ fun <C : NablaCard> renderHand(element: HTMLDivElement, hand: MutableList<HandCa
 fun renderHand() {
     renderHand(
         document.getElementById("hand1") as HTMLDivElement,
-        GameState.board.players[0].hand,
+        GameState.board.players[0].let { p ->
+            p.hand.map { HandCard(p, it) }
+        },
     )
     renderHand(
         document.getElementById("hand2") as HTMLDivElement,
-        GameState.board.players[1].hand,
+        GameState.board.players[1].let { p ->
+            p.hand.map { HandCard(p, it) }
+        },
     )
 }
 
