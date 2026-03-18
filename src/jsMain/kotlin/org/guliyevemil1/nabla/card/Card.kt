@@ -96,7 +96,7 @@ object Inverse : Operator {
     override fun render(): String = """f^{-1}"""
 }
 
-class NablaDeck : Deck {
+class NablaDeck : Deck<NablaCard> {
 
     override val cards: List<NablaCard> = buildList {
         repeat(times = 2) { add(CardZero) }

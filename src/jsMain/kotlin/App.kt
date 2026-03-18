@@ -52,9 +52,7 @@ fun renderState() {
     GameState.items.forEach { item ->
         stateDiv.append {
             div {
-                +"${item.id}: "
-                val v = div {}
-                renderMath(item.value.render(), v)
+                renderMath(item.value.render(), div {})
             }
         }
     }
@@ -98,6 +96,10 @@ fun updateState(newItems: List<StateItem>) {
 }
 
 fun main() {
+    val deck = Shuffler(deck = NablaDeck())
+    repeat(times = 7) {
+        GameState.hand.add(deck.draw())
+    }
     // Initial render
     renderState()
     renderHand()
