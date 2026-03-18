@@ -2,6 +2,7 @@ import kotlinx.browser.document
 import kotlinx.html.classes
 import kotlinx.html.dom.append
 import kotlinx.html.js.button
+import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
@@ -30,12 +31,14 @@ fun renderState(element: HTMLDivElement, bases: MutableList<Base>) {
 
     bases.forEach { base ->
         element.append {
-            val d = button {
-                disabled = !GameState.board.canReceive(base)
-                classes = setOf("field-button")
-                onClickFunction = { play(base) }
+            div {
+                val d = button {
+                    disabled = !GameState.board.canReceive(base)
+                    classes = setOf("field-button")
+                    onClickFunction = { play(base) }
+                }
+                renderMath(base.expr, d)
             }
-            renderMath(base.expr, d)
         }
     }
 }

@@ -104,7 +104,7 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
 
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
     override fun render(): String =
-        """\frac{${numerator.render()}}{${numerator.render()}}"""
+        """\frac{${numerator.render()}}{${denominator.render()}}"""
 }
 
 data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {

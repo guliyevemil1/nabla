@@ -73,8 +73,8 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
         if (l is Integer && r is Integer) return rational(l.n, r.n)
-        val ratL = l.toRational() ?: return Divide(l, r)
-        val ratR = l.toRational() ?: return Divide(l, r)
+        val ratL = l.toRational() ?: return Illegal
+        val ratR = l.toRational() ?: return Illegal
         return rational(
             numerator = ratL.numerator * ratR.denominator,
             denominator = ratL.denominator * ratR.numerator,
