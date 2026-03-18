@@ -37,11 +37,11 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
         } else {
             summands.forEachIndexed { index, m ->
                 if (index > 0) {
-                    append("""\times""")
+                    append("""+""")
                 }
-                append("""\left(""")
+                if (!m.isSimple) append("""\left(""")
                 append(m.render().trim())
-                append("""\right)""")
+                if (!m.isSimple) append("""\right)""")
             }
         }
     }
@@ -71,9 +71,9 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
                 if (index > 0) {
                     append("""\times""")
                 }
-                append("""\left(""")
+                if (!m.isSimple) append("""\left(""")
                 append(m.render().trim())
-                append("""\right)""")
+                if (!m.isSimple) append("""\right)""")
             }
         }
     }
