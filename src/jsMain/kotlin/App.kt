@@ -36,23 +36,16 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
     KaTeX.render(card.render(), element)
 }
 
-object GameState {
-    val items = mutableListOf(
-        StateItem("item1", integer(1)),
-        StateItem("item2", X),
-        StateItem("item3", pow(X, 2))
-    )
-    val hand = mutableListOf<NablaCard>()
-}
+val board = NablaBoard()
 
 fun renderState() {
     val stateDiv = document.getElementById("gameState") as HTMLDivElement
     stateDiv.innerHTML = ""
 
-    GameState.items.forEach { item ->
+    board.fields[0].bases.forEach { item ->
         stateDiv.append {
             div {
-                renderMath(item.value.render(), div {})
+                renderMath(item.render(), div {})
             }
         }
     }
@@ -62,7 +55,7 @@ fun renderHand() {
     val handDiv = document.getElementById("hand") as HTMLDivElement
     handDiv.innerHTML = ""
 
-    GameState.hand.forEachIndexed { index, card ->
+    board.players[0].hand.forEachIndexed { index, card ->
         handDiv.append {
             val b = button {
                 classes += setOf("card-button")
@@ -84,22 +77,7 @@ fun playCard(cardId: Int) {
 //    }
 }
 
-fun addCard(card: NablaCard) {
-    GameState.hand.add(card)
-    renderHand()
-}
-
-fun updateState(newItems: List<StateItem>) {
-    GameState.items.clear()
-    GameState.items.addAll(newItems)
-    renderState()
-}
-
 fun main() {
-    val deck = Shuffler(deck = NablaDeck())
-    repeat(times = 7) {
-        GameState.hand.add(deck.draw())
-    }
     // Initial render
     renderState()
     renderHand()

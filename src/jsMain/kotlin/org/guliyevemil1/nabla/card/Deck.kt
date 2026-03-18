@@ -4,6 +4,7 @@ import org.guliyevemil1.nabla.Expr
 import org.guliyevemil1.nabla.X
 import org.guliyevemil1.nabla.integer
 import org.guliyevemil1.nabla.pow
+import kotlin.repeat
 
 interface Card {
 }
@@ -40,21 +41,26 @@ class NablaPlayer : Player<NablaCard> {
     override val hand: MutableList<NablaCard> = mutableListOf()
 }
 
-abstract class Board<C : Card, P : Player<C>> {
-    abstract val deck: Deck<C>
+abstract class Board<C : Card, P : Player<C>>(
+    deck: Deck<C>,
+) {
 
     val shuffler: Shuffler<C> = Shuffler(deck)
 
-    abstract val players: List<P>
+    abstract val players: Array<P>
 
 }
 
-class NablaBoard(n: Int) : Board<NablaCard, NablaPlayer>() {
-    override val deck = NablaDeck()
+class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
+    override val players = Array(2) {
+        NablaPlayer().also { p ->
+            repeat(times = 7) {
+                p.hand.add(shuffler.draw())
+            }
+        }
+    }
 
-    override val players = List(n) { NablaPlayer() }
-
-    val fields: List<NablaField> = List(n) { NablaField() }
+    val fields = Array(2) { NablaField() }
 }
 
 class NablaField {
