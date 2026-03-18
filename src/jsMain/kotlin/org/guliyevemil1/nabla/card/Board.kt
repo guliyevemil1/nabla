@@ -45,10 +45,12 @@ class NablaPlayer : Player<NablaCard> {
     }
 }
 
-enum class BoardState {
-    None,
-    AwaitingBaseCard,
-    AwaitingBase,
+sealed interface BoardState {
+    object None : BoardState
+
+    class AwaitingBaseCard(card: NablaCard) : BoardState
+
+    class AwaitingBase(card: NablaCard) : BoardState
 }
 
 class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
@@ -72,7 +74,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
     fun play(clickable: Clickable) {
         when (clickable) {
             is Base -> {
-                if (state != BoardState.AwaitingBase) {
+                if (state is BoardState.AwaitingBase) {
                     println("Awaiting hand card")
                     return
                 }
@@ -82,12 +84,12 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is HandCard<*> -> {
-                if (state == BoardState.AwaitingBase) {
+                if (state is BoardState.AwaitingBase) {
                     println("Awaiting base")
                     return
                 }
 
-                if (state == BoardState.AwaitingBaseCard && clickable.card !is BaseCard) {
+                if (state is BoardState.AwaitingBaseCard && clickable.card !is BaseCard) {
                     println("Awaiting base card")
                     return
                 }
@@ -113,11 +115,11 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                                 advanceTurn()
                             }
 
-                            BoardState.AwaitingBase -> {
+                            is BoardState.AwaitingBase -> {
                                 throw IllegalStateException()
                             }
 
-                            BoardState.AwaitingBaseCard -> {
+                            is BoardState.AwaitingBaseCard -> {
                                 state = BoardState.None
                                 advanceTurn()
                             }
@@ -133,11 +135,11 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                     }
 
                     is Operator -> {
-                        state = BoardState.AwaitingBase
+                        state = BoardState.AwaitingBase(clickedCard)
                     }
 
                     is BinaryOperator -> {
-                        state = BoardState.AwaitingBaseCard
+                        state = BoardState.AwaitingBaseCard(clickedCard)
                     }
                 }
 
