@@ -45,6 +45,6 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         }
 
         is Scale -> {
-            Scale(b.factor, differentiate(b.expr))
+            multiply(b.factor, differentiate(b.expr))
         }
     }

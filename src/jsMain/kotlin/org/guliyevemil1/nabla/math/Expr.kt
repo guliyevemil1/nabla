@@ -49,7 +49,14 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
 }
 
 class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
-    override fun render(): String = """${factor.render()} \times ${expr.render()}"""
+    override fun render(): String =
+        if (factor == integer(-1)) {
+            """-${expr.render()}"""
+        } else if (factor.isSimple && expr.isSimple) {
+            """${factor.render()} ${expr.render()}"""
+        } else {
+            """${factor.render()} \times ${expr.render()}"""
+        }
 }
 
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
@@ -74,7 +81,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
         } else {
             multiplicants.forEachIndexed { index, m ->
                 if (index > 0) {
-                    append("""\times""")
+                    append("""\times """)
                 }
                 if (!m.isSimple) append("""\left(""")
                 append(m.render().trim())

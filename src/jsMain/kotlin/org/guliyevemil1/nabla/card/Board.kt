@@ -105,12 +105,14 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                 .takeIf { it != -1 }
                 ?: run {
                     println("can't find card")
-                    return@let {}
+                    return@let null
                 }
 
             return@let {
                 players[turn].hand.removeAt(cardIndex)
                 players[turn].hand.add(HandCard(player = clickable.player, shuffler.draw()))
+                players[0].field.removeAll { it.expr == integer(0) }
+                players[1].field.removeAll { it.expr == integer(0) }
                 shuffler.discard(clickable.card as NablaCard)
             }
         }
@@ -134,7 +136,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                     }
 
                     is AllOperator -> {
-                        players[turn].field.forEach { base ->
+                        players[1 - turn].field.forEach { base ->
                             base.expr = clickedCard.transformExpr(base.expr)
                         }
                         finalize!!.invoke()

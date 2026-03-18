@@ -45,6 +45,7 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
 }
 
 fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
+    if (l == Zero || r == Zero) return Zero
     if (l == One) return r
     if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
