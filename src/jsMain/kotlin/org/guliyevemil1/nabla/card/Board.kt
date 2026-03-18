@@ -47,14 +47,29 @@ class NablaPlayer : Player<NablaCard> {
 }
 
 sealed interface BoardState {
-    object None : BoardState
 
-    class StateBinaryOperator(val binaryOperator: BinaryOperator, val finalize: () -> Unit) : BoardState
+    fun canReceive(clickable: Clickable): Boolean
+
+    object None : BoardState {
+        override fun canReceive(clickable: Clickable): Boolean =
+            clickable is HandCard<*>
+    }
+
+    class StateBinaryOperator(
+        val binaryOperator: BinaryOperator,
+        val finalize: () -> Unit,
+    ) : BoardState {
+        override fun canReceive(clickable: Clickable): Boolean = clickable is BaseCard
+    }
 
     class StateBinaryOperatorPartial(val binaryOperator: BinaryOperator, val rhs: BaseCard, val finalize: () -> Unit) :
-        BoardState
+        BoardState {
+        override fun canReceive(clickable: Clickable): Boolean = clickable is Base
+    }
 
-    class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState
+    class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState {
+        override fun canReceive(clickable: Clickable): Boolean = clickable is Base
+    }
 }
 
 class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
@@ -77,109 +92,87 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
 
     fun play(clickable: Clickable) {
         val s = state
-        when (clickable) {
-            is Base -> {
-                val base = clickable
-                when (s) {
-                    is StateOperator -> {
-                        base.expr = s.card.transformExpr(base.expr)
-                        s.finalize()
-                    }
 
-                    is StateBinaryOperatorPartial -> {
-                        base.expr = s.binaryOperator.transformExpr(base.expr, s.rhs.expr)
-                        s.finalize()
-                    }
+        if (!s.canReceive(clickable)) return
 
-                    else -> {
-                        println("Awaiting hand card")
-                        return
-                    }
+        val finalize = (clickable as? HandCard<*>)?.let { card ->
+            val cardIndex: Int = players[turn].hand.indexOfFirst { it.card == card.card }
+                .takeIf { it != -1 }
+                ?: run {
+                    println("can't find card")
+                    return@let {}
                 }
-                state = None
-                advanceTurn()
+
+            return@let {
+                players[turn].hand.removeAt(cardIndex)
+                players[turn].hand.add(HandCard(player = clickable.player, shuffler.draw()))
+                shuffler.discard(clickable.card as NablaCard)
             }
+        }
 
-            is HandCard<*> -> {
-                if (state is StateOperator || state is StateBinaryOperatorPartial) {
-                    println("Awaiting base")
-                    return
-                }
+        when (s) {
+            is None -> {
+                val handCard = clickable as? HandCard<*> ?: throw IllegalStateException()
 
-                if (state is StateBinaryOperator && clickable.card !is BaseCard) {
-                    println("Awaiting base card")
-                    return
-                }
-
-                if (clickable.player != players[turn]) {
+                if (handCard.player != players[turn]) {
                     println("It is $turn player's turn")
                     return
                 }
-                val cardIndex: Int = players[turn].hand.indexOfFirst { it.card == clickable.card }
-                    .takeIf { it != -1 }
-                    ?: run {
-                        println("Card not found")
-                        return
-                    }
 
-                val clickedCard = clickable.card
-
-                val finalize = {
-                    players[turn].hand.removeAt(cardIndex)
-                    players[turn].hand.add(HandCard(player = clickable.player, shuffler.draw()))
-                    shuffler.discard(clickable.card as NablaCard)
-                }
+                val clickedCard = handCard.card
 
                 when (clickedCard) {
                     is BaseCard -> {
-                        when (s) {
-                            None -> {
-                                clickable.player.addBase(clickedCard.expr)
-                                advanceTurn()
-                            }
-
-                            is StateOperator -> {
-                                throw IllegalStateException()
-                            }
-
-                            is StateBinaryOperator -> {
-                                state = StateBinaryOperatorPartial(
-                                    binaryOperator = s.binaryOperator,
-                                    rhs = clickedCard,
-                                    finalize = {
-                                        s.finalize()
-                                        finalize()
-                                    },
-                                )
-                                return
-                            }
-
-                            is StateBinaryOperatorPartial -> {
-                                throw IllegalStateException()
-                            }
-                        }
-
+                        handCard.player.addBase(clickedCard.expr)
+                        finalize!!.invoke()
+                        advanceTurn()
                     }
 
                     is AllOperator -> {
                         players[turn].field.forEach { base ->
                             base.expr = clickedCard.transformExpr(base.expr)
                         }
+                        finalize!!.invoke()
                         advanceTurn()
                     }
 
                     is Operator -> {
-                        state = StateOperator(clickedCard, finalize)
-                        return
+                        state = StateOperator(clickedCard, finalize!!)
                     }
 
                     is BinaryOperator -> {
-                        state = StateBinaryOperator(clickedCard, finalize)
-                        return
+                        state = StateBinaryOperator(clickedCard, finalize!!)
                     }
                 }
+            }
 
-                finalize()
+            is StateBinaryOperator -> {
+                val base = clickable as? BaseCard ?: throw IllegalStateException()
+
+                state = StateBinaryOperatorPartial(
+                    binaryOperator = s.binaryOperator,
+                    rhs = base,
+                    finalize = {
+                        s.finalize()
+                        finalize!!.invoke()
+                    },
+                )
+            }
+
+            is StateOperator -> {
+                val base = clickable as? Base ?: throw IllegalStateException()
+                base.expr = s.card.transformExpr(base.expr)
+                s.finalize()
+                state = None
+                advanceTurn()
+            }
+
+            is StateBinaryOperatorPartial -> {
+                val base = clickable as? Base ?: throw IllegalStateException()
+                base.expr = s.binaryOperator.transformExpr(base.expr, s.rhs.expr)
+                s.finalize()
+                state = None
+                advanceTurn()
             }
         }
     }
