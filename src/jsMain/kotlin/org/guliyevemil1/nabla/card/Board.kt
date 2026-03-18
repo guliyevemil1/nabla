@@ -1,5 +1,6 @@
 package org.guliyevemil1.nabla.card
 
+import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.integer
@@ -48,9 +49,12 @@ class NablaPlayer : Player<NablaCard> {
 sealed interface BoardState {
     object None : BoardState
 
-    class StateBinaryOperator(val card: BinaryOperator) : BoardState
+    class StateBinaryOperator(val binaryOperator: BinaryOperator, val finalize: () -> Unit) : BoardState
 
-    class StateOperator(val card: Operator) : BoardState
+    class StateBinaryOperatorPartial(val binaryOperator: BinaryOperator, val rhs: BaseCard, val finalize: () -> Unit) :
+        BoardState
+
+    class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState
 }
 
 class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
@@ -69,28 +73,27 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
         }
     }
 
-    private var state: BoardState = BoardState.None
+    private var state: BoardState = None
 
     fun play(clickable: Clickable) {
         val s = state
         when (clickable) {
             is Base -> {
-                if (s !is BoardState.StateOperator) {
+                if (s !is StateOperator && s !is StateBinaryOperatorPartial) {
                     println("Awaiting hand card")
                     return
                 }
-                s.card
-                state = BoardState.None
+                state = None
                 advanceTurn()
             }
 
             is HandCard<*> -> {
-                if (state is BoardState.StateOperator) {
+                if (state is StateOperator || state is StateBinaryOperatorPartial) {
                     println("Awaiting base")
                     return
                 }
 
-                if (state is BoardState.StateBinaryOperator && clickable.card !is BaseCard) {
+                if (state is StateBinaryOperator && clickable.card !is BaseCard) {
                     println("Awaiting base card")
                     return
                 }
@@ -108,21 +111,38 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
 
                 val clickedCard = clickable.card
 
+                val finalize = {
+                    players[turn].hand.removeAt(cardIndex)
+                    players[turn].hand.add(HandCard(player = clickable.player, shuffler.draw()))
+                    shuffler.discard(clickable.card as NablaCard)
+                }
+
                 when (clickedCard) {
                     is BaseCard -> {
-                        when (state) {
-                            BoardState.None -> {
+                        when (s) {
+                            None -> {
                                 clickable.player.addBase(clickedCard.expr)
                                 advanceTurn()
                             }
 
-                            is BoardState.StateOperator -> {
+                            is StateOperator -> {
                                 throw IllegalStateException()
                             }
 
-                            is BoardState.StateBinaryOperator -> {
-                                state = BoardState.None
-                                advanceTurn()
+                            is StateBinaryOperator -> {
+                                state = StateBinaryOperatorPartial(
+                                    binaryOperator = s.binaryOperator,
+                                    rhs = clickedCard,
+                                    finalize = {
+                                        s.finalize()
+                                        finalize()
+                                    },
+                                )
+                                return
+                            }
+
+                            is StateBinaryOperatorPartial -> {
+                                throw IllegalStateException()
                             }
                         }
 
@@ -136,17 +156,17 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
                     }
 
                     is Operator -> {
-                        state = BoardState.StateOperator(clickedCard)
+                        state = StateOperator(clickedCard, finalize)
+                        return
                     }
 
                     is BinaryOperator -> {
-                        state = BoardState.StateBinaryOperator(clickedCard)
+                        state = StateBinaryOperator(clickedCard, finalize)
+                        return
                     }
                 }
 
-                players[turn].hand.removeAt(cardIndex)
-                players[turn].hand.add(HandCard(player = clickable.player, shuffler.draw()))
-                shuffler.discard(clickable.card as NablaCard)
+                finalize()
             }
         }
     }
