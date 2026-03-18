@@ -1,21 +1,26 @@
-#gameStates {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 24px;
-}
-
 .gameState {
     display: block;
-}
-
-#gameStates > div {
-    flex: 1;
+    gap: 24px;
+    margin-top: 24px;
+    margin-bottom: 24px;
 }
 
 #hand {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.field-button .katex {
+    font-size: 14px;
+}
+
+.field-button {
+    height: 42px;
+    border: 2px solid #333;
+    border-radius: 2px;
+    margin-bottom: 10px;
+    /*flex-shrink: 0; !* Prevents cards from shrinking *!*/
 }
 
 .card-button .katex {
@@ -29,18 +34,8 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
+    margin-right: 10px;
     flex-shrink: 0; /* Prevents cards from shrinking */
-}
-
-.field-button .katex {
-    font-size: 14px;
-}
-
-.field-button {
-    height: 42px;
-    border: 2px solid #333;
-    border-radius: 2px;
-    /*flex-shrink: 0; !* Prevents cards from shrinking *!*/
 }
 
 .card-button:hover {

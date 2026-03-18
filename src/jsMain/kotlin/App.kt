@@ -4,6 +4,7 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.button
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
+import kotlinx.html.js.p
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
 import org.w3c.dom.HTMLDivElement
@@ -23,11 +24,20 @@ fun renderMath(card: NablaCard, element: HTMLElement) {
 }
 
 object GameState {
-    val board = NablaBoard()
+    val board = Board()
 }
 
-fun renderState(element: HTMLDivElement, bases: MutableList<Base>) {
+fun renderState(element: HTMLDivElement, bases: MutableList<FieldItem>) {
     element.innerHTML = ""
+
+    if (bases.isEmpty()) {
+        element.append {
+            div {
+                +"Game over! The other player won!"
+            }
+        }
+        return
+    }
 
     bases.forEach { base ->
         element.append {

@@ -6,7 +6,7 @@ interface Deck<C : Card> {
     val cards: List<C>
 }
 
-class Shuffler<C : Card>(val deck: Deck<C>) {
+class Shuffler<C : Card>(deck: Deck<C>) {
     private val drawPile: MutableList<C> = mutableListOf()
     private val discardPile: MutableList<C> = deck.cards.toMutableList()
 

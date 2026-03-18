@@ -7,38 +7,24 @@ import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.pow
 
 interface Clickable {
-    val player: NablaPlayer
-}
-
-abstract class Board<C : Card, P : Player<C>>(
-    deck: Deck<C>,
-) {
-
-    val shuffler: Shuffler<C> = Shuffler(deck)
-
-    abstract val players: Array<P>
-
-}
-
-interface Player<C : Card> {
-    val hand: List<HandCard<C>>
+    val player: Player
 }
 
 class HandCard<C : Card>(
-    override val player: NablaPlayer,
+    override val player: Player,
     val card: C,
 ) : Clickable
 
-class NablaPlayer : Player<NablaCard> {
-    override val hand: MutableList<HandCard<NablaCard>> = mutableListOf()
+class Player {
+    val hand: MutableList<HandCard<NablaCard>> = mutableListOf()
 
-    val field: MutableList<Base> = mutableListOf(
+    val field: MutableList<FieldItem> = mutableListOf(
         base(integer(1)),
         base(X),
         base(pow(X, 2)),
     )
 
-    private fun base(expr: Expr<Any?>): Base = Base(player = this, expr = expr)
+    private fun base(expr: Expr<Any?>): FieldItem = FieldItem(player = this, expr = expr)
 
     fun addBase(expr: Expr<Any?>) {
         if (expr == integer(0)) return
@@ -49,6 +35,7 @@ class NablaPlayer : Player<NablaCard> {
 sealed interface BoardState {
 
     object None : BoardState
+    object GameOver : BoardState
 
     class StateBinaryOperator(
         val binaryOperator: BinaryOperator,
@@ -61,7 +48,9 @@ sealed interface BoardState {
     class StateOperator(val card: Operator, val finalize: () -> Unit) : BoardState
 }
 
-class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
+class Board {
+    val shuffler = Shuffler(NablaDeck())
+
     private var turn: Int = 0
 
     fun advanceTurn() {
@@ -69,8 +58,8 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
         println("turn: $turn")
     }
 
-    override val players = Array(2) {
-        NablaPlayer().also { p ->
+    val players = Array(2) {
+        Player().also { p ->
             repeat(times = 7) {
                 p.hand.add(HandCard(player = p, shuffler.draw()))
             }
@@ -90,8 +79,10 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateBinaryOperatorPartial, is StateOperator -> {
-                clickable is Base
+                clickable is FieldItem
             }
+
+            GameOver -> false
         }
     }
 
@@ -168,16 +159,18 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
             }
 
             is StateOperator -> {
-                val base = clickable as? Base ?: throw IllegalStateException("did not get a base input as expected")
-                base.expr = s.card.transformExpr(base.expr)
+                val fieldItem = clickable as? FieldItem
+                    ?: throw IllegalStateException("did not get a base input as expected")
+                fieldItem.expr = s.card.transformExpr(fieldItem.expr)
                 s.finalize()
                 state = None
                 advanceTurn()
             }
 
             is StateBinaryOperatorPartial -> {
-                val base = clickable as? Base ?: throw IllegalStateException("did not get a base input as expected")
-                base.expr = s.binaryOperator.transformExpr(base.expr, s.rhs.expr)
+                val fieldItem = clickable as? FieldItem
+                    ?: throw IllegalStateException("did not get a base input as expected")
+                fieldItem.expr = s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
                 s.finalize()
                 state = None
                 advanceTurn()
@@ -186,7 +179,7 @@ class NablaBoard : Board<NablaCard, NablaPlayer>(NablaDeck()) {
     }
 }
 
-class Base(
-    override val player: NablaPlayer,
+class FieldItem(
+    override val player: Player,
     var expr: Expr<Any?>,
 ) : Clickable
