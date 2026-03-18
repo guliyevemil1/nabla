@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.card
 
-interface NablaCard : Card {
+sealed interface NablaCard : Card {
     fun render(): String
 }
 
