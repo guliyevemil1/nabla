@@ -53,26 +53,26 @@ fun renderHand() {
     val handDiv = document.getElementById("hand") as HTMLDivElement
     handDiv.innerHTML = ""
 
-    GameState.board.players[0].hand.forEachIndexed { index, card ->
+    GameState.board.players[0].hand.forEach { card ->
         handDiv.append {
             val b = button {
                 classes += setOf("card-button")
-                onClickFunction = { playCard(index) }
+                onClickFunction = { playCard(card) }
             }
             renderMath(card, b)
         }
     }
 }
 
-fun playCard(cardId: Int) {
-//    val card = GameState.hand.find { it.id == cardId }
-//    if (card != null) {
-//        // Apply your card effect here
-//        console.log("Playing card: ${card.name}")
-//
-//        GameState.hand.remove(card)
-//        renderHand()
-//    }
+fun playCard(card: Card) {
+    val hand = GameState.board.players[0].hand
+    val card = hand.find { it == card }
+    if (card != null) {
+        // Apply your card effect here
+        console.log("Playing card: $card")
+        hand.remove(card)
+        renderHand()
+    }
 }
 
 fun main() {
