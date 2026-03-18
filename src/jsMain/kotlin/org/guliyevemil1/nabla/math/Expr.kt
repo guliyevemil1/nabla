@@ -1,7 +1,7 @@
 package org.guliyevemil1.nabla.math
 
 sealed interface Expr<out T> {
-    fun render(): String = "TODO()"
+    fun render(): String
 
     val isSimple
         get() = when (this) {
@@ -48,7 +48,9 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     }
 }
 
-class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?>
+class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String = """${factor.render()} \times ${expr.render()}"""
+}
 
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     constructor(vararg m: Expr<T>) : this(m.asList())
@@ -98,7 +100,9 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
         """\frac{${numerator.render()}}{${numerator.render()}}"""
 }
 
-data class Differentiate(val base: Expr<Any?>) : Expr<Any?>
+data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String = """\frac{d}{dx}\left(${base.render()}\right)"""
+}
 
 data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
     override fun render(): String = """\int{${base.render()}}"""
@@ -112,4 +116,9 @@ data class Log<T>(val base: Expr<T>) : Expr<T> {
     override fun render(): String = """\log\left(${base.render()}\right)"""
 }
 
-data class Invert(val base: Expr<Any?>) : Expr<Any?>
+data class Invert(val base: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String {
+        TODO("Not yet implemented")
+    }
+
+}

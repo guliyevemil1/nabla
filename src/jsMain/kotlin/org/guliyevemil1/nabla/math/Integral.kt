@@ -67,4 +67,5 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
     }
 
     override fun toRational() = this
+    override fun render(): String = """\frac{$numerator}{$denominator}"""
 }
