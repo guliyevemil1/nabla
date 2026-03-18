@@ -92,12 +92,6 @@ fun board(rng: ImmutableRNG): Board {
     return Board(shuffler = s).draw()
 }
 
-fun <T, U : T> List<U>.replaceAt(index: Int, item: U): List<T> =
-    this.toMutableList().apply { set(index, item) }.toList()
-
-fun <T, U : T> List<U>.replaceAt(index: Int, transform: (U) -> T): List<T> =
-    this.replaceAt(index, transform(this[index]))
-
 class Board(
     private val shuffler: Shuffler<NablaCard>,
     private val state: BoardState = None,
@@ -173,13 +167,7 @@ class Board(
     }
 
     fun Players.checkGameOver() = if (player1.field.contains(Illegal) || player2.field.contains(Illegal)) {
-        update(
-            transform = {
-                copy(
-                    field = emptyList(),
-                )
-            },
-        )
+        update(transform = { copy(field = emptyList()) })
     } else {
         this
     }
@@ -229,32 +217,22 @@ class Board(
                         return copy(
                             state = None,
                             players = players.update(
-                                transform = {
-                                    copy(
-                                        hand = hand.filterIndexed { index, _ -> handCard.idx != index },
-                                    )
-                                },
+                                transform = { copy(hand = hand.filterIndexed { index, _ -> handCard.idx != index }) },
                                 transformOther = {
-                                    copy(
-                                        field = field.map {
-                                            clickedCard.transformExpr(it).takeIf { it != Zero }
-                                        }.filterNotNull()
-                                    )
+                                    copy(field = field.mapNotNull {
+                                        clickedCard.transformExpr(it).takeIf { it != Zero }
+                                    })
                                 }
                             ),
                         )
                     }
 
                     is Operator -> {
-                        return copy(
-                            state = StateOperator(clickedCard, playedCard = handCard.idx),
-                        )
+                        return copy(state = StateOperator(clickedCard, playedCard = handCard.idx))
                     }
 
                     is BinaryOperator -> {
-                        return copy(
-                            state = StateBinaryOperator(clickedCard, playedCard = handCard.idx),
-                        )
+                        return copy(state = StateBinaryOperator(clickedCard, playedCard = handCard.idx))
                     }
                 }
             }
@@ -279,11 +257,7 @@ class Board(
                 return copy(
                     state = None,
                     players = players.update(
-                        transform = {
-                            copy(
-                                hand = hand.filterIndexed { index, _ -> s.playedCard != index },
-                            )
-                        },
+                        transform = { copy(hand = hand.filterIndexed { index, _ -> s.playedCard != index }) },
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
                                 copy(field = field.replaceAt(fieldItem.idx) {
@@ -303,11 +277,7 @@ class Board(
                 return copy(
                     state = None,
                     players = players.update(
-                        transform = {
-                            copy(
-                                hand = hand.filterIndexed { index, _ -> index !in s.playedCards },
-                            )
-                        },
+                        transform = { copy(hand = hand.filterIndexed { index, _ -> index !in s.playedCards }) },
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
                                 copy(

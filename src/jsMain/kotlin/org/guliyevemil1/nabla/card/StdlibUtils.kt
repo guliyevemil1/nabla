@@ -10,3 +10,9 @@ data class ImmutableRNG(val seed: Int) {
         return Pair(value, ImmutableRNG(value))
     }
 }
+
+fun <T, U : T> List<U>.replaceAt(index: Int, item: U): List<T> =
+    this.toMutableList().apply { set(index, item) }.toList()
+
+fun <T, U : T> List<U>.replaceAt(index: Int, transform: (U) -> T): List<T> =
+    this.replaceAt(index, transform(this[index]))
