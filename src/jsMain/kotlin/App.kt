@@ -25,15 +25,16 @@ object GameState {
     val board = NablaBoard()
 }
 
-fun renderState(element: HTMLDivElement, field: NablaField) {
+fun renderState(element: HTMLDivElement, bases: MutableList<Base>) {
     element.innerHTML = ""
 
-    field.bases.forEach { item ->
+    bases.forEach { base ->
         element.append {
             val d = button {
                 classes = setOf("field-button")
+                onClickFunction = { play(base) }
             }
-            renderMath(item, d)
+            renderMath(base.expr, d)
         }
     }
 }
@@ -41,24 +42,24 @@ fun renderState(element: HTMLDivElement, field: NablaField) {
 fun renderState() {
     renderState(
         document.getElementById("gameState1") as HTMLDivElement,
-        GameState.board.fields[0],
+        GameState.board.players[0].field,
     )
     renderState(
         document.getElementById("gameState2") as HTMLDivElement,
-        GameState.board.fields[1],
+        GameState.board.players[1].field,
     )
 }
 
-fun renderHand(element: HTMLDivElement, hand: MutableList<NablaCard>) {
+fun <C : NablaCard> renderHand(element: HTMLDivElement, hand: MutableList<HandCard<C>>) {
     element.innerHTML = ""
 
     hand.forEach { card ->
         element.append {
             val b = button {
                 classes += setOf("card-button")
-                onClickFunction = { playCard(hand, card) }
+                onClickFunction = { play(card) }
             }
-            renderMath(card, b)
+            renderMath(card.card, b)
         }
     }
 }
@@ -74,18 +75,17 @@ fun renderHand() {
     )
 }
 
-fun playCard(hand: MutableList<out Card>, card: Card) {
-    val card = hand.find { it == card }
-    if (card != null) {
-        // Apply your card effect here
-        console.log("Playing card: $card")
-        hand.remove(card)
-        renderHand()
-    }
+fun render() {
+    renderState()
+    renderHand()
+}
+
+fun play(card: Clickable) {
+    GameState.board.play(card)
+    render()
 }
 
 fun main() {
     // Initial render
-    renderState()
-    renderHand()
+    render()
 }

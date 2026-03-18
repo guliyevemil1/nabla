@@ -1,47 +1,65 @@
 package org.guliyevemil1.nabla.card
 
+import org.guliyevemil1.nabla.math.Constant
+import org.guliyevemil1.nabla.math.CosX
+import org.guliyevemil1.nabla.math.ExpX
+import org.guliyevemil1.nabla.math.Expr
+import org.guliyevemil1.nabla.math.SinX
+import org.guliyevemil1.nabla.math.X
+import org.guliyevemil1.nabla.math.Zero
+import org.guliyevemil1.nabla.math.differentiate
+import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.math.pow
+
 sealed interface NablaCard : Card {
     fun render(): String
 }
 
-sealed interface BaseCard : NablaCard
+sealed class BaseCard(val expr: Expr<Any?>) : NablaCard
 
-object CardZero : BaseCard {
+object CardZero : BaseCard(integer(0)) {
     override fun render(): String = """0"""
 }
 
-object CardOne : BaseCard {
+object CardOne : BaseCard(integer(1)) {
     override fun render(): String = """1"""
 }
 
-object CardX : BaseCard {
+object CardX : BaseCard(X) {
     override fun render(): String = """x"""
 }
 
-object CardX2 : BaseCard {
+object CardX2 : BaseCard(pow(X, 2)) {
     override fun render(): String = """x^2"""
 }
 
-object ExpX : BaseCard {
+object CardExpX : BaseCard(ExpX) {
     override fun render(): String = """e^x"""
 }
 
-object SinX : BaseCard {
+object CardSinX : BaseCard(SinX) {
     override fun render(): String = """\sin x"""
 }
 
-object CosX : BaseCard {
+object CardCosX : BaseCard(CosX) {
     override fun render(): String = """\cos x"""
 }
 
-sealed interface AllOperator : NablaCard
+sealed interface AllOperator : NablaCard {
+    fun transformExpr(expr: Expr<Any?>): Expr<Any?>
+}
 
 object Nabla : AllOperator {
     override fun render(): String = """\nabla"""
+
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        differentiate(expr)
 }
 
 object Nabla2 : AllOperator {
     override fun render(): String = """\triangle"""
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+        differentiate(differentiate(expr))
 }
 
 sealed interface Operator : NablaCard
@@ -103,9 +121,9 @@ class NablaDeck : Deck<NablaCard> {
         repeat(times = 2) { add(CardOne) }
         repeat(times = 8) { add(CardX) }
         repeat(times = 3) { add(CardX2) }
-        repeat(times = 4) { add(SinX) }
-        repeat(times = 4) { add(CosX) }
-        repeat(times = 4) { add(ExpX) }
+        repeat(times = 4) { add(CardSinX) }
+        repeat(times = 4) { add(CardCosX) }
+        repeat(times = 4) { add(CardExpX) }
 
         repeat(times = 10) { add(Nabla) }
         repeat(times = 2) { add(Nabla2) }
