@@ -1,18 +1,12 @@
 import kotlinx.browser.document
+import kotlinx.html.classes
 import kotlinx.html.dom.append
 import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
 import org.guliyevemil1.nabla.Expr
 import org.guliyevemil1.nabla.Zero
-import org.guliyevemil1.nabla.card.Card
-import org.guliyevemil1.nabla.card.CosX
-import org.guliyevemil1.nabla.card.ExpX
-import org.guliyevemil1.nabla.card.One
-import org.guliyevemil1.nabla.card.SinX
-import org.guliyevemil1.nabla.card.X
-import org.guliyevemil1.nabla.card.X2
-import org.guliyevemil1.nabla.card.Zero
+import org.guliyevemil1.nabla.card.*
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
@@ -70,6 +64,7 @@ fun renderHand() {
     GameState.hand.forEachIndexed { index, card ->
         handDiv.append {
             val b = button {
+                classes += setOf("card-button")
                 onClickFunction = { playCard(index) }
             }
             renderMath(card, b)
@@ -111,4 +106,18 @@ fun main() {
     addCard(ExpX)
     addCard(SinX)
     addCard(CosX)
+    addCard(Nabla)
+    addCard(Nabla2)
+    addCard(DDx)
+    addCard(Integrate)
+    addCard(Times)
+    addCard(Over)
+    addCard(Sqrt)
+    addCard(Log)
+    addCard(Inverse)
+    addCard(Lim0)
+    addCard(LimInf)
+    addCard(LimNegInf)
+    addCard(LimSupremum)
+    addCard(LimInfimum)
 }

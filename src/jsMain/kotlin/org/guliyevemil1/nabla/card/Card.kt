@@ -43,11 +43,11 @@ object CosX : BaseCard {
 sealed interface AllOperator : Card
 
 object Nabla : AllOperator {
-    override fun render(): String = TODO()
+    override fun render(): String = """\nabla"""
 }
 
 object Nabla2 : AllOperator {
-    override fun render(): String = TODO()
+    override fun render(): String = """\triangle"""
 }
 
 sealed interface Operator : Card
@@ -67,31 +67,31 @@ object Times : BinaryOperator {
 }
 
 object Over : BinaryOperator {
-    override fun render(): String = """/"""
+    override fun render(): String = """\div"""
 }
 
 object Lim0 : Operator {
-    override fun render(): String = """\lim_{x \arrow 0}"""
+    override fun render(): String = """\displaystyle\lim_{x \to 0}"""
 }
 
 object LimInf : Operator {
-    override fun render(): String = """\lim_{x \arrow 0}"""
+    override fun render(): String = """\displaystyle\lim_{x \to \infty}"""
 }
 
 object LimNegInf : Operator {
-    override fun render(): String = """\lim_{x \arrow 0}"""
+    override fun render(): String = """\displaystyle\lim_{x \to -\infty}"""
 }
 
 object LimSupremum : Operator {
-    override fun render(): String = """\lim_{x \arrow 0}"""
+    override fun render(): String = """\displaystyle\limsup_{x \to 0}"""
 }
 
 object LimInfimum : Operator {
-    override fun render(): String = """\lim_{x \arrow 0}"""
+    override fun render(): String = """\displaystyle\liminf_{x \to 0}"""
 }
 
 object Sqrt : Operator {
-    override fun render(): String = """\sqrt"""
+    override fun render(): String = """\sqrt{}"""
 }
 
 object Log : Operator {
