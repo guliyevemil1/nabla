@@ -4,15 +4,17 @@ import org.guliyevemil1.nabla.math.CosX
 import org.guliyevemil1.nabla.math.ExpX
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Limit
-import org.guliyevemil1.nabla.math.Multiply
 import org.guliyevemil1.nabla.math.SinX
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.differentiate
 import org.guliyevemil1.nabla.math.divide
 import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.math.integrate
 import org.guliyevemil1.nabla.math.lim
+import org.guliyevemil1.nabla.math.log
 import org.guliyevemil1.nabla.math.multiply
 import org.guliyevemil1.nabla.math.pow
+import org.guliyevemil1.nabla.math.sqrt
 
 sealed interface NablaCard : Card {
     fun render(): String
@@ -58,7 +60,7 @@ object DDx : Operator {
 
 object Integrate : Operator {
     override fun render(): String = """\int"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = TODO()
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = integrate(expr)
 }
 
 sealed interface BinaryOperator : NablaCard {
@@ -113,16 +115,12 @@ object LimInfimum : Operator {
 
 object Sqrt : Operator {
     override fun render(): String = """\sqrt{}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
-        TODO("Not yet implemented")
-    }
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = sqrt(expr)
 }
 
 object Log : Operator {
     override fun render(): String = """\log"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
-        TODO("Not yet implemented")
-    }
+    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = log(expr)
 }
 
 object Inverse : Operator {

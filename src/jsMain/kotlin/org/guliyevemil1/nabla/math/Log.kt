@@ -2,7 +2,7 @@ package org.guliyevemil1.nabla.math
 
 fun <T> log(c: Expr<T>): Expr<T> {
     if (c is Constant) {
-        TODO()
+        return Zero
     }
     if (c is ExpX) {
         return X as Expr<T>
