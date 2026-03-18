@@ -6,22 +6,54 @@ interface Deck<C : Card> {
     val cards: List<C>
 }
 
-class Shuffler<C : Card>(deck: Deck<C>) {
-    private val drawPile: MutableList<C> = mutableListOf()
-    private val discardPile: MutableList<C> = deck.cards.toMutableList()
-
-    fun draw(): C {
-        if (drawPile.isEmpty()) {
-            drawPile.addAll(discardPile)
-            drawPile.apply { shuffle() }
-            discardPile.clear()
+fun <C : Card> shuffler(
+    rng: ImmutableRNG,
+    cards: List<C>,
+): Shuffler<C> {
+    var rng = rng
+    val drawPile = cards.toMutableList().apply {
+        for (i in lastIndex downTo 1) {
+            val (j, newRng) = rng.nextInt(i + 1)
+            this[j] = this.set(i, this[j])
+            rng = newRng
         }
-        return drawPile.removeAt(drawPile.size - 1)
+    }
+    return Shuffler(
+        rng = rng,
+        drawPile = drawPile,
+        discardPile = emptyList(),
+    )
+}
+
+data class Shuffler<C : Card>(
+    private val rng: ImmutableRNG,
+    private val drawPile: List<C>,
+    private val discardPile: List<C>,
+) {
+
+    fun draw(): Pair<C, Shuffler<C>> {
+        if (drawPile.isEmpty()) {
+            val s = shuffler(rng, discardPile)
+            return s.draw()
+        }
+        return drawPile[drawPile.size - 1] to copy(
+            drawPile = drawPile.subList(0, drawPile.size - 1),
+        )
     }
 
-    fun draw(n: Int): List<C> = List(n) { draw() }
-
-    fun discard(card: C) {
-        discardPile.add(card)
+    fun draw(n: Int): Pair<List<C>, Shuffler<C>> {
+        var shuffler = this
+        val l = buildList {
+            repeat(n) {
+                val (c, newShuffler) = shuffler.draw()
+                add(c)
+                shuffler = newShuffler
+            }
+        }
+        return l to shuffler
     }
+
+    fun discard(card: C): Shuffler<C> = copy(
+        discardPile = discardPile + card,
+    )
 }
