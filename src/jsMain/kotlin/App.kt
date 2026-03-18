@@ -7,6 +7,7 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.p
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
+import org.guliyevemil1.nabla.math.Illegal
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import kotlin.random.Random

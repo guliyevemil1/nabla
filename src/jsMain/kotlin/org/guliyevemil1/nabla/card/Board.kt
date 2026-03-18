@@ -2,6 +2,7 @@ package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
+import org.guliyevemil1.nabla.math.Illegal
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
@@ -47,6 +48,9 @@ data class Players(
             player2 = p2,
         ) to s2
     }
+
+    fun containsIllegal(): Boolean =
+        Illegal in player1.field || Illegal in player2.field
 }
 
 data class Player(
@@ -151,15 +155,22 @@ class Board(
     }
 
     fun Players.update(
-        turn: Int,
         transform: Player.() -> Player,
-    ): Players = when (turn) {
-        0 -> copy(player1 = player1.transform())
-        1 -> copy(player2 = player2.transform())
+        transformOther: Player.() -> Player = { this },
+        transformIdx: Player.() -> Player = { this },
+    ) = when (turn) {
+        0 -> copy(
+            player1 = player1.transform().transformIdx(),
+            player2 = player2.transformOther().transformIdx(),
+        )
+
+        1 -> copy(
+            player1 = player1.transformOther().transformIdx(),
+            player2 = player2.transform().transformIdx(),
+        )
+
         else -> throw IllegalStateException("unrecognized turn: $turn")
     }
-
-    fun Players.update(transform: Player.() -> Player) = update(turn, transform)
 
     fun play(clickable: Clickable): Board {
         val s = state
@@ -206,10 +217,13 @@ class Board(
                         return copy(
                             state = None,
                             players = players.update(
-                                turn = 1 - turn,
                                 transform = {
                                     copy(
                                         hand = hand.filterIndexed { index, _ -> handCard.idx != index },
+                                    )
+                                },
+                                transformOther = {
+                                    copy(
                                         field = field.map {
                                             clickedCard.transformExpr(it).takeIf { it != Zero }
                                         }.filterNotNull()
@@ -252,14 +266,22 @@ class Board(
                     ?: throw IllegalStateException("did not get a base input as expected")
                 return copy(
                     state = None,
-                    players = players.update(fieldItem.player.idx) {
-                        copy(
-                            hand = hand.filterIndexed { index, _ -> s.playedCard != index },
-                            field = field.replaceAt(fieldItem.idx) {
-                                s.card.transformExpr(fieldItem.expr).takeIf { it != Zero }
-                            }.filterNotNull()
-                        )
-                    }
+                    players = players.update(
+                        transform = {
+                            copy(
+                                hand = hand.filterIndexed { index, _ -> s.playedCard != index },
+                            )
+                        },
+                        transformIdx = {
+                            if (fieldItem.player.idx == idx) {
+                                copy(field = field.replaceAt(fieldItem.idx) {
+                                    s.card.transformExpr(fieldItem.expr).takeIf { it != Zero }
+                                }.filterNotNull())
+                            } else {
+                                this
+                            }
+                        }
+                    ),
                 )
             }
 
@@ -268,14 +290,24 @@ class Board(
                     ?: throw IllegalStateException("did not get a base input as expected")
                 return copy(
                     state = None,
-                    players = players.update(fieldItem.player.idx) {
-                        copy(
-                            hand = hand.filterIndexed { index, _ -> index !in s.playedCards },
-                            field = field.replaceAt(fieldItem.idx) {
-                                s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr).takeIf { it != Zero }
-                            }.filterNotNull()
-                        )
-                    }
+                    players = players.update(
+                        transform = {
+                            copy(
+                                hand = hand.filterIndexed { index, _ -> index !in s.playedCards },
+                            )
+                        },
+                        transformIdx = {
+                            if (fieldItem.player.idx == idx) {
+                                copy(
+                                    field = field.replaceAt(fieldItem.idx) {
+                                        s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr).takeIf { it != Zero }
+                                    }.filterNotNull()
+                                )
+                            } else {
+                                this
+                            }
+                        },
+                    ),
                 )
             }
 
