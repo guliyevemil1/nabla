@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(
     List(m.multiplicants.size) { index ->

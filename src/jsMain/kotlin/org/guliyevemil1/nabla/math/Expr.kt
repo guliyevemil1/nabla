@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 sealed interface Expr<out T> {
     fun render(): String = "TODO()"

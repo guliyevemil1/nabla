@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 object X : Expr<Any?> {
     override fun render(): String = "x"

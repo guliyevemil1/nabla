@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 import kotlin.math.abs
 

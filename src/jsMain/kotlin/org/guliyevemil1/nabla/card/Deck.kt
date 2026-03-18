@@ -1,9 +1,8 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.Expr
-import org.guliyevemil1.nabla.X
-import org.guliyevemil1.nabla.integer
-import org.guliyevemil1.nabla.pow
+import org.guliyevemil1.nabla.math.X
+import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.math.pow
 import kotlin.repeat
 
 interface Card {

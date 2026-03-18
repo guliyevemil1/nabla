@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal

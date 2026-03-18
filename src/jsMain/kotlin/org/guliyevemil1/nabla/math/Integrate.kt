@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal

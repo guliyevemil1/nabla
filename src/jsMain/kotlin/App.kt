@@ -1,31 +1,16 @@
 import kotlinx.browser.document
 import kotlinx.html.classes
 import kotlinx.html.dom.append
-import kotlinx.html.js.div
 import kotlinx.html.js.button
 import kotlinx.html.js.onClickFunction
-import org.guliyevemil1.nabla.Expr
-import org.guliyevemil1.nabla.Pow
-import org.guliyevemil1.nabla.X
+import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
-import org.guliyevemil1.nabla.integer
-import org.guliyevemil1.nabla.pow
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
-data class StateItem(
-    val id: String,
-    val value: Expr<Any?>,
-)
-
-// KaTeX external interface
 @JsName("katex")
 external object KaTeX {
     fun render(tex: String, element: HTMLElement, options: dynamic = definedExternally)
-}
-
-fun renderMath(formula: String, element: HTMLElement) {
-    KaTeX.render(formula, element)
 }
 
 fun renderMath(formula: Expr<*>, element: HTMLElement) {

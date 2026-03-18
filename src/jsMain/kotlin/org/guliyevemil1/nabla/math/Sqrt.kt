@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 fun <T> sqrt(c: Expr<T>): Expr<T> {
     if (c is Constant) {

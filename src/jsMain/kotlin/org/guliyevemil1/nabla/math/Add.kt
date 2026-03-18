@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.math
 
 fun <T> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())
 
