@@ -4,11 +4,11 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal
     is Constant -> multiply(b, X)
     CosX -> SinX
-    SinX -> Multiply(NegOne, CosX)
+    SinX -> Scale(NegOne, CosX)
     ExpX -> ExpX
     is Add -> b.map { integrate(it) }
     is Differentiate -> b.base
-    X -> Multiply(rational(1, 2), pow(X, 2))
+    X -> Scale(rational(1, 2), pow(X, 2))
 
     is Divide<*> -> TODO()
     is Integrate -> TODO()

@@ -26,10 +26,12 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
                     differentiate(b.numerator),
                     b.denominator,
                 ),
-                multiply(
+                Scale(
                     NegOne,
-                    b.numerator,
-                    differentiate(b.denominator),
+                    multiply(
+                        b.numerator,
+                        differentiate(b.denominator),
+                    )
                 ),
             ),
             multiply(b.denominator, b.denominator)
@@ -38,8 +40,8 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Differentiate -> Differentiate(b)
         is Integrate -> b.base
         is Invert -> TODO()
-        is Log -> Divide(differentiate(b.base), b.base)
-        is Sqrt -> Divide(differentiate(b.base), Multiply(integer(2), b))
+        is Log -> divide(differentiate(b.base), b.base)
+        is Sqrt -> divide(differentiate(b.base), Scale(integer(2), b))
         is Pow -> {
             multiply(Scale(integer(b.pow), b.base), differentiate(b.base))
         }

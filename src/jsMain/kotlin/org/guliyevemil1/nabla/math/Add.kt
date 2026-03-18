@@ -8,8 +8,7 @@ fun <T> add(summands: List<Expr<T>>): Expr<T> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
-        else -> summands
-            .reduce(::add)
+        else -> summands.reduce(::add)
     }
 }
 
@@ -34,8 +33,6 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
     }
 }
 
-fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
-
 fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
@@ -59,9 +56,38 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
-        l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
-        l is Multiply -> multiply(l.multiplicants + r)
-        r is Multiply -> multiply(r.multiplicants + l)
+        l is Add && r is Add -> add(l.summands.flatMap { ls ->
+            r.summands.map { rs ->
+                multiply(ls, rs)
+            }
+        })
+
+        l is Add -> add(l.summands.map { ls ->
+            multiply(ls, r)
+        })
+
+        r is Add -> add(r.summands.map { rs ->
+            multiply(l, rs)
+        })
+
+        l is Scale && r is Scale -> Scale(
+            factor = multiply(l.factor, r.factor),
+            expr = multiply(l.expr, r.expr),
+        ) as Expr<T>
+
+        l is Scale -> Scale(
+            factor = l.factor,
+            expr = multiply(l.expr, r),
+        ) as Expr<T>
+
+        r is Scale -> Scale(
+            factor = r.factor,
+            expr = multiply(l, r.expr),
+        ) as Expr<T>
+
+        l is Multiply && r is Multiply -> Multiply(l.multiplicants + r.multiplicants)
+        l is Multiply -> Multiply(l.multiplicants + r)
+        r is Multiply -> Multiply(listOf(l) + r.multiplicants)
         else -> Multiply(l, r)
     }
 }
@@ -81,6 +107,10 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
+        l is Scale && r is Scale -> Scale(
+            factor = divide(l.factor, r.factor),
+            expr = divide(l.expr, r.expr),
+        ) as Expr<T>
 //        l is Pow && r is X -> TODO()
 //        l is Multiply && r is Multiply -> TODO()
 //        l is Multiply -> TODO()

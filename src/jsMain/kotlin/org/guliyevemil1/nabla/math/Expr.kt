@@ -69,6 +69,16 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             } else {
                 listOf(it)
             }
+        }.sortedBy {
+            when (it) {
+                is Constant -> 0
+                is X -> 1
+                is Pow -> 2
+                is ExpX -> 3
+                is SinX -> 4
+                is CosX -> 5
+                else -> 6
+            }
         }
     }
 
