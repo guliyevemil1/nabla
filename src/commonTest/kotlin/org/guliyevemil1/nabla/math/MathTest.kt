@@ -11,4 +11,11 @@ class MathTest {
         assertEquals(expr, X)
     }
 
+    @Test
+    fun testDifferentiate() {
+        val expr = differentiate(Parser.parse("Multiply[Divide[1, 3], Pow[X, 3]]"))
+        assertEquals(XPow::class, expr::class)
+//        assertEquals(expr.pow, integer(2))
+    }
+
 }

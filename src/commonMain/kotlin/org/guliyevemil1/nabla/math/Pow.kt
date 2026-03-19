@@ -28,7 +28,7 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
             if (pow.numerator == 1) return """\sqrt{x}"""
             return """\sqrt{x^${pow.numerator}}"""
         }
-        return """x^${pow.render()}"""
+        return """x^{${pow.render()}}"""
     }
 }
 

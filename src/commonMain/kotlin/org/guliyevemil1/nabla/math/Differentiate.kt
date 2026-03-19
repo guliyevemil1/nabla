@@ -32,7 +32,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
                     differentiate(b.numerator),
                     b.denominator,
                 ),
-                Scale(
+                multiply(
                     NegOne,
                     multiply(
                         b.numerator,
@@ -49,7 +49,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Log -> divide(differentiate(b.base), b.base)
         is Sqrt -> divide(differentiate(b.base), Scale(integer(2), b))
         is Pow -> {
-            multiply(Scale(integer(b.pow), b.base), differentiate(b.base))
+            multiply(multiply(integer(b.pow), b.base), differentiate(b.base))
         }
 
         is Scale -> {
