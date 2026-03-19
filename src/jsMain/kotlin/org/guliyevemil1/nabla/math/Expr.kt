@@ -142,8 +142,11 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
     }
 }
 
+private val xPowMap = HashMap<Integer, XPow>()
+
 fun xPow(pow: Expr<Nothing>): Expr<Any?> {
     if (pow == Zero) return One
+    if (pow is Integer) xPowMap[pow] ?: XPow(pow).also { xPowMap[pow] = it }
     return XPow(pow)
 }
 
