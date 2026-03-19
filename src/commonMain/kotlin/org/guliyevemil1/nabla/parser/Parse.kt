@@ -7,6 +7,10 @@ class ParseException(message: String) : Exception(message)
 class Parser(private val input: String) {
     private var pos = 0
 
+    companion object {
+        fun parse(input: String): Expr<Any?> = Parser(input).parse()
+    }
+
     fun parse(): Expr<Any?> {
         skipWhitespace()
         val expr = parseExpression()

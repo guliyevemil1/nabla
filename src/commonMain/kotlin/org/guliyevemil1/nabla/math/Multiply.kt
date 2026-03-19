@@ -113,12 +113,12 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
             multiply(l.denominator, r.denominator)
         )
 
-        l is Divide -> divide(
+        l is Divide -> Divide(
             multiply(l.numerator, r),
             l.denominator,
         )
 
-        r is Divide -> divide(
+        r is Divide -> Divide(
             multiply(l, r.numerator),
             r.denominator,
         )
