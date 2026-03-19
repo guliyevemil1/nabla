@@ -48,14 +48,6 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
             Limit.Infimum -> NegOne
         }
 
-        X -> when (x) {
-            Limit.Zero -> Zero
-            Limit.Infinity -> Illegal
-            Limit.NegativeInfinity -> Illegal
-            Limit.Supremum -> Illegal
-            Limit.Infimum -> Illegal
-        }
-
         is XPow -> when (x) {
             Limit.Zero -> Zero
             Limit.Infinity -> Illegal

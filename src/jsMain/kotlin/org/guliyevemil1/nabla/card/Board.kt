@@ -5,6 +5,7 @@ import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.Illegal
 import org.guliyevemil1.nabla.math.X
+import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.pow
@@ -28,7 +29,7 @@ data class FieldItem(
 val startingField: List<Expr<Any?>> = listOf(
     integer(1),
     X,
-    pow(X, 2),
+    X2,
 )
 
 data class Players(
@@ -69,7 +70,7 @@ data class Player(
         field: List<Expr<Any?>> = this.field,
     ) = copy(
         hand = hand.sortedWith(NablaCardComparator),
-        field = field.sortedWith(ExprComparator),
+        field = field,
     )
 }
 

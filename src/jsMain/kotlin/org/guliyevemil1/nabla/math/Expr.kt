@@ -5,8 +5,8 @@ import kotlin.reflect.KClass
 val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Integer::class,
     Rational::class,
-    X::class,
     XPow::class,
+    Scale::class,
     ExpX::class,
     SinX::class,
     CosX::class,
@@ -16,7 +16,6 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Differentiate::class,
     Integrate::class,
     Add::class,
-    Scale::class,
     Multiply::class,
     Divide::class,
     Invert::class,
@@ -29,7 +28,6 @@ sealed interface Expr<out T> {
 
     val isSimple
         get() = when (this) {
-            is X -> true
             is Constant -> true
             is ExpX -> true
             is SinX -> true
@@ -66,7 +64,16 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
         } else {
             summands.forEachIndexed { index, m ->
                 if (index > 0) {
-                    append("""+""")
+                    when (m) {
+                        is Constant if m.isNegative == Bool.True ->
+                            "-"
+
+                        is Scale if m.factor is Constant && m.factor.isNegative == Bool.True ->
+                            "-"
+
+                        else ->
+                            "+"
+                    }.also { append(it) }
                 }
                 append(m.render())
             }
@@ -98,9 +105,8 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
         }.sortedBy {
             when (it) {
                 is Constant -> 0
-                is X -> 1
+                is XPow -> 1
                 is Pow -> 2
-                is XPow -> 2
                 is ExpX -> 3
                 is SinX -> 4
                 is CosX -> 5
@@ -138,12 +144,14 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
 
 fun xPow(pow: Expr<Nothing>): Expr<Any?> {
     if (pow == Zero) return One
-    if (pow == One) return X
     return XPow(pow)
 }
 
 data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     override fun render(): String {
+        if (pow == One) {
+            return "x"
+        }
         return """x^${pow.render()}"""
     }
 }

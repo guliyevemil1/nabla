@@ -12,10 +12,7 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     SinX -> Illegal
 
     ExpX -> Log(X)
-    is Log -> when (b.base) {
-        is X -> ExpX
-        else -> Illegal
-    }
+    is Log -> TODO()
 
     is Invert -> b.base
     is Sqrt -> TODO()

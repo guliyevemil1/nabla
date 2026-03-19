@@ -6,6 +6,7 @@ import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Limit
 import org.guliyevemil1.nabla.math.SinX
 import org.guliyevemil1.nabla.math.X
+import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.differentiate
 import org.guliyevemil1.nabla.math.divide
 import org.guliyevemil1.nabla.math.integer
@@ -53,7 +54,7 @@ sealed class BaseCard(val expr: Expr<Any?>) : NablaCard {
 object CardZero : BaseCard(integer(0))
 object CardOne : BaseCard(integer(1))
 object CardX : BaseCard(X)
-object CardX2 : BaseCard(pow(X, 2))
+object CardX2 : BaseCard(X2)
 object CardExpX : BaseCard(ExpX)
 object CardSinX : BaseCard(SinX)
 object CardCosX : BaseCard(CosX)

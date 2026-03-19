@@ -12,10 +12,12 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
     when (b) {
         is Illegal -> Illegal
         is Constant -> Zero
-        is X -> One
         is SinX -> CosX
         is CosX -> multiply(NegOne, SinX)
         is ExpX -> ExpX
+        is XPow -> {
+            multiply(b.pow, xPow(add(b.pow, NegOne)))
+        }
 
         is Add -> b.map { differentiate(it) }
         is Multiply -> differentiate(b)
@@ -44,10 +46,6 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Sqrt -> divide(differentiate(b.base), Scale(integer(2), b))
         is Pow -> {
             multiply(Scale(integer(b.pow), b.base), differentiate(b.base))
-        }
-
-        is XPow -> {
-            multiply(b.pow, xPow(add(b.pow, NegOne)))
         }
 
         is Scale -> {

@@ -56,8 +56,8 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
-        l is Integral && r is Scale -> Scale(multiply(l, r.factor), r.expr) as Expr<T>
-        l is Scale && r is Integral -> Scale(multiply(l.factor, r), l.expr) as Expr<T>
+        l is Integral && r is Scale -> multiply(multiply(l, r.factor), r.expr) as Expr<T>
+        l is Scale && r is Integral -> multiply(multiply(l.factor, r), l.expr) as Expr<T>
 
         l is Integral -> Scale(l, r) as Expr<T>
         r is Integral -> Scale(r, l) as Expr<T>
@@ -137,13 +137,13 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
         ) as Expr<T>
 
         l == r -> One
-        else -> multiply(l, divide(One, r))
+        else -> multiply(l, Divide(One, r))
     }
 }
 
 fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
-    if (base is X) {
-        return xPow(integer(n)) as Expr<T>
+    if (base is XPow) {
+        return xPow(multiply(base.pow, integer(n))) as Expr<T>
     }
     if (n < 0) return Illegal
     if (n == 0) return One

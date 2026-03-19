@@ -8,8 +8,8 @@ fun <T> sqrt(c: Expr<T>): Expr<T> {
     if (c is XPow) {
         return xPow(divide(c.pow, integer(2))) as Expr<T>
     }
-    if (c is Multiply && c.multiplicants.size == 2 && c.multiplicants[0] is X && c.multiplicants[1] is X) {
-        return X as Expr<T>
+    if (c is Multiply && c.multiplicants.size == 2 && c.multiplicants[0] == c.multiplicants[1]) {
+        return c.multiplicants[0]
     }
     return Sqrt(c)
 }

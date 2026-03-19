@@ -101,6 +101,7 @@ fun Board.renderUndo(element: HTMLDivElement) {
     element.innerHTML = ""
     element.append {
         button {
+            disabled = b.previous == null
             classes = setOf("field-button")
             +"Undo"
             onClickFunction = {

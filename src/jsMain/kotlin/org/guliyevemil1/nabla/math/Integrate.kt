@@ -8,7 +8,6 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     ExpX -> ExpX
     is Add -> b.map { integrate(it) }
     is Differentiate -> b.base
-    X -> multiply(rational(1, 2), pow(X, 2))
 
     is Divide<*> -> TODO()
     is Integrate -> TODO()
@@ -16,12 +15,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Log -> TODO()
     is Multiply<*> -> TODO()
     is Sqrt -> TODO()
-    is Pow -> {
-        if (b.base is X) {
-
-        }
-        TODO()
-    }
+    is Pow -> TODO()
 
     is Scale -> {
         multiply(b.factor, integrate(b.expr))

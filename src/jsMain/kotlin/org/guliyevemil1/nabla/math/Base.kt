@@ -1,8 +1,7 @@
 package org.guliyevemil1.nabla.math
 
-object X : Expr<Any?> {
-    override fun render(): String = "x"
-}
+val X = xPow(One)
+val X2 = xPow(integer(2))
 
 object CosX : Expr<Any?> {
     override fun render(): String = """\cos(x)"""
