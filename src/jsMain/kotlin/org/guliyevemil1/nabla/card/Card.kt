@@ -14,7 +14,6 @@ import org.guliyevemil1.nabla.math.integrate
 import org.guliyevemil1.nabla.math.lim
 import org.guliyevemil1.nabla.math.log
 import org.guliyevemil1.nabla.math.multiply
-import org.guliyevemil1.nabla.math.pow
 import org.guliyevemil1.nabla.math.sqrt
 
 private val NablaCardOrdering = listOf(
@@ -60,43 +59,43 @@ object CardSinX : BaseCard(SinX)
 object CardCosX : BaseCard(CosX)
 
 sealed interface AllOperator : NablaCard {
-    fun transformExpr(expr: Expr<Any?>): Expr<Any?>
+    fun transform(expr: Expr<Any?>): Expr<Any?>
 }
 
 object Nabla : AllOperator {
     override fun render(): String = """\nabla"""
 
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         differentiate(expr)
 }
 
 object Nabla2 : AllOperator {
     override fun render(): String = """\triangle"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         differentiate(differentiate(expr))
 }
 
 sealed interface Operator : NablaCard {
-    fun transformExpr(expr: Expr<Any?>): Expr<Any?>
+    fun transform(expr: Expr<Any?>): Expr<Any?>
 }
 
 object DDx : Operator {
     override fun render(): String = """\frac{d}{dx}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = differentiate(expr)
+    override fun transform(expr: Expr<Any?>): Expr<Any?> = differentiate(expr)
 }
 
 object Integrate : Operator {
     override fun render(): String = """\int"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = integrate(expr)
+    override fun transform(expr: Expr<Any?>): Expr<Any?> = integrate(expr)
 }
 
 sealed interface BinaryOperator : NablaCard {
-    fun transformExpr(expr: Expr<Any?>, rhs: Expr<Any?>): Expr<Any?>
+    fun transform(expr: Expr<Any?>, rhs: Expr<Any?>): Expr<Any?>
 }
 
 object Times : BinaryOperator {
     override fun render(): String = """\times"""
-    override fun transformExpr(
+    override fun transform(
         expr: Expr<Any?>,
         rhs: Expr<Any?>,
     ): Expr<Any?> = multiply(expr, rhs)
@@ -104,7 +103,7 @@ object Times : BinaryOperator {
 
 object Over : BinaryOperator {
     override fun render(): String = """\div"""
-    override fun transformExpr(
+    override fun transform(
         expr: Expr<Any?>,
         rhs: Expr<Any?>,
     ): Expr<Any?> = divide(expr, rhs)
@@ -112,47 +111,47 @@ object Over : BinaryOperator {
 
 object Lim0 : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to 0}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Zero)
 }
 
 object LimInf : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to \infty}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Infinity)
 }
 
 object LimNegInf : Operator {
     override fun render(): String = """\displaystyle\lim_{x \to -\infty}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.NegativeInfinity)
 }
 
 object LimSupremum : Operator {
     override fun render(): String = """\displaystyle\limsup_{x \to 0}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Supremum)
 }
 
 object LimInfimum : Operator {
     override fun render(): String = """\displaystyle\liminf_{x \to 0}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> =
+    override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Infimum)
 }
 
 object Sqrt : Operator {
     override fun render(): String = """\sqrt{}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = sqrt(expr)
+    override fun transform(expr: Expr<Any?>): Expr<Any?> = sqrt(expr)
 }
 
 object Log : Operator {
     override fun render(): String = """\log"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> = log(expr)
+    override fun transform(expr: Expr<Any?>): Expr<Any?> = log(expr)
 }
 
 object Inverse : Operator {
     override fun render(): String = """f^{-1}"""
-    override fun transformExpr(expr: Expr<Any?>): Expr<Any?> {
+    override fun transform(expr: Expr<Any?>): Expr<Any?> {
         TODO("Not yet implemented")
     }
 }

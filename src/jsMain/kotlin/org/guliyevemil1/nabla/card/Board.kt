@@ -2,13 +2,11 @@ package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
-import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.Illegal
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
-import org.guliyevemil1.nabla.math.pow
 
 interface Clickable {
     val player: Player
@@ -230,7 +228,7 @@ class Board(
                                 transform = { with(hand = hand.filterIndexed { index, _ -> handCard.idx != index }) },
                                 transformOther = {
                                     with(field = field.mapNotNull {
-                                        clickedCard.transformExpr(it).takeIf { it != Zero }
+                                        clickedCard.transform(it).takeIf { it != Zero }
                                     })
                                 }
                             ),
@@ -271,7 +269,7 @@ class Board(
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
                                 with(field = field.replaceAt(fieldItem.idx) {
-                                    s.card.transformExpr(fieldItem.expr).takeIf { it != Zero }
+                                    s.card.transform(fieldItem.expr).takeIf { it != Zero }
                                 }.filterNotNull())
                             } else {
                                 this
@@ -292,7 +290,7 @@ class Board(
                             if (fieldItem.player.idx == idx) {
                                 with(
                                     field = field.replaceAt(fieldItem.idx) {
-                                        s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
+                                        s.binaryOperator.transform(fieldItem.expr, s.rhs.expr)
                                             .takeIf { it != Zero }
                                     }.filterNotNull()
                                 )
