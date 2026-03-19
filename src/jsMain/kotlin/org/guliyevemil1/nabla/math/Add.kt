@@ -56,8 +56,13 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
-        l is Constant -> Scale(l, r) as Expr<T>
-        r is Constant -> Scale(r, l) as Expr<T>
+        l is Integral && r is Scale -> Scale(multiply(l, r.factor), r.expr) as Expr<T>
+        l is Scale && r is Integral -> Scale(multiply(l.factor, r), l.expr) as Expr<T>
+
+        l is Integral -> Scale(l, r) as Expr<T>
+        r is Integral -> Scale(r, l) as Expr<T>
+
+        l is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { rs ->
