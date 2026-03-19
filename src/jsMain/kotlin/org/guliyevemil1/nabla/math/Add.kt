@@ -25,7 +25,28 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
             denominator = ratL.denominator * ratR.denominator,
         )
     }
+    if (l == r) {
+        return Scale(integer(2), l) as Expr<T>
+    }
     return when {
+        l is Scale && r is Scale && l.expr == r.expr ->
+            Scale(
+                add(l.factor, r.factor),
+                add(l.expr, r.expr),
+            ) as Expr<T>
+
+        l is Scale && l.expr == r ->
+            Scale(
+                add(l.factor, One),
+                r,
+            ) as Expr<T>
+
+        r is Scale && l == r.expr ->
+            Scale(
+                add(r.factor, One),
+                l,
+            ) as Expr<T>
+
         l is Add && r is Add -> add(l.summands + r.summands)
         l is Add -> add(l.summands + r)
         r is Add -> add(r.summands + l)
