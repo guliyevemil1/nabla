@@ -135,12 +135,9 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
             factor = divide(l.factor, r.factor),
             expr = divide(l.expr, r.expr),
         ) as Expr<T>
-//        l is Pow && r is X -> TODO()
-//        l is Multiply && r is Multiply -> TODO()
-//        l is Multiply -> TODO()
-//        r is Multiply -> TODO()
+
         l == r -> One
-        else -> Divide(l, r)
+        else -> multiply(l, divide(One, r))
     }
 }
 

@@ -61,7 +61,7 @@ data class Player(
 ) {
     fun draw(s: Shuffler<NablaCard>): Pair<Player, Shuffler<NablaCard>> {
         val (cs, s2) = s.draw(7 - hand.size)
-        return copy(hand = hand + cs) to s2
+        return with(hand = hand + cs) to s2
     }
 
     fun with(
@@ -176,7 +176,7 @@ class Board(
     }
 
     fun Players.checkGameOver() = if (player1.field.contains(Illegal) || player2.field.contains(Illegal)) {
-        update(transform = { copy(field = emptyList()) })
+        update(transform = { with(field = emptyList()) })
     } else {
         this
     }
@@ -213,7 +213,7 @@ class Board(
                             shuffler = shuffler.discard(clickedCard),
                             players = players.update(
                                 transform = {
-                                    copy(
+                                    with(
                                         hand = hand.filterIndexed { index, _ -> handCard.idx != index },
                                         field = (field + clickedCard.expr),
                                     )
@@ -226,9 +226,9 @@ class Board(
                         return copy(
                             state = None,
                             players = players.update(
-                                transform = { copy(hand = hand.filterIndexed { index, _ -> handCard.idx != index }) },
+                                transform = { with(hand = hand.filterIndexed { index, _ -> handCard.idx != index }) },
                                 transformOther = {
-                                    copy(field = field.mapNotNull {
+                                    with(field = field.mapNotNull {
                                         clickedCard.transformExpr(it).takeIf { it != Zero }
                                     })
                                 }
@@ -266,10 +266,10 @@ class Board(
                 return copy(
                     state = None,
                     players = players.update(
-                        transform = { copy(hand = hand.filterIndexed { index, _ -> s.playedCard != index }) },
+                        transform = { with(hand = hand.filterIndexed { index, _ -> s.playedCard != index }) },
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
-                                copy(field = field.replaceAt(fieldItem.idx) {
+                                with(field = field.replaceAt(fieldItem.idx) {
                                     s.card.transformExpr(fieldItem.expr).takeIf { it != Zero }
                                 }.filterNotNull())
                             } else {
@@ -286,10 +286,10 @@ class Board(
                 return copy(
                     state = None,
                     players = players.update(
-                        transform = { copy(hand = hand.filterIndexed { index, _ -> index !in s.playedCards }) },
+                        transform = { with(hand = hand.filterIndexed { index, _ -> index !in s.playedCards }) },
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
-                                copy(
+                                with(
                                     field = field.replaceAt(fieldItem.idx) {
                                         s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
                                             .takeIf { it != Zero }
