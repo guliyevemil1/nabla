@@ -23,19 +23,11 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             summands[0].render()
         } else {
             summands.forEachIndexed { index, m ->
-                if (index > 0) {
-                    when (m) {
-                        is Constant if m.isNegative == Bool.True ->
-                            "-"
-
-                        is Scale if m.factor is Constant && m.factor.isNegative == Bool.True ->
-                            "-"
-
-                        else ->
-                            "+"
-                    }.also { append(it) }
+                val r = m.render()
+                if (index > 0 && !r.startsWith("-")) {
+                    append("+")
                 }
-                append(m.render())
+                append(r)
             }
         }
     }
