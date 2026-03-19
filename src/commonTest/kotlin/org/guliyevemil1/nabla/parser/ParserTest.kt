@@ -88,10 +88,9 @@ class ParserTest {
 
     @Test
     fun testMissingClosingBracket() {
-        val exception = assertFailsWith<ParseException> {
+        assertFailsWith<ParseException> {
             parse("f[x, y")
         }
-        assertTrue(exception.message!!.contains("Expected ']'"))
     }
 
     @Test

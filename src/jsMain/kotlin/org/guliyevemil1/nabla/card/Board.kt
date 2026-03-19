@@ -48,9 +48,6 @@ data class Players(
             player2 = p2,
         ) to s2
     }
-
-    fun containsIllegal(): Boolean =
-        Illegal in player1.field || Illegal in player2.field
 }
 
 data class Player(

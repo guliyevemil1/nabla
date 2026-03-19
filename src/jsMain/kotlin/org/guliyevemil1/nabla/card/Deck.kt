@@ -6,7 +6,7 @@ interface Deck<C : Card> {
     val cards: List<C>
 }
 
-fun <C : Card> shuffler(
+fun <C> shuffler(
     rng: ImmutableRNG,
     cards: List<C>,
 ): Shuffler<C> {
@@ -25,7 +25,7 @@ fun <C : Card> shuffler(
     )
 }
 
-data class Shuffler<C : Card>(
+data class Shuffler<C>(
     private val rng: ImmutableRNG,
     private val drawPile: List<C>,
     private val discardPile: List<C>,
