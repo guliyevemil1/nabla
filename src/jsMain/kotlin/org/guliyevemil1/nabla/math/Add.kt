@@ -56,6 +56,9 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     return when {
+        l is Constant -> Scale(l, r) as Expr<T>
+        r is Constant -> Scale(r, l) as Expr<T>
+
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { rs ->
                 multiply(ls, rs)
@@ -88,6 +91,22 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Multiply && r is Multiply -> Multiply(l.multiplicants + r.multiplicants)
         l is Multiply -> Multiply(l.multiplicants + r)
         r is Multiply -> Multiply(listOf(l) + r.multiplicants)
+
+        l is Divide && r is Divide -> divide(
+            multiply(l.numerator, r.numerator),
+            multiply(l.denominator, r.denominator)
+        )
+
+        l is Divide -> divide(
+            multiply(l.numerator, r),
+            l.denominator,
+        )
+
+        r is Divide -> divide(
+            multiply(l, r.numerator),
+            r.denominator,
+        )
+
         else -> Multiply(l, r)
     }
 }
@@ -120,17 +139,9 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     }
 }
 
-private val powMap = HashMap<Int, Pow<Any?>>()
-
 fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
     if (base is X) {
-        return if (!powMap.containsKey(n)) {
-            Pow(X, n).also {
-                powMap[n] = it
-            }
-        } else {
-            powMap[n]
-        } as Expr<T>
+        return XPow(integer(n)) as Expr<T>
     }
     if (n < 0) return Illegal
     if (n == 0) return One

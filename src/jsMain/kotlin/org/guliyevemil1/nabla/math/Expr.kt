@@ -8,6 +8,9 @@ sealed interface Expr<out T> {
             is X -> true
             is Constant -> true
             is ExpX -> true
+            is SinX -> true
+            is CosX -> true
+            is Pow -> true
             else -> false
         }
 }
@@ -55,7 +58,7 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
         } else if (factor.isSimple && expr.isSimple) {
             """${factor.render()} ${expr.render()}"""
         } else {
-            """${factor.render()} \times ${expr.render()}"""
+            """${factor.render()} ${expr.render()}"""
         }
 }
 
@@ -74,6 +77,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
                 is Constant -> 0
                 is X -> 1
                 is Pow -> 2
+                is XPow -> 2
                 is ExpX -> 3
                 is SinX -> 4
                 is CosX -> 5
@@ -90,9 +94,6 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             multiplicants[0].render()
         } else {
             multiplicants.forEachIndexed { index, m ->
-                if (index > 0) {
-                    append("""\times """)
-                }
                 if (!m.isSimple) append("""\left(""")
                 append(m.render().trim())
                 if (!m.isSimple) append("""\right)""")
@@ -110,6 +111,10 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
             else -> """\left(${base.render()}\right)^$pow"""
         }
     }
+}
+
+data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
+    override fun render(): String = """x^${pow.render()}"""
 }
 
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {

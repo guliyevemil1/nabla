@@ -24,4 +24,5 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Integrate -> TODO()
     is Pow -> TODO()
     is Scale -> Scale(divide(One, b.factor), integrate(b.expr))
+    is XPow -> TODO()
 }

@@ -56,6 +56,14 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
             Limit.Infimum -> Illegal
         }
 
+        is XPow -> when (x) {
+            Limit.Zero -> Zero
+            Limit.Infinity -> Illegal
+            Limit.NegativeInfinity -> Illegal
+            Limit.Supremum -> Illegal
+            Limit.Infimum -> Illegal
+        }
+
         is Scale -> {
             multiply(b.factor, lim(b.expr, x))
         }
