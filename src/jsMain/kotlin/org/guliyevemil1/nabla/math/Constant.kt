@@ -32,28 +32,31 @@ enum class Bool {
 sealed interface Constant : Expr<Nothing> {
     val sign: Sign
 
-    fun isPositive(): Bool = when (sign) {
-        Sign.Positive -> Bool.True
-        Sign.Unknown -> Bool.Unknown
-        else -> Bool.False
-    }
+    val isPositive: Bool
+        get() = when (sign) {
+            Sign.Positive -> Bool.True
+            Sign.Unknown -> Bool.Unknown
+            else -> Bool.False
+        }
 
-    fun isZero(): Bool = when (sign) {
-        Sign.Zero -> Bool.True
-        Sign.Unknown -> Bool.Unknown
-        else -> Bool.False
-    }
+    val isZero: Bool
+        get() = when (sign) {
+            Sign.Zero -> Bool.True
+            Sign.Unknown -> Bool.Unknown
+            else -> Bool.False
+        }
 
-    fun isNegative(): Bool = when (sign) {
-        Sign.Negative -> Bool.True
-        Sign.Unknown -> Bool.Unknown
-        else -> Bool.False
-    }
+    val isNegative: Bool
+        get() = when (sign) {
+            Sign.Negative -> Bool.True
+            Sign.Unknown -> Bool.Unknown
+            else -> Bool.False
+        }
 
-    fun isNonPositive(): Bool = !isPositive()
-    fun isNonNegative(): Bool = !isNegative()
+    val isNonPositive: Bool get() = !isPositive
+    val isNonNegative: Bool get() = !isNegative
 
-    fun inverse(): Expr<Constant> = when (isZero()) {
+    fun inverse(): Expr<Constant> = when (isZero) {
         Bool.True -> Illegal
         Bool.False -> Divide(One, this)
         else -> TODO()

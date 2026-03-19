@@ -21,7 +21,7 @@ data class Integer(val n: Int) : Integral {
 
     override fun toRational() = Rational(n, 1)
 
-    override fun inverse(): Expr<Nothing> = when (isZero()) {
+    override fun inverse(): Expr<Nothing> = when (isZero) {
         Bool.True -> Illegal
         Bool.False -> Rational(1, n)
         Bool.Unknown -> throw IllegalStateException()
@@ -60,7 +60,7 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
         else -> Sign.Negative
     }
 
-    override fun inverse(): Expr<Nothing> = when (isZero()) {
+    override fun inverse(): Expr<Nothing> = when (isZero) {
         Bool.True -> Illegal
         Bool.False -> Rational(numerator, denominator)
         Bool.Unknown -> throw IllegalStateException()
