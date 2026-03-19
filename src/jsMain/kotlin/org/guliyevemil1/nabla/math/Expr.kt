@@ -145,6 +145,9 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
         if (pow == One) {
             return "x"
         }
+        if (pow is Rational && pow.denominator == 2) {
+            return """\sqrt{x^${pow.numerator}}"""
+        }
         return """x^${pow.render()}"""
     }
 }

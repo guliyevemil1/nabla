@@ -1,8 +1,9 @@
 package org.guliyevemil1.nabla.math
 
-fun <T> log(c: Expr<T>): Expr<T> =
-    when (c) {
-        is Integral -> Zero
+fun <T> log(c: Expr<T>): Expr<T> {
+    if (c == One) return Zero
+    return when (c) {
+        is Integral if c.isNonPositive == Bool.True -> Illegal
         is Illegal -> Illegal
         is ExpX -> X as Expr<T>
         is XPow -> multiply(c.pow, Log(X)) as Expr<T>
@@ -10,3 +11,4 @@ fun <T> log(c: Expr<T>): Expr<T> =
         is Multiply -> add(c.multiplicants.map { log(it) })
         else -> Log(c)
     }
+}
