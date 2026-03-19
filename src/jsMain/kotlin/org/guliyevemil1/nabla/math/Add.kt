@@ -80,6 +80,12 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Integral && r is Scale -> multiply(multiply(l, r.factor), r.expr) as Expr<T>
         l is Scale && r is Integral -> multiply(multiply(l.factor, r), l.expr) as Expr<T>
 
+        l is Integral && r is Multiply -> multiply(r.multiplicants + l)
+        l is Multiply && r is Integral -> multiply(l.multiplicants + r)
+
+        l is Integral && r is Divide -> divide(multiply(l, r.numerator), r.denominator)
+        l is Divide && r is Integral -> divide(multiply(l.numerator, r), l.denominator)
+
         l is Integral -> Scale(l, r) as Expr<T>
         r is Integral -> Scale(r, l) as Expr<T>
 
