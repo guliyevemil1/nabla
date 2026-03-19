@@ -29,6 +29,6 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
 
     is XPow -> {
         val p = add(b.pow, One)
-        multiply(divide(One, p), XPow(p))
+        multiply(divide(One, p), xPow(p))
     }
 }

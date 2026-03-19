@@ -6,7 +6,7 @@ fun <T> sqrt(c: Expr<T>): Expr<T> {
         return Sqrt(c)
     }
     if (c is XPow) {
-        return XPow(divide(c.pow, integer(2))) as Expr<T>
+        return xPow(divide(c.pow, integer(2))) as Expr<T>
     }
     if (c is Multiply && c.multiplicants.size == 2 && c.multiplicants[0] is X && c.multiplicants[1] is X) {
         return X as Expr<T>

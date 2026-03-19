@@ -16,6 +16,32 @@ import org.guliyevemil1.nabla.math.multiply
 import org.guliyevemil1.nabla.math.pow
 import org.guliyevemil1.nabla.math.sqrt
 
+private val NablaCardOrdering = listOf(
+    CardZero,
+    CardOne,
+    CardX,
+    CardX2,
+    CardExpX,
+    CardSinX,
+    CardCosX,
+    Over,
+    Times,
+    DDx,
+    Integrate,
+    Inverse,
+    Lim0,
+    LimInf,
+    LimInfimum,
+    LimNegInf,
+    LimSupremum,
+    Log,
+    Sqrt,
+    Nabla,
+    Nabla2,
+).mapIndexed { index, card -> card to index }.toMap()
+
+val NablaCardComparator: Comparator<NablaCard> = compareBy { NablaCardOrdering[it] }
+
 sealed interface NablaCard : Card {
     fun render(): String
 }

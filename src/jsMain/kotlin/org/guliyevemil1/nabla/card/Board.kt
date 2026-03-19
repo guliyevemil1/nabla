@@ -2,6 +2,7 @@ package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
+import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.Illegal
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.Zero
@@ -62,6 +63,14 @@ data class Player(
         val (cs, s2) = s.draw(7 - hand.size)
         return copy(hand = hand + cs) to s2
     }
+
+    fun with(
+        hand: List<NablaCard> = this.hand,
+        field: List<Expr<Any?>> = this.field,
+    ) = copy(
+        hand = hand.sortedWith(NablaCardComparator),
+        field = field.sortedWith(ExprComparator),
+    )
 }
 
 sealed interface BoardState {
@@ -206,7 +215,7 @@ class Board(
                                 transform = {
                                     copy(
                                         hand = hand.filterIndexed { index, _ -> handCard.idx != index },
-                                        field = field + clickedCard.expr,
+                                        field = (field + clickedCard.expr),
                                     )
                                 },
                             ),
@@ -282,7 +291,8 @@ class Board(
                             if (fieldItem.player.idx == idx) {
                                 copy(
                                     field = field.replaceAt(fieldItem.idx) {
-                                        s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr).takeIf { it != Zero }
+                                        s.binaryOperator.transformExpr(fieldItem.expr, s.rhs.expr)
+                                            .takeIf { it != Zero }
                                     }.filterNotNull()
                                 )
                             } else {

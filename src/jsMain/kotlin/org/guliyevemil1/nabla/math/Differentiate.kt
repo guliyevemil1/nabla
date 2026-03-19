@@ -47,7 +47,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         }
 
         is XPow -> {
-            multiply(b.pow, XPow(add(b.pow, NegOne)))
+            multiply(b.pow, xPow(add(b.pow, NegOne)))
         }
 
         is Scale -> {

@@ -141,7 +141,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
 
 fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
     if (base is X) {
-        return XPow(integer(n)) as Expr<T>
+        return xPow(integer(n)) as Expr<T>
     }
     if (n < 0) return Illegal
     if (n == 0) return One

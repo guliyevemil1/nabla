@@ -1,5 +1,29 @@
 package org.guliyevemil1.nabla.math
 
+import kotlin.reflect.KClass
+
+val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
+    Integer::class,
+    Rational::class,
+    X::class,
+    XPow::class,
+    ExpX::class,
+    SinX::class,
+    CosX::class,
+    Log::class,
+    Pow::class,
+    Sqrt::class,
+    Differentiate::class,
+    Integrate::class,
+    Add::class,
+    Scale::class,
+    Multiply::class,
+    Divide::class,
+    Invert::class,
+).mapIndexed { index, klass -> klass to index }.toMap()
+
+val ExprComparator: Comparator<Expr<*>> = compareBy { ExprOrdering[it::class] }
+
 sealed interface Expr<out T> {
     fun render(): String
 
@@ -10,7 +34,8 @@ sealed interface Expr<out T> {
             is ExpX -> true
             is SinX -> true
             is CosX -> true
-            is Pow -> true
+            is XPow -> true
+            is Log -> true
             else -> false
         }
 }
@@ -43,9 +68,7 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
                 if (index > 0) {
                     append("""+""")
                 }
-                if (!m.isSimple) append("""\left(""")
-                append(m.render().trim())
-                if (!m.isSimple) append("""\right)""")
+                append(m.render())
             }
         }
     }
@@ -113,8 +136,16 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
     }
 }
 
+fun xPow(pow: Expr<Nothing>): Expr<Any?> {
+    if (pow == Zero) return One
+    if (pow == One) return X
+    return XPow(pow)
+}
+
 data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
-    override fun render(): String = """x^${pow.render()}"""
+    override fun render(): String {
+        return """x^${pow.render()}"""
+    }
 }
 
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
