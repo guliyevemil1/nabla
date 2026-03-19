@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.parser
 
-import org.guliyevemil1.nabla.math.isqrt
+import org.guliyevemil1.nabla.math.*
 import kotlin.test.*
 
 class ParserTest {
@@ -8,95 +8,70 @@ class ParserTest {
     @Test
     fun testParseSimpleSymbol() {
         val result = parse("x")
-        assertTrue(result is Expr.Symbol)
-        assertEquals("x", result.name)
+        assertEquals(result, X)
     }
 
     @Test
     fun testParseNumber() {
         val result = parse("42")
-        assertTrue(result is Expr.Number)
-        assertEquals(42.0, result.value)
+        assertEquals(result, integer(42))
     }
 
     @Test
     fun testParseNegativeNumber() {
-        val result = parse("-3.14")
-        assertTrue(result is Expr.Number)
-        assertEquals(-3.14, result.value)
+        val result = parse("-314")
+        assertEquals(result, integer(-314))
     }
 
     @Test
     fun testParseFunctionApplication() {
-        val result = parse("f[x]")
-        assertTrue(result is Expr.Application)
+        val result = parse("Add[x]")
+        assertTrue(result is Add)
 
-        assertTrue(result.function is Expr.Symbol)
-        assertEquals("f", result.function.name)
-        assertEquals(1, result.args.size)
+        assertEquals(1, result.summands.size)
     }
 
     @Test
     fun testParseMultipleArguments() {
         val result = parse("Plus[1, 2, 3]")
-        assertTrue(result is Expr.Application)
-
-        assertEquals("Plus", (result.function as Expr.Symbol).name)
-        assertEquals(3, result.args.size)
+        assertTrue(result is Add)
     }
 
     @Test
     fun testParseNestedExpressions() {
-        val result = parse("f[g[x], h[y]]")
-        assertTrue(result is Expr.Application)
+        val result = parse("Add[Sin[x], Cos[x]]")
+        assertTrue(result is Add)
 
-        assertEquals(2, result.args.size)
-        assertTrue(result.args[0] is Expr.Application)
-        assertTrue(result.args[1] is Expr.Application)
-    }
-
-    @Test
-    fun testParseCurriedApplication() {
-        val result = parse("f[x][y]")
-        assertTrue(result is Expr.Application)
-
-        assertTrue(result.function is Expr.Application)
-        val inner = result.function
-        assertEquals("f", (inner.function as Expr.Symbol).name)
-    }
-
-    @Test
-    fun testParseEmptyArguments() {
-        val result = parse("f[]")
-        assertTrue(result is Expr.Application)
-        assertEquals(0, result.args.size)
+        assertEquals(2, result.summands.size)
+        assertTrue(result.summands[0] is SinX)
+        assertTrue(result.summands[1] is CosX)
     }
 
     @Test
     fun testWhitespaceHandling() {
-        val result = parse("  f [ x , y ]  ")
-        assertTrue(result is Expr.Application)
-        assertEquals(2, result.args.size)
+        val result = parse("  Add [ x , x ]  ")
+        assertTrue(result is Add)
+        assertEquals(2, result.summands.size)
     }
 
     @Test
     fun testInvalidSyntaxThrowsException() {
         assertFails {
-            parse("f[x")
+            parse("Add[x")
         }
     }
 
     @Test
     fun testMissingClosingBracket() {
         assertFailsWith<ParseException> {
-            parse("f[x, y")
+            parse("Add[x, x")
         }
     }
 
     @Test
     fun testUnexpectedCharacter() {
         assertFailsWith<ParseException> {
-            parse("f[x] garbage")
+            parse("Add[x] garbage")
         }
     }
 }

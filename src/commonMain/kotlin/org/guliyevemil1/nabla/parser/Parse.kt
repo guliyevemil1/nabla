@@ -1,25 +1,13 @@
 package org.guliyevemil1.nabla.parser
 
-sealed class Expr {
-    data class Symbol(val name: String) : Expr() {
-        override fun toString() = name
-    }
-
-    data class Number(val value: Double) : Expr() {
-        override fun toString() = value.toString()
-    }
-
-    data class Application(val function: Expr, val args: List<Expr>) : Expr() {
-        override fun toString() = "$function[${args.joinToString(", ")}]"
-    }
-}
+import org.guliyevemil1.nabla.math.*
 
 class ParseException(message: String) : Exception(message)
 
 class Parser(private val input: String) {
     private var pos = 0
 
-    fun parse(): Expr {
+    fun parse(): Expr<Any?> {
         skipWhitespace()
         val expr = parseExpression()
         skipWhitespace()
@@ -29,13 +17,13 @@ class Parser(private val input: String) {
         return expr
     }
 
-    private fun parseExpression(): Expr {
+    private fun parseExpression(): Expr<Any?> {
         skipWhitespace()
 
         // Try to parse a number first
         val numberExpr = tryParseNumber()
         if (numberExpr != null) {
-            return checkForApplication(numberExpr)
+            return numberExpr
         }
 
         // Otherwise parse a symbol
@@ -43,7 +31,7 @@ class Parser(private val input: String) {
         return checkForApplication(symbol)
     }
 
-    private fun checkForApplication(expr: Expr): Expr {
+    private fun checkForApplication(funcName: String): Expr<Any?> {
         skipWhitespace()
 
         // Check if followed by '['
@@ -56,16 +44,65 @@ class Parser(private val input: String) {
             }
             pos++ // consume ']'
 
-            val application = Expr.Application(expr, args)
-            // Check for nested applications like f[x][y]
-            return checkForApplication(application)
+            return when (funcName) {
+                "Add", "Plus" -> Add(args)
+                "Multiply" -> Multiply(args)
+                "Divide" -> require(args.size == 2).let {
+                    Divide(args[0], args[1])
+                }
+
+                "Pow" -> require(args.size == 2 && args[1] is Integral).let {
+                    if (args[0] == X)
+                        xPow(args[1] as Integral)
+                    else
+                        pow(args[0], (args[1] as Integer).n)
+                }
+
+                "Differentiate" -> require(args.size == 1).let {
+                    Differentiate(args[0])
+                }
+
+                "Integrate" -> require(args.size == 1).let {
+                    Integrate(args[0])
+                }
+
+                "Sqrt" -> require(args.size == 1).let {
+                    Sqrt(args[0])
+                }
+
+                "Log" -> require(args.size == 1).let {
+                    Log(args[0])
+                }
+
+                "Cos" -> require(args.size == 1 && args[0] == X).let {
+                    CosX
+                }
+
+                "Sin" -> require(args.size == 1 && args[0] == X).let {
+                    SinX
+                }
+
+                "Exp" -> require(args.size == 1 && args[0] == X).let {
+                    ExpX
+                }
+
+//                "Limit" -> Limit()
+
+                else -> Illegal
+            }
         }
 
-        return expr
+        return when (funcName) {
+            "ExpX" -> ExpX
+            "SinX" -> SinX
+            "CosX" -> CosX
+            "X", "x" -> X
+            else -> throw ParseException("Unexpected symbol at position $pos: '${funcName}'")
+        }
     }
 
-    private fun parseArguments(): List<Expr> {
-        val args = mutableListOf<Expr>()
+    private fun parseArguments(): List<Expr<Any?>> {
+        val args = mutableListOf<Expr<Any?>>()
         skipWhitespace()
 
         // Handle empty argument list
@@ -95,7 +132,7 @@ class Parser(private val input: String) {
         return args
     }
 
-    private fun parseSymbol(): Expr.Symbol {
+    private fun parseSymbol(): String {
         skipWhitespace()
         val start = pos
 
@@ -107,10 +144,10 @@ class Parser(private val input: String) {
             pos++
         }
 
-        return Expr.Symbol(input.substring(start, pos))
+        return input.substring(start, pos)
     }
 
-    private fun tryParseNumber(): Expr.Number? {
+    private fun tryParseNumber(): Expr<Nothing>? {
         skipWhitespace()
         val start = pos
 
@@ -131,19 +168,9 @@ class Parser(private val input: String) {
             pos++
         }
 
-        // Parse optional decimal part
-        if (pos < input.length && input[pos] == '.') {
-            pos++
-            if (pos < input.length && input[pos].isDigit()) {
-                while (pos < input.length && input[pos].isDigit()) {
-                    pos++
-                }
-            }
-        }
-
         val numberStr = input.substring(start, pos)
         return try {
-            Expr.Number(numberStr.toDouble())
+            integer(numberStr.toInt())
         } catch (e: NumberFormatException) {
             pos = start // reset
             null
@@ -157,6 +184,6 @@ class Parser(private val input: String) {
     }
 }
 
-fun parse(input: String): Expr {
+fun parse(input: String): Expr<Any?> {
     return Parser(input).parse()
 }

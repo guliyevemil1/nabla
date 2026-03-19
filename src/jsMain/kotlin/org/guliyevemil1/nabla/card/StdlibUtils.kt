@@ -2,7 +2,14 @@ package org.guliyevemil1.nabla.card
 
 import kotlin.random.Random
 
-data class ImmutableRNG(val seed: Int) {
+data class ImmutableRNG(private val seed: Int) {
+    fun nextBits(bitCount: Int): Pair<Int, ImmutableRNG> {
+        return Pair(
+            Random(seed).nextBits(bitCount),
+            ImmutableRNG(Random(seed).nextInt())
+        )
+    }
+
     fun nextInt(until: Int): Pair<Int, ImmutableRNG> {
         return Pair(
             Random(seed).nextInt(until),
