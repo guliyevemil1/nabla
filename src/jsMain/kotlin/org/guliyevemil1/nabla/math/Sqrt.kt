@@ -4,9 +4,45 @@ data class Sqrt<T>(val base: Expr<T>) : Expr<T> {
     override fun render(): String = """\sqrt{${base.render()}}"""
 }
 
+private fun isqrt(n: Int): Int? {
+    if (n < 0) throw IllegalArgumentException("Cannot compute square root of negative number: $n")
+    if (n < 2) return n
+
+    var x = n
+    var y = (x + 1) / 2
+
+    while (y < x) {
+        x = y
+        y = (x + n / x) / 2
+    }
+
+    if (x * x == n) return x
+    return null
+}
+
 fun <T> sqrt(c: Expr<T>): Expr<T> =
     when (c) {
         is Constant if (c == Zero || c == One) -> c
+        is Integer -> {
+            val r = isqrt(c.n) ?: return Sqrt(c)
+            return integer(r)
+        }
+
+        is Rational -> {
+            val n = isqrt(c.numerator)
+            val d = isqrt(c.denominator)
+            if (n == null && d == null) return Sqrt(c)
+            else if (n != null && d != null) return rational(n, d)
+            val ni = integer(c.numerator)
+            val di = integer(c.denominator)
+            if (n == null && d != null) return divide(Sqrt(ni), di)
+            if (n != null && d == null) return divide(
+                multiply(ni, Sqrt(di)),
+                di
+            )
+            throw IllegalStateException("Cannot compute square root of $c")
+        }
+
         is Constant -> Sqrt(c)
         is XPow -> xPow(divide(c.pow, integer(2))) as Expr<T>
         is Multiply if c.multiplicants.size == 2 && c.multiplicants[0] == c.multiplicants[1] -> {
