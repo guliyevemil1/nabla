@@ -4,7 +4,7 @@ data class Sqrt<T>(val base: Expr<T>) : Expr<T> {
     override fun render(): String = """\sqrt{${base.render()}}"""
 }
 
-private fun isqrt(n: Int): Int? {
+fun isqrt(n: Int): Int? {
     if (n < 0) throw IllegalArgumentException("Cannot compute square root of negative number: $n")
     if (n < 2) return n
 

@@ -8,7 +8,7 @@ import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
 
-interface Clickable {
+interface Event {
     val player: Player
 }
 
@@ -16,13 +16,13 @@ class HandCard(
     override val player: Player,
     val idx: Int,
     val card: NablaCard,
-) : Clickable
+) : Event
 
 data class FieldItem(
     override val player: Player,
     val idx: Int,
     val expr: Expr<Any?>,
-) : Clickable
+) : Event
 
 val startingField: List<Expr<Any?>> = listOf(
     integer(1),
@@ -138,18 +138,18 @@ class Board(
         else -> previous.turn
     }
 
-    fun canReceive(clickable: Clickable): Boolean {
+    fun canReceive(event: Event): Boolean {
         return when (state) {
             None -> {
-                clickable is HandCard && clickable.player == players[turn]
+                event is HandCard && event.player == players[turn]
             }
 
             is StateBinaryOperator -> {
-                clickable is HandCard && clickable.card is BaseCard && clickable.player == players[turn]
+                event is HandCard && event.card is BaseCard && event.player == players[turn]
             }
 
             is StateBinaryOperatorPartial, is StateOperator -> {
-                clickable is FieldItem
+                event is FieldItem
             }
 
             GameOver -> false
@@ -180,12 +180,12 @@ class Board(
         this
     }
 
-    fun play(clickable: Clickable): Board {
+    fun play(event: Event): Board {
         val s = state
 
-        if (!canReceive(clickable)) return this
+        if (!canReceive(event)) return this
 
-        val handCard: HandCard? = (clickable as? HandCard)?.let { card ->
+        val handCard: HandCard? = (event as? HandCard)?.let { card ->
             players[turn].hand.indexOfFirst { it == card.card }
                 .takeIf { it != -1 }
                 ?: run {
@@ -243,7 +243,7 @@ class Board(
 
             is StateBinaryOperator -> {
                 val base =
-                    clickable as? HandCard ?: throw IllegalStateException("did not get a hand card as expected")
+                    event as? HandCard ?: throw IllegalStateException("did not get a hand card as expected")
 
                 return copy(
                     state = StateBinaryOperatorPartial(
@@ -256,7 +256,7 @@ class Board(
             }
 
             is StateOperator -> {
-                val fieldItem = clickable as? FieldItem
+                val fieldItem = event as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
                 return copy(
                     state = None,
@@ -274,7 +274,7 @@ class Board(
             }
 
             is StateBinaryOperatorPartial -> {
-                val fieldItem = clickable as? FieldItem
+                val fieldItem = event as? FieldItem
                     ?: throw IllegalStateException("did not get a base input as expected")
                 return copy(
                     state = None,
