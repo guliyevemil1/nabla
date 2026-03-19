@@ -1,5 +1,9 @@
 package org.guliyevemil1.nabla.math
 
+data class Log<T>(val base: Expr<T>) : Expr<T> {
+    override fun render(): String = """\log\left(${base.render()}\right)"""
+}
+
 fun <T> log(c: Expr<T>): Expr<T> {
     if (c == One) return Zero
     return when (c) {

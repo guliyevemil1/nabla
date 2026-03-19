@@ -1,5 +1,9 @@
 package org.guliyevemil1.nabla.math
 
+data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String = """\int{${base.render()}}"""
+}
+
 fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal
     is Constant -> multiply(b, X)

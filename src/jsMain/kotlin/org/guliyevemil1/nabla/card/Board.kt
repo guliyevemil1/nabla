@@ -68,7 +68,7 @@ data class Player(
         field: List<Expr<Any?>> = this.field,
     ) = copy(
         hand = hand.sortedWith(NablaCardComparator),
-        field = field,
+        field = field.mapNotNull { it.takeIf { it != Zero } },
     )
 }
 
@@ -214,7 +214,7 @@ class Board(
                                 transform = {
                                     with(
                                         hand = hand.filterIndexed { index, _ -> handCard.idx != index },
-                                        field = (field + clickedCard.expr),
+                                        field = field + clickedCard.expr,
                                     )
                                 },
                             ),
@@ -226,11 +226,7 @@ class Board(
                             state = None,
                             players = players.update(
                                 transform = { with(hand = hand.filterIndexed { index, _ -> handCard.idx != index }) },
-                                transformOther = {
-                                    with(field = field.mapNotNull {
-                                        clickedCard.transform(it).takeIf { it != Zero }
-                                    })
-                                }
+                                transformOther = { with(field = field.map { clickedCard.transform(it) }) }
                             ),
                         )
                     }
@@ -268,9 +264,7 @@ class Board(
                         transform = { with(hand = hand.filterIndexed { index, _ -> s.playedCard != index }) },
                         transformIdx = {
                             if (fieldItem.player.idx == idx) {
-                                with(field = field.replaceAt(fieldItem.idx) {
-                                    s.card.transform(fieldItem.expr).takeIf { it != Zero }
-                                }.filterNotNull())
+                                with(field = field.replaceAt(fieldItem.idx) { s.card.transform(fieldItem.expr) })
                             } else {
                                 this
                             }
@@ -291,8 +285,7 @@ class Board(
                                 with(
                                     field = field.replaceAt(fieldItem.idx) {
                                         s.binaryOperator.transform(fieldItem.expr, s.rhs.expr)
-                                            .takeIf { it != Zero }
-                                    }.filterNotNull()
+                                    }
                                 )
                             } else {
                                 this

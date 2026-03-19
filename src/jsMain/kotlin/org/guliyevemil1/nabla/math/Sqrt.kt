@@ -1,5 +1,9 @@
 package org.guliyevemil1.nabla.math
 
+data class Sqrt<T>(val base: Expr<T>) : Expr<T> {
+    override fun render(): String = """\sqrt{${base.render()}}"""
+}
+
 fun <T> sqrt(c: Expr<T>): Expr<T> {
     if (c is Constant) {
         if (c == Zero || c == One) return c

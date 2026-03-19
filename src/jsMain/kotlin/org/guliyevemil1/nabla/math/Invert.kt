@@ -1,5 +1,10 @@
 package org.guliyevemil1.nabla.math
 
+data class Invert(val base: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String =
+        TODO("Not yet implemented")
+}
+
 fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     Illegal -> Illegal
     is Constant -> Illegal

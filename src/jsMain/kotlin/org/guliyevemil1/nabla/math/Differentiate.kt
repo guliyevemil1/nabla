@@ -1,5 +1,9 @@
 package org.guliyevemil1.nabla.math
 
+data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {
+    override fun render(): String = """\frac{d}{dx}\left(${base.render()}\right)"""
+}
+
 fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(
     List(m.multiplicants.size) { index ->
         val mm = m.multiplicants.toMutableList()
