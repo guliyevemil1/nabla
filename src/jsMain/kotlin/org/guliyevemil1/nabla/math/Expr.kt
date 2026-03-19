@@ -21,7 +21,9 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Invert::class,
 ).mapIndexed { index, klass -> klass to index }.toMap()
 
-val ExprComparator: Comparator<Expr<*>> = compareBy { ExprOrdering[it::class] }
+val ExprComparator: Comparator<Expr<*>> = compareBy {
+    ExprOrdering[it::class]
+}
 
 sealed interface Expr<out T> {
     fun render(): String
@@ -48,7 +50,7 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     val summands: List<Expr<T>> by lazy {
         s.flatMap {
             if (it is Add) {
-                it.summands
+                it.summands.sortedWith(ExprComparator)
             } else {
                 listOf(it)
             }
@@ -85,8 +87,6 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override fun render(): String =
         if (factor == integer(-1)) {
             """-${expr.render()}"""
-        } else if (factor.isSimple && expr.isSimple) {
-            """${factor.render()} ${expr.render()}"""
         } else {
             """${factor.render()} ${expr.render()}"""
         }
@@ -102,17 +102,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             } else {
                 listOf(it)
             }
-        }.sortedBy {
-            when (it) {
-                is Constant -> 0
-                is XPow -> 1
-                is Pow -> 2
-                is ExpX -> 3
-                is SinX -> 4
-                is CosX -> 5
-                else -> 6
-            }
-        }
+        }.sortedWith(ExprComparator)
     }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
