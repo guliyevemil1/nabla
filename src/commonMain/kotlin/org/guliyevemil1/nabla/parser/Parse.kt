@@ -49,8 +49,8 @@ class Parser(private val input: String) {
             pos++ // consume ']'
 
             return when (funcName) {
-                "Add", "Plus" -> Add(args)
-                "Multiply" -> Multiply(args)
+                "Add", "Plus" -> add(args)
+                "Multiply" -> multiply(args)
                 "Divide" -> require(args.size == 2).let {
                     Divide(args[0], args[1])
                 }
@@ -71,11 +71,11 @@ class Parser(private val input: String) {
                 }
 
                 "Sqrt" -> require(args.size == 1).let {
-                    Sqrt(args[0])
+                    sqrt(args[0])
                 }
 
                 "Log" -> require(args.size == 1).let {
-                    Log(args[0])
+                    log(args[0])
                 }
 
                 "Cos" -> require(args.size == 1 && args[0] == X).let {

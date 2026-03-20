@@ -30,6 +30,6 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow))) as Expr<T>
 
         l == r -> One
-        else -> multiply(l, Divide(One, r))
+        else -> Divide(l, r)
     }
 }

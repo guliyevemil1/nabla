@@ -3,6 +3,7 @@ package org.guliyevemil1.nabla.math
 import org.guliyevemil1.nabla.parser.Parser
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class MathTest {
     @Test
@@ -13,16 +14,10 @@ class MathTest {
 
     @Test
     fun testDifferentiate() {
-//        val expr = differentiate(Parser.parse("Multiply[Divide[1, 3], Pow[X, 3]]"))
-        val m = multiply(
-            divide(1, 3),
-            xPow(3)
-        )
-        val expr = differentiate(
-            m,
-        )
-//        assertEquals(XPow::class, expr::class)
-//        assertEquals(expr.pow, integer(2))
+        val m = multiply(divide(1, 3), xPow(3))
+        val expr = differentiate(m)
+        assertIs<XPow>(expr)
+        assertEquals(expr.pow, integer(2))
     }
 
 }

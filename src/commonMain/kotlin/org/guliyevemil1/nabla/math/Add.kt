@@ -57,7 +57,7 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
         )
     }
     if (l == r) {
-        return Scale(integer(2), l) as Expr<T>
+        return scale(integer(2), l) as Expr<T>
     }
     return when {
         l is Scale && r is Scale && l.expr == r.expr ->

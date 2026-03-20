@@ -59,7 +59,7 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
 
 fun <T> multiply(l: Integral, r: Integral): Expr<T> {
     val ratL = l.toRational() ?: return Illegal
-    val ratR = l.toRational() ?: return Illegal
+    val ratR = r.toRational() ?: return Illegal
     return rational(
         numerator = ratL.numerator * ratR.numerator,
         denominator = ratL.denominator * ratR.denominator,
