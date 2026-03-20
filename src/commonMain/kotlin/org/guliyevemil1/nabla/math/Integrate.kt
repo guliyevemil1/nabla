@@ -15,7 +15,9 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Add -> b.map { integrate(it) }
     is Differentiate -> b.base
 
-    is Divide<*> -> TODO()
+    is Divide<Any?> if b.numerator == One && b.denominator == X -> Log(X)
+    is Divide<Any?> -> TODO()
+
     is Integrate -> TODO()
     is Invert -> TODO()
     is Log -> TODO()
@@ -24,7 +26,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Pow -> TODO()
 
     is Scale -> {
-        multiply(b.factor, integrate(b.expr))
+        Scale(b.factor, integrate(b.expr))
     }
 
     is XPow -> {
