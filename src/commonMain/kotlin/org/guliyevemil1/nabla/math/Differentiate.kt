@@ -27,21 +27,17 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Add -> b.map { differentiate(it) }
         is Multiply -> differentiate(b)
 
-        is Divide<*> -> divide(
-            add(
-                multiply(
-                    differentiate(b.numerator),
-                    b.denominator,
-                ),
-                negate(
-                    multiply(
-                        b.numerator,
-                        differentiate(b.denominator),
-                    )
-                ),
-            ),
-            multiply(b.denominator, b.denominator)
-        )
+        is Divide<*> -> {
+            val f = b.numerator
+            val g = b.denominator
+            val df = differentiate(f)
+            val dg = differentiate(g)
+            val gdf = multiply(df, g)
+            val fdg = multiply(f, dg)
+            val n = add(gdf, negate(fdg))
+            val d = multiply(g, g)
+            divide(n, d)
+        }
 
         is Differentiate -> Differentiate(b)
         is Integrate -> b.base

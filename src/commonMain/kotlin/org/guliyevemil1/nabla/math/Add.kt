@@ -8,11 +8,11 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     val summands: List<Expr<T>> =
         s.flatMap {
             if (it is Add) {
-                it.summands.sortedWith(ExprComparator)
+                it.summands
             } else {
                 listOf(it)
             }
-        }
+        }.sortedWith(ExprComparator)
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         add(summands.map(f))
@@ -48,23 +48,25 @@ fun <T> add(summands: List<Expr<T>>): Expr<T> {
     }
 }
 
-fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
-    if (l == Zero) return r
-    if (r == Zero) return l
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Integral && r is Integral) {
-        if (l is Integer && r is Integer) return integer(l.n + r.n)
-        val ratL = l.toRational() ?: return Add(l, r)
-        val ratR = r.toRational() ?: return Add(l, r)
-        return rational(
-            numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
-            denominator = ratL.denominator * ratR.denominator,
-        )
-    }
-    if (l == r) {
-        return scale(integer(2), l) as Expr<T>
-    }
-    return when {
+fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> =
+    when {
+        l == Zero -> r
+        r == Zero -> l
+
+        l is Illegal || r is Illegal -> Illegal
+
+        l is Integer && r is Integer -> integer(l.n + r.n)
+        l is Integral && r is Integral -> {
+            val ratL = l.toRational() ?: return Add(l, r)
+            val ratR = r.toRational() ?: return Add(l, r)
+            rational(
+                numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
+                denominator = ratL.denominator * ratR.denominator,
+            )
+        }
+
+        l == r -> scale(integer(2), l)
+
         l is Scale && r is Scale && l.expr == r.expr ->
             Scale(
                 add(l.factor, r.factor),
@@ -85,7 +87,6 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
 
         l is Add && r is Add -> Add(l.summands + r.summands)
         l is Add -> Add(l.summands + r)
-        r is Add -> Add(r.summands + l)
+        r is Add -> Add(listOf(l) + r.summands)
         else -> Add(l, r)
     }
-}

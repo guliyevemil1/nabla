@@ -51,14 +51,21 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 
 fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
 
-fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> {
-    if (factor == Zero) return Zero
-    if (factor == One) return expr
-    if (factor is Integral && expr is Integral) {
-        return multiply(factor, expr)
+fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
+    when (factor) {
+        Illegal -> Illegal
+        Zero -> Zero
+        One -> expr
+        is Integral if expr is Integral -> {
+            multiply(factor, expr)
+        }
+
+        is Integral if expr is Scale -> {
+            Scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
+        }
+
+        else -> Scale(factor, expr) as Expr<T>
     }
-    return multiply(factor, expr)
-}
 
 fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
@@ -69,6 +76,7 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
 }
 
 fun <T> multiply(l: Integral, r: Integral): Expr<T> {
+    if (l is Integer && r is Integer) return integer(l.n * r.n)
     val ratL = l.toRational() ?: return Illegal
     val ratR = r.toRational() ?: return Illegal
     return rational(
@@ -89,14 +97,14 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr) as Expr<T>
         l is Scale && r is Integral -> scale(multiply(l.factor, r), l.expr) as Expr<T>
 
-        l is Integral && r is Multiply -> multiply(r.multiplicants + l)
-        l is Multiply && r is Integral -> multiply(l.multiplicants + r)
+        l is Integral && r is Multiply -> scale(l, r)
+        l is Multiply && r is Integral -> scale(r, l)
 
         l is Integral && r is Divide -> Divide(multiply(l, r.numerator), r.denominator)
         l is Divide && r is Integral -> Divide(multiply(l.numerator, r), l.denominator)
 
-        l is Integral -> Scale(l, r) as Expr<T>
-        r is Integral -> Scale(r, l) as Expr<T>
+        l is Integral -> scale(l, r)
+        r is Integral -> scale(r, l)
 
         l is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
 

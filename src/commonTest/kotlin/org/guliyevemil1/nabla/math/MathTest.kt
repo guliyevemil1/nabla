@@ -51,4 +51,32 @@ class MathTest {
         assertIs<Divide<Any?>>(expr)
     }
 
+    @Test
+    fun testDifferentiate4() {
+        val m = X2
+        val expr = differentiate(m)
+        assertIs<Scale>(expr)
+        assertEquals(integer(2), expr.factor)
+        assertEquals(X, expr.expr)
+    }
+
+    @Test
+    fun testDifferentiate5() {
+        val m = divide(scale(integer(2), X), ExpX)
+        val expr = differentiate(m)
+        assertIs<Divide<Any?>>(expr)
+    }
+
+    @Test
+    fun testNegate() {
+        val m = multiply(
+            X,
+            ExpX,
+        )
+        val expr = negate(m)
+        assertIs<Scale>(expr)
+        assertEquals(NegOne, expr.factor)
+        assertEquals(m, expr.expr)
+    }
+
 }
