@@ -77,8 +77,8 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
 
 fun <T> multiply(l: Integral, r: Integral): Expr<T> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)
-    val ratL = l.toRational() ?: return Illegal
-    val ratR = r.toRational() ?: return Illegal
+    val ratL = l.toRational()
+    val ratR = r.toRational()
     return rational(
         numerator = ratL.numerator * ratR.numerator,
         denominator = ratL.denominator * ratR.denominator,

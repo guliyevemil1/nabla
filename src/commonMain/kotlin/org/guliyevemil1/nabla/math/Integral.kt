@@ -3,7 +3,7 @@ package org.guliyevemil1.nabla.math
 import kotlin.math.abs
 
 sealed interface Integral : Constant {
-    fun toRational(): Rational? = null
+    fun toRational(): Rational
 
     override fun inverse(): Expr<Nothing>
 }

@@ -3,10 +3,8 @@ package org.guliyevemil1.nabla.math
 import kotlin.reflect.KClass
 
 val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
-    Integer::class,
-    Rational::class,
-    XPow::class,
     Scale::class,
+    XPow::class,
     ExpX::class,
     SinX::class,
     CosX::class,
@@ -21,9 +19,23 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Invert::class,
 ).mapIndexed { index, klass -> klass to index }.toMap()
 
-val ExprComparator: Comparator<Expr<*>> = compareBy {
-    ExprOrdering[it::class]
-}
+fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
+    when {
+        a is Scale && b is Scale -> compareExpr(a.expr, b.expr)
+        a is Scale -> compareExpr(a.expr, b)
+        b is Scale -> compareExpr(a, b.expr)
+        a is Integral && b is Integral -> {
+            val ar = a.toRational()
+            val br = a.toRational()
+            compareValues(ar.numerator * br.denominator, br.numerator * ar.denominator)
+        }
+
+        a is Integral -> -1
+        b is Integral -> 1
+        else -> compareValuesBy(a, b) { ExprOrdering[it::class] }
+    }
+
+val ExprComparator: Comparator<Expr<*>> = Comparator { a, b -> compareExpr(a, b) }
 
 sealed interface Expr<out T> {
     fun render(): String

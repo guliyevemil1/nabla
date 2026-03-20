@@ -9,8 +9,8 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
 
 fun divide(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return rational(l.n, r.n)
-    val ratL = l.toRational() ?: return Illegal
-    val ratR = l.toRational() ?: return Illegal
+    val ratL = l.toRational()
+    val ratR = l.toRational()
     return rational(
         numerator = ratL.numerator * ratR.denominator,
         denominator = ratL.denominator * ratR.numerator,

@@ -57,8 +57,8 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> =
 
         l is Integer && r is Integer -> integer(l.n + r.n)
         l is Integral && r is Integral -> {
-            val ratL = l.toRational() ?: return Add(l, r)
-            val ratR = r.toRational() ?: return Add(l, r)
+            val ratL = l.toRational()
+            val ratR = r.toRational()
             rational(
                 numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
                 denominator = ratL.denominator * ratR.denominator,
