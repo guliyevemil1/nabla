@@ -128,13 +128,13 @@ object LimNegInf : Operator {
 }
 
 object LimSupremum : Operator {
-    override fun render(): String = """\displaystyle\limsup_{x \to 0}"""
+    override fun render(): String = """\displaystyle\limsup_{x \to \infty}""".trimMargin()
     override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Supremum)
 }
 
 object LimInfimum : Operator {
-    override fun render(): String = """\displaystyle\liminf_{x \to 0}"""
+    override fun render(): String = """\displaystyle\liminf_{x \to \infty}"""
     override fun transform(expr: Expr<Any?>): Expr<Any?> =
         lim(expr, Limit.Infimum)
 }

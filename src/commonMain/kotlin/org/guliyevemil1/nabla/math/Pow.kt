@@ -11,7 +11,6 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
     }
 
     override fun toLisp(): String {
-        if (pow == 1) return base.toLisp()
         return "(pow ${base.toLisp()} ${pow})"
     }
 }
@@ -42,10 +41,7 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     }
 
     override fun toLisp(): String {
-        if (pow == One) {
-            return "x"
-        }
-        return "(pow x ${pow.toLisp()})"
+        return "(xpow ${pow.toLisp()})"
     }
 }
 
