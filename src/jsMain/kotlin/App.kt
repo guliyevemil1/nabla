@@ -103,9 +103,7 @@ fun Board.renderUndo(element: HTMLDivElement) {
         button {
             disabled = b.previous == null
             +"↺"
-            onClickFunction = {
-                b.undo().render()
-            }
+            onClickFunction = { b.undo().render() }
         }
     }
 }

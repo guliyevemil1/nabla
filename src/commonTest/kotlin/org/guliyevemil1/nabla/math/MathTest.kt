@@ -99,6 +99,21 @@ class MathTest {
     }
 
     @Test
+    fun testDifferentiate6() {
+        assertEqualsExpr(
+            expected = "(xpow 2)",
+            actual = differentiate(
+                parse(
+                    """(/ x
+                                  (*
+                                    (exp x)
+                                    (cos x)))"""
+                )
+            )
+        )
+    }
+
+    @Test
     fun testNegate() {
         assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
     }
@@ -172,7 +187,7 @@ class MathTest {
     @Test
     fun testLatex() {
         val m = Pow(X2, integer(2))
-        assertEquals("""\left(x^{2}\right)^2""", m.render())
+        assertEquals("""\left(x^{2}\right)^{2}""", m.render())
     }
 
 }

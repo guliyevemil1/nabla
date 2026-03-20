@@ -37,6 +37,15 @@ private fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
             if (a is XPow && b is XPow) {
                 return compareExpr(a.pow, b.pow)
             }
+            if (a is Multiply && b is Multiply) {
+                a.multiplicants.zip(b.multiplicants).forEach { (a, b) ->
+                    val cmp2 = compareExpr(a, b)
+                    if (cmp2 != 0) return cmp2
+                }
+                if (a.multiplicants.size != b.multiplicants.size) {
+                    return compareValuesBy(a.multiplicants.size, b.multiplicants.size)
+                }
+            }
             return 0
         }
     }
