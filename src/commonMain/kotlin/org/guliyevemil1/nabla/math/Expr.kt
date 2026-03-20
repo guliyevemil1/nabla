@@ -28,6 +28,8 @@ val ExprComparator: Comparator<Expr<*>> = compareBy {
 sealed interface Expr<out T> {
     fun render(): String
 
+    fun toLisp(): String
+
     val isSimple
         get() = when (this) {
             is Constant -> true
@@ -42,4 +44,5 @@ sealed interface Expr<out T> {
 
 object Illegal : Expr<Nothing> {
     override fun render(): String = """\bot"""
+    override fun toLisp(): String = "bottom"
 }

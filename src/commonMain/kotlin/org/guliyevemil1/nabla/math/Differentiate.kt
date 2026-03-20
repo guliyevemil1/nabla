@@ -2,6 +2,7 @@ package org.guliyevemil1.nabla.math
 
 data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {
     override fun render(): String = """\frac{d}{dx}\left(${base.render()}\right)"""
+    override fun toLisp(): String = "(ddx ${base.toLisp()})"
 }
 
 fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(

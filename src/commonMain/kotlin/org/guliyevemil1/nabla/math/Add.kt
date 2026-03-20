@@ -31,6 +31,12 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             }
         }
     }
+
+    override fun toLisp(): String = buildString {
+        append("(+ ")
+        summands.joinTo(this, separator = " ") { it.toLisp() }
+        append(")")
+    }
 }
 
 fun <T> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())

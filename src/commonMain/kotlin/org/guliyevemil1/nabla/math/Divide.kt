@@ -3,6 +3,8 @@ package org.guliyevemil1.nabla.math
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
     override fun render(): String =
         """\frac{${numerator.render()}}{${denominator.render()}}"""
+
+    override fun toLisp(): String = "(/ ${numerator.toLisp()} ${denominator.toLisp()})"
 }
 
 fun <T> divide(l: Int, r: Int): Expr<T> = divide(integer(l), integer(r))

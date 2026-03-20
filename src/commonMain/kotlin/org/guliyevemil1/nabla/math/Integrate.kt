@@ -2,6 +2,7 @@ package org.guliyevemil1.nabla.math
 
 data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
     override fun render(): String = """\int{${base.render()}}"""
+    override fun toLisp(): String = "(integrate ${base.toLisp()})"
 }
 
 fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {

@@ -28,6 +28,7 @@ data class Integer(val n: Int) : Integral {
     }
 
     override fun render(): String = """$n"""
+    override fun toLisp(): String = "$n"
 }
 
 fun gcd(a: Int, b: Int): Int {
@@ -68,4 +69,5 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
 
     override fun toRational() = this
     override fun render(): String = """\frac{$numerator}{$denominator}"""
+    override fun toLisp(): String = "(/ $numerator $denominator)"
 }

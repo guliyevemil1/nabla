@@ -5,12 +5,15 @@ val X2 = xPow(integer(2))
 
 object CosX : Expr<Any?> {
     override fun render(): String = """\cos(x)"""
+    override fun toLisp(): String = "(cos x)"
 }
 
 object SinX : Expr<Any?> {
     override fun render(): String = """\sin(x)"""
+    override fun toLisp(): String = "(sin x)"
 }
 
 object ExpX : Expr<Any?> {
     override fun render(): String = """e^x"""
+    override fun toLisp(): String = "(exp x)"
 }

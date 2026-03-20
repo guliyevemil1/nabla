@@ -2,6 +2,7 @@ package org.guliyevemil1.nabla.math
 
 data class Log<T>(val base: Expr<T>) : Expr<T> {
     override fun render(): String = """\log\left(${base.render()}\right)"""
+    override fun toLisp(): String = "(log ${base.toLisp()})"
 }
 
 fun <T> log(c: Expr<T>): Expr<T> {

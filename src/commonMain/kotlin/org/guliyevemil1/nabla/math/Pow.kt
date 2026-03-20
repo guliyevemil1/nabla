@@ -9,6 +9,11 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
             else -> """\left(${base.render()}\right)^$pow"""
         }
     }
+
+    override fun toLisp(): String {
+        if (pow == 1) return base.toLisp()
+        return "(pow ${base.toLisp()} ${pow})"
+    }
 }
 
 private val xPowMap = HashMap<Int, XPow>()
@@ -34,6 +39,13 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
             return """\sqrt{x^${pow.numerator}}"""
         }
         return """x^{${pow.render()}}"""
+    }
+
+    override fun toLisp(): String {
+        if (pow == One) {
+            return "x"
+        }
+        return "(pow x ${pow.toLisp()})"
     }
 }
 

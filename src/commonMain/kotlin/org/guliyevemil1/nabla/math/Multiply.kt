@@ -7,6 +7,11 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
         } else {
             """${factor.render()} ${expr.render()}"""
         }
+
+    override fun toLisp(): String = buildString {
+        append("(*  ${factor.toLisp()} ${expr.toLisp()})")
+    }
+
 }
 
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
@@ -36,6 +41,13 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             }
         }
     }
+
+    override fun toLisp(): String = buildString {
+        append("(* ")
+        multiplicants.joinTo(this, separator = " ") { it.toLisp() }
+        append(")")
+    }
+
 }
 
 fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
