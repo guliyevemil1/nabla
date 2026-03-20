@@ -16,13 +16,34 @@ class MathTest {
         )
     }
 
-//    @Test
-//    fun testDivide2() {
-//        assertEqualsExpr(
-//            expected = "x",
-//            actual = divide(parse("(pow (xpow 1) 2)"), X),
-//        )
-//    }
+    @Test
+    fun testDivide2() {
+        assertEqualsExpr(
+            expected = """
+                (/ 
+                    (+ 
+                        (exp x) 
+                        (scale -1 (* 
+                            (xpow -2) 
+                            (exp x)
+                        ))
+                        (scale -1 (* 
+                            (xpow -1) 
+                            (exp x)
+                        ))
+                    )
+                    (pow (exp x) 2)
+                )""".trimIndent(),
+            actual = differentiate(parse("(/ (add -1 (xpow -1)) (exp x))")),
+        )
+    }
+
+    //    fun testDivide3() {
+    //        assertEqualsExpr(
+    //            expected = "x",
+    //            actual = divide(parse("(pow (xpow 1) 2)"), X),
+    //        )
+    //    }
 
     @Test
     fun testDifferentiate() {
@@ -107,7 +128,7 @@ class MathTest {
 
     @Test
     fun testLatex() {
-        val m = Pow(X2, 2)
+        val m = Pow(X2, integer(2))
         assertEquals("""\left(x^{2}\right)^2""", m.render())
     }
 

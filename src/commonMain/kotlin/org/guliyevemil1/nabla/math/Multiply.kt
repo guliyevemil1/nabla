@@ -6,8 +6,10 @@ data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override fun render(): String =
         if (factor == integer(-1)) {
             """-${expr.render()}"""
-        } else {
+        } else if (expr.isSimple) {
             """${factor.render()} ${expr.render()}"""
+        } else {
+            """${factor.render()} \left(${expr.render()}\right)"""
         }
 
     override fun toLisp(): String = buildString {
@@ -28,6 +30,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             }
         }.sortedWith(ExprComparator)
 
+    override val isSimple: Boolean = multiplicants.all { it.isSimple }
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
@@ -56,16 +59,19 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 fun <T> negate(m: Expr<T>): Expr<T> = multiply(NegOne, m)
 
 fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
-    when (factor) {
-        Bottom -> Bottom
-        Zero -> Zero
-        One -> expr
-        is Integral if expr is Integral -> {
+    when {
+        factor == Bottom -> Bottom
+        factor == Zero -> Zero
+        factor == One -> expr
+
+        expr is Add -> expr.map { scale(factor, it) }
+
+        factor is Integral && expr is Integral -> {
             multiply(factor, expr)
         }
 
-        is Integral if expr is Scale -> {
-            Scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
+        factor is Integral && expr is Scale -> {
+            scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
         }
 
         else -> Scale(factor, expr) as Expr<T>
@@ -117,18 +123,11 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         r is Pow && l == r.base -> Pow(r, add(r.pow, One) as Constant)
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
-            r.summands.map { rs ->
-                multiply(ls, rs)
-            }
+            r.summands.map { multiply(ls, it) }
         })
 
-        l is Add -> add(l.summands.map { ls ->
-            multiply(ls, r)
-        })
-
-        r is Add -> add(r.summands.map { rs ->
-            multiply(l, rs)
-        })
+        l is Add -> l.map { multiply(it, r) }
+        r is Add -> r.map { multiply(l, it) }
 
         l is Scale && r is Scale -> Scale(
             factor = multiply(l.factor, r.factor),

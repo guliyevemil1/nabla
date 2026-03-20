@@ -35,7 +35,6 @@ data class XPow(val pow: Constant) : Expr<Any?> {
     override val isSimple = true
     override fun render(): String {
         if (pow == One) return "x"
-
         if (pow is Rational && pow.denominator == 2) {
             if (pow.numerator == 1) return """\sqrt{x}"""
             return """\sqrt{x^${pow.numerator}}"""
@@ -44,6 +43,7 @@ data class XPow(val pow: Constant) : Expr<Any?> {
     }
 
     override fun toLisp(): String {
+        if (pow == One) return "x"
         return "(xpow ${pow.toLisp()})"
     }
 }

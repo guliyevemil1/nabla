@@ -7,39 +7,35 @@ class ParserTest {
 
     @Test
     fun testParseSimpleSymbol() {
-        val result = parse("x")
-        assertEquals(result, X)
+        assertEquals(X, parse("x"))
     }
 
     @Test
     fun testParseNumber() {
-        val result = parse("42")
-        assertEquals(result, integer(42))
+        assertEquals(integer(42), parse("42"))
     }
 
     @Test
     fun testParseNegativeNumber() {
-        val result = parse("-314")
-        assertEquals(result, integer(-314))
+        assertEquals(integer(-314), parse("-314"))
     }
 
     @Test
     fun testParseFunctionApplication() {
-        val result = parse("(Add x)")
+        val result = parse("(add x)")
         assertTrue(result is Add)
-
         assertEquals(1, result.summands.size)
     }
 
     @Test
     fun testParseMultipleArguments() {
-        val result = parse("(Add 1 2 3)")
+        val result = parse("(add 1 2 3)")
         assertTrue(result is Add)
     }
 
     @Test
     fun testParseNestedExpressions() {
-        val result = parse("(Add (Sin x) (Cos x))")
+        val result = parse("(add (sin x) (cos x))")
         assertTrue(result is Add)
 
         assertEquals(2, result.summands.size)
@@ -57,21 +53,21 @@ class ParserTest {
     @Test
     fun testInvalidSyntaxThrowsException() {
         assertFails {
-            parse("(Add x")
+            parse("(add x")
         }
     }
 
     @Test
     fun testMissingClosingBracket() {
         assertFailsWith<ParseException> {
-            parse("(Add x x")
+            parse("(add x x")
         }
     }
 
     @Test
     fun testUnexpectedCharacter() {
         assertFailsWith<ParseException> {
-            parse("(Add x) garbage")
+            parse("(add x) garbage")
         }
     }
 }
