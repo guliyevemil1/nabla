@@ -11,12 +11,17 @@ data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
     }
 }
 
-private val xPowMap = HashMap<Integer, XPow>()
+private val xPowMap = HashMap<Int, XPow>()
+
+fun xPow(pow: Int): Expr<Any?> =
+    xPowMap[pow] ?: XPow(integer(pow)).also { xPowMap[pow] = it }
 
 fun xPow(pow: Expr<Nothing>): Expr<Any?> {
-    if (pow == Zero) return One
-    if (pow is Integer) xPowMap[pow] ?: XPow(pow).also { xPowMap[pow] = it }
-    return XPow(pow)
+    return when (pow) {
+        Zero -> One
+        is Integer -> xPow(pow.n)
+        else -> XPow(pow)
+    }
 }
 
 data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {

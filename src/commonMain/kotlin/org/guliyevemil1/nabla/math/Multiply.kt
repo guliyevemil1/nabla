@@ -40,6 +40,15 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 
 fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
 
+fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> {
+    if (factor == Zero) return Zero
+    if (factor == One) return expr
+    if (factor is Integral && expr is Integral) {
+        return multiply(factor, expr)
+    }
+    return multiply(factor, expr)
+}
+
 fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
@@ -48,22 +57,26 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     }
 }
 
+fun <T> multiply(l: Integral, r: Integral): Expr<T> {
+    val ratL = l.toRational() ?: return Illegal
+    val ratR = l.toRational() ?: return Illegal
+    return rational(
+        numerator = ratL.numerator * ratR.numerator,
+        denominator = ratL.denominator * ratR.denominator,
+    )
+}
+
 fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (l == Zero || r == Zero) return Zero
     if (l == One) return r
     if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
-        val ratL = l.toRational() ?: return Illegal
-        val ratR = l.toRational() ?: return Illegal
-        return rational(
-            numerator = ratL.numerator * ratR.numerator,
-            denominator = ratL.denominator * ratR.denominator,
-        )
+        return multiply(l, r)
     }
     return when {
-        l is Integral && r is Scale -> multiply(multiply(l, r.factor), r.expr) as Expr<T>
-        l is Scale && r is Integral -> multiply(multiply(l.factor, r), l.expr) as Expr<T>
+        l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr) as Expr<T>
+        l is Scale && r is Integral -> scale(multiply(l.factor, r), l.expr) as Expr<T>
 
         l is Integral && r is Multiply -> multiply(r.multiplicants + l)
         l is Multiply && r is Integral -> multiply(l.multiplicants + r)

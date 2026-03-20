@@ -5,6 +5,8 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
         """\frac{${numerator.render()}}{${denominator.render()}}"""
 }
 
+fun <T> divide(l: Int, r: Int): Expr<T> = divide(integer(l), integer(r))
+
 fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (r == Zero) return Illegal
     if (l == Zero) return Zero
