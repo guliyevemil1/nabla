@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 data class Invert(val base: Expr<Any?>) : Expr<Any?> {
+    override val isConstant: Boolean = false
+
     override fun render(): String =
         TODO("Not yet implemented")
 

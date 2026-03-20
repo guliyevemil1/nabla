@@ -1,6 +1,7 @@
 package org.guliyevemil1.nabla.math
 
 data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
+    override val isConstant: Boolean = base == Zero
     override fun render(): String = """\int{${base.render()}}"""
     override fun toLisp(): String = "(integrate ${base.toLisp()})"
 }

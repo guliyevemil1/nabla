@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {
+    override val isConstant: Boolean = base.isConstant || base == X || (base is Scale && base.expr == X)
+
     override fun render(): String = """\frac{d}{dx}\left(${base.render()}\right)"""
     override fun toLisp(): String = "(ddx ${base.toLisp()})"
 }

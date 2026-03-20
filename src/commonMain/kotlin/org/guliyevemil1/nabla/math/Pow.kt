@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
+    override val isConstant: Boolean = base.isConstant
+
     override fun render(): String {
         return when (base) {
             is CosX -> """\cos^$pow x"""
@@ -28,6 +30,8 @@ fun xPow(pow: Expr<Nothing>): Expr<Any?> {
 }
 
 data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
+    override val isConstant: Boolean = false
+
     override val isSimple = true
     override fun render(): String {
         if (pow == One) return "x"

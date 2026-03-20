@@ -38,6 +38,13 @@ private fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
 val ExprComparator: Comparator<Expr<*>> = Comparator { a, b -> compareExpr(a, b) }
 
 sealed interface Expr<out T> {
+    val isConstant: Boolean
+
+    val asConstant: Expr<Nothing>?
+        get() = if (isConstant) {
+            this as Expr<Nothing>
+        } else null
+
     fun render(): String
 
     fun toLisp(): String
@@ -47,6 +54,7 @@ sealed interface Expr<out T> {
 }
 
 object Bottom : Expr<Nothing> {
+    override val isConstant: Boolean = true
     override fun render(): String = """\bot"""
     override fun toLisp(): String = "bottom"
 }

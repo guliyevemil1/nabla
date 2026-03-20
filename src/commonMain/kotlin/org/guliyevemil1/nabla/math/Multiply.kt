@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
+    override val isConstant: Boolean = expr.isConstant
+
     override fun render(): String =
         if (factor == integer(-1)) {
             """-${expr.render()}"""
@@ -25,6 +27,8 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
                 listOf(it)
             }
         }.sortedWith(ExprComparator)
+
+    override val isConstant: Boolean = multiplicants.all { it.isConstant }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         multiply(multiplicants.map(f))

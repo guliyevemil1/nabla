@@ -14,6 +14,8 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             }
         }.sortedWith(ExprComparator)
 
+    override val isConstant: Boolean = summands.all { it.isConstant }
+
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         add(summands.map(f))
 

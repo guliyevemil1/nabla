@@ -2,6 +2,8 @@ package org.guliyevemil1.nabla.math
 
 data class Log<T>(val base: Expr<T>) : Expr<T> {
     override val isSimple = true
+    override val isConstant: Boolean = base.isConstant
+
     override fun render(): String = """\log\left(${base.render()}\right)"""
     override fun toLisp(): String = "(log ${base.toLisp()})"
 }

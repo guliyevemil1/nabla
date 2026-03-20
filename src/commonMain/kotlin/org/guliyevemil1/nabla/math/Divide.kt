@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
+    override val isConstant: Boolean = numerator.isConstant && denominator.isConstant
+
     override fun render(): String =
         """\frac{${numerator.render()}}{${denominator.render()}}"""
 
@@ -19,12 +21,20 @@ fun divide(l: Integral, r: Integral): Expr<Nothing> {
 
 fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
     when {
+        l == Bottom || r == Bottom -> Bottom
+        l == r -> One
         r == Zero -> Bottom
         l == Zero -> Zero
         r == One -> l
+        l == One -> Divide(One, r)
+
         l is Bottom || r is Bottom -> Bottom
         l is Integral && r is Integral -> {
             divide(l, r)
+        }
+
+        l.isConstant -> {
+            Scale(l.asConstant!!, Divide(One, r)) as Expr<T>
         }
 
         l is Divide -> divide(
@@ -39,6 +49,5 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
 
         l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow))) as Expr<T>
 
-        l == r -> One
         else -> Divide(l, r)
     }
