@@ -148,6 +148,26 @@ class MathTest {
     }
 
     @Test
+    fun testMultiply() {
+        assertEqualsExpr(
+            "x",
+            multiply(
+                X,
+                parse(
+                    """
+                        (/ 
+                          (+ 
+                            (scale 2 (* x (sin x))) 
+                            (scale -1 (* (xpow 2) (cos x)))
+                          )
+                          (pow (sin x) 2)
+                        )"""
+                )
+            ),
+        )
+    }
+
+    @Test
     fun testLatex() {
         val m = Pow(X2, integer(2))
         assertEquals("""\left(x^{2}\right)^2""", m.render())

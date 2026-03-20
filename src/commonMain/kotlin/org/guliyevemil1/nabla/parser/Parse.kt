@@ -135,5 +135,6 @@ private class LispParser(private val input: String) {
 }
 
 fun parse(input: String): Expr<Any?> {
+    if (input == "") throw ParseException("empty input provided")
     return LispParser(input).parse().toExpr()
 }
