@@ -5,7 +5,7 @@ package org.guliyevemil1.nabla.math
 class Add<T>(s: List<Expr<T>>) : Expr<T> {
     constructor(vararg s: Expr<T>) : this(s.asList())
 
-    val summands: List<Expr<T>> by lazy {
+    val summands: List<Expr<T>> =
         s.flatMap {
             if (it is Add) {
                 it.summands.sortedWith(ExprComparator)
@@ -13,7 +13,6 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
                 listOf(it)
             }
         }
-    }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         add(summands.map(f))
@@ -84,9 +83,9 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> {
                 l,
             ) as Expr<T>
 
-        l is Add && r is Add -> add(l.summands + r.summands)
-        l is Add -> add(l.summands + r)
-        r is Add -> add(r.summands + l)
+        l is Add && r is Add -> Add(l.summands + r.summands)
+        l is Add -> Add(l.summands + r)
+        r is Add -> Add(r.summands + l)
         else -> Add(l, r)
     }
 }

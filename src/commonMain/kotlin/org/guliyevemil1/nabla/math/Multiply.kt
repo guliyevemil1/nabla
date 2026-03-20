@@ -9,7 +9,7 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
         }
 
     override fun toLisp(): String = buildString {
-        append("(*  ${factor.toLisp()} ${expr.toLisp()})")
+        append("(scale  ${factor.toLisp()} ${expr.toLisp()})")
     }
 
 }
@@ -17,7 +17,7 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     constructor(vararg m: Expr<T>) : this(m.asList())
 
-    val multiplicants: List<Expr<T>> by lazy {
+    val multiplicants: List<Expr<T>> =
         m.flatMap {
             if (it is Multiply) {
                 it.multiplicants
@@ -25,7 +25,6 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
                 listOf(it)
             }
         }.sortedWith(ExprComparator)
-    }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         multiply(multiplicants.map(f))

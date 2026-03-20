@@ -1,11 +1,13 @@
 .gameState {
-    display: block;
+    display: flex;
+    justify-content: center;
     gap: 24px;
     margin-top: 24px;
     margin-bottom: 24px;
 }
 
-#hand {
+.hand {
+    justify-content: center;
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
@@ -17,8 +19,6 @@
 
 .field-button {
     height: 42px;
-    border: 2px solid #333;
-    border-radius: 2px;
     margin-bottom: 10px;
     /*flex-shrink: 0; !* Prevents cards from shrinking *!*/
 }

@@ -4,10 +4,9 @@ import kotlinx.html.dom.append
 import kotlinx.html.js.button
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
-import kotlinx.html.js.p
+import kotlinx.html.title
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
-import org.guliyevemil1.nabla.math.Illegal
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import kotlin.random.Random
@@ -41,6 +40,7 @@ fun Board.renderState(element: HTMLDivElement, bases: List<FieldItem>) {
         element.append {
             div {
                 val d = button {
+                    title = formatLispExpression(base.expr.toLisp())
                     disabled = !canReceive(base)
                     classes = setOf("field-button")
                     onClickFunction = { play(base).render() }
@@ -102,8 +102,7 @@ fun Board.renderUndo(element: HTMLDivElement) {
     element.append {
         button {
             disabled = b.previous == null
-            classes = setOf("field-button")
-            +"Undo"
+            +"↺"
             onClickFunction = {
                 b.undo().render()
             }

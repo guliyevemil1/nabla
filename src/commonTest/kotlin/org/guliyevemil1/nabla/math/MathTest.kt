@@ -20,4 +20,35 @@ class MathTest {
         assertEquals(expr.pow, integer(2))
     }
 
+    @Test
+    fun testDifferentiate2() {
+        val m = multiply(
+            listOf(
+                X2,
+                ExpX,
+                SinX,
+            )
+        )
+        val expr = differentiate(m)
+        assertIs<Add<Any?>>(expr)
+        assertEquals(expr.summands.size, 3)
+        val expr0 = expr.summands[0]
+        val expr1 = expr.summands[1]
+        val expr2 = expr.summands[2]
+        assertIs<Scale>(expr0)
+        assertEquals(expr0.factor, integer(2))
+        assertIs<Multiply<Any?>>(expr1)
+        assertIs<Multiply<Any?>>(expr2)
+    }
+
+    @Test
+    fun testDifferentiate3() {
+        val m = divide(
+            X2,
+            ExpX,
+        )
+        val expr = differentiate(m)
+        assertIs<Divide<Any?>>(expr)
+    }
+
 }
