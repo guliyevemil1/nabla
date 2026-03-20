@@ -127,6 +127,27 @@ class MathTest {
     }
 
     @Test
+    fun testAdd3() {
+        assertEqualsExpr(
+            expected = "(+ (scale 2 (cos x)) (scale -4 (* x (sin x))) (scale -1 (* (xpow 2) (cos x))))",
+            actual = add(
+                parse("(scale 2 (cos x)) "),
+                parse("(scale -2 (* x (sin x))) "),
+                parse("(scale -2 (* x (sin x))) "),
+                parse("(scale -1 (* (xpow 2) (cos x)))"),
+            ),
+        )
+    }
+
+    @Test
+    fun testEquals() {
+        assertEquals(
+            add(X2, X, One).toLisp(),
+            add(One, X, X2).toLisp(),
+        )
+    }
+
+    @Test
     fun testLatex() {
         val m = Pow(X2, integer(2))
         assertEquals("""\left(x^{2}\right)^2""", m.render())

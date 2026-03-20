@@ -25,13 +25,20 @@ private fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
         b is Scale -> compareExpr(a, b.expr)
         a is Integral && b is Integral -> {
             val ar = a.toRational()
-            val br = a.toRational()
+            val br = b.toRational()
             compareValues(ar.numerator * br.denominator, br.numerator * ar.denominator)
         }
 
         a is Integral -> -1
         b is Integral -> 1
-        else -> compareValuesBy(a, b) { ExprOrdering[it::class] }
+        else -> {
+            val cmp = compareValuesBy(a, b) { ExprOrdering[it::class] }
+            if (cmp != 0) return cmp
+            if (a is XPow && b is XPow) {
+                return compareExpr(a.pow, b.pow)
+            }
+            return 0
+        }
     }
 
 val ExprComparator: Comparator<Expr<*>> = Comparator { a, b -> compareExpr(a, b) }

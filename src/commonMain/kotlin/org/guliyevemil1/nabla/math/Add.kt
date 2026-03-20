@@ -5,6 +5,12 @@ package org.guliyevemil1.nabla.math
 class Add<T>(s: List<Expr<T>>) : Expr<T> {
     constructor(vararg s: Expr<T>) : this(s.asList())
 
+    override fun equals(other: Any?): Boolean = other is Add<*> &&
+            summands.size == other.summands.size &&
+            summands.zip(other.summands).all { (a, b) -> a == b }
+
+    override fun hashCode(): Int = summands.fold(0) { acc, x -> acc + 31 * x.hashCode() }
+
     val summands: List<Expr<T>> =
         s.flatMap {
             if (it is Add) {
@@ -69,25 +75,25 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> =
 
         l == r -> scale(integer(2), l)
         l is Scale && r is Scale && l.expr == r.expr ->
-            Scale(
+            scale(
                 add(l.factor, r.factor),
                 add(l.expr, r.expr),
             ) as Expr<T>
 
         l is Scale && l.expr == r ->
-            Scale(
+            scale(
                 add(l.factor, One),
                 r,
-            ) as Expr<T>
+            )
 
         r is Scale && l == r.expr ->
-            Scale(
+            scale(
                 add(r.factor, One),
                 l,
-            ) as Expr<T>
+            )
 
-        l is Add && r is Add -> Add(l.summands + r.summands)
-        l is Add -> Add(l.summands + r)
+        l is Add && r is Add -> add(l.summands + r.summands)
+        l is Add -> l.summands.foldRight(r) { ls, acc -> add(ls, acc) }
         r is Add -> Add(listOf(l) + r.summands)
         else -> Add(l, r)
     }

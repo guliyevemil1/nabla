@@ -21,6 +21,12 @@ data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     constructor(vararg m: Expr<T>) : this(m.asList())
 
+    override fun equals(other: Any?): Boolean = other is Multiply<*> &&
+            multiplicants.size == other.multiplicants.size &&
+            multiplicants.zip(other.multiplicants).all { (a, b) -> a == b }
+
+    override fun hashCode(): Int = multiplicants.fold(0) { acc, x -> acc + 31 * x.hashCode() }
+
     val multiplicants: List<Expr<T>> =
         m.flatMap {
             if (it is Multiply) {
@@ -144,8 +150,8 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
             expr = multiply(l, r.expr),
         ) as Expr<T>
 
-        l is Multiply && r is Multiply -> Multiply(l.multiplicants + r.multiplicants)
-        l is Multiply -> Multiply(l.multiplicants + r)
+        l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
+        l is Multiply -> l.multiplicants.foldRight(r) { m, acc -> multiply(m, acc) }
         r is Multiply -> Multiply(listOf(l) + r.multiplicants)
 
         l is Divide && r is Divide ->
