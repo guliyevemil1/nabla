@@ -10,7 +10,6 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     CosX::class,
     Log::class,
     Pow::class,
-    Sqrt::class,
     Differentiate::class,
     Integrate::class,
     Add::class,
@@ -40,9 +39,9 @@ val ExprComparator: Comparator<Expr<*>> = Comparator { a, b -> compareExpr(a, b)
 sealed interface Expr<out T> {
     val isConstant: Boolean
 
-    val asConstant: Expr<Nothing>?
+    val asConstant: Constant?
         get() = if (isConstant) {
-            this as Expr<Nothing>
+            this as Constant
         } else null
 
     fun render(): String
@@ -54,7 +53,7 @@ sealed interface Expr<out T> {
 }
 
 object Bottom : Expr<Nothing> {
-    override val isConstant: Boolean = true
+    override val isConstant: Boolean = false
     override fun render(): String = """\bot"""
     override fun toLisp(): String = "bottom"
 }

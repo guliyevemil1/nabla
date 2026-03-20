@@ -53,7 +53,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 
 }
 
-fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
+fun <T> negate(m: Expr<T>): Expr<T> = multiply(NegOne, m)
 
 fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
     when (factor) {
@@ -79,7 +79,7 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     }
 }
 
-fun <T> multiply(l: Integral, r: Integral): Expr<T> {
+fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)
     val ratL = l.toRational()
     val ratR = r.toRational()
@@ -109,12 +109,12 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Integral -> scale(l, r)
         r is Integral -> scale(r, l)
 
-        l is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
+        l is XPow && r is XPow -> xPow(add(l.pow, r.pow) as Constant) as Expr<T>
 
-        l == r -> Pow(l, 2)
-        l is Pow && r is Pow && l.base == r.base -> Pow(l.base, l.pow + r.pow)
-        l is Pow && l.base == r -> Pow(l, l.pow + 1)
-        r is Pow && l == r.base -> Pow(r, r.pow + 1)
+        l == r -> Pow(l, integer(2))
+        l is Pow && r is Pow && l.base == r.base -> Pow(l.base, add(l.pow, r.pow) as Constant)
+        l is Pow && l.base == r -> Pow(l, add(l.pow, One) as Constant)
+        r is Pow && l == r.base -> Pow(r, add(r.pow, One) as Constant)
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { rs ->

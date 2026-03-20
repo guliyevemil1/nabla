@@ -22,7 +22,6 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Invert -> TODO()
     is Log -> TODO()
     is Multiply<*> -> TODO()
-    is Sqrt -> TODO()
     is Pow -> TODO()
 
     is Scale -> {
@@ -30,7 +29,13 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     }
 
     is XPow -> {
+        if (b.pow == NegOne) return Log(X)
+        if (b.pow is Integral) {
+            val p = add(b.pow, One)
+            if (p == Bottom) return Bottom
+            return multiply(divide(One, p as Integral), xPow(p))
+        }
         val p = add(b.pow, One)
-        multiply(divide(One, p), xPow(p))
+        multiply(divide(One, p), xPow(p as Constant))
     }
 }

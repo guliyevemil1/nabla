@@ -23,7 +23,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is CosX -> negate(SinX)
         is ExpX -> ExpX
         is XPow -> {
-            multiply(b.pow, xPow(add(b.pow, NegOne)))
+            multiply(b.pow, xPow(add(b.pow, NegOne).asConstant!!))
         }
 
         is Add -> b.map { differentiate(it) }
@@ -45,9 +45,8 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Integrate -> b.base
         is Invert -> TODO()
         is Log -> divide(differentiate(b.base), b.base)
-        is Sqrt -> divide(differentiate(b.base), Scale(integer(2), b))
         is Pow -> {
-            multiply(multiply(integer(b.pow), b.base), differentiate(b.base))
+            multiply(multiply(b.pow, b.base), differentiate(b.base))
         }
 
         is Scale -> {

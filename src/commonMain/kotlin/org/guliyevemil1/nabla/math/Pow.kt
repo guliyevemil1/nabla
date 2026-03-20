@@ -1,18 +1,18 @@
 package org.guliyevemil1.nabla.math
 
-data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
+data class Pow<T>(val base: Expr<T>, val pow: Constant) : Expr<T> {
     override val isConstant: Boolean = base.isConstant
 
     override fun render(): String {
         return when (base) {
-            is CosX -> """\cos^$pow x"""
-            is SinX -> """\sin^$pow x"""
-            else -> """\left(${base.render()}\right)^$pow"""
+            is CosX -> """\cos^{${pow.render()}} x"""
+            is SinX -> """\sin^{${pow.render()}} x"""
+            else -> """\left(${base.render()}\right)^{${pow.render()}}"""
         }
     }
 
     override fun toLisp(): String {
-        return "(pow ${base.toLisp()} ${pow})"
+        return "(pow ${base.toLisp()} ${pow.toLisp()})"
     }
 }
 
@@ -21,7 +21,7 @@ private val xPowMap = HashMap<Int, XPow>()
 fun xPow(pow: Int): Expr<Any?> =
     xPowMap[pow] ?: XPow(integer(pow)).also { xPowMap[pow] = it }
 
-fun xPow(pow: Expr<Nothing>): Expr<Any?> {
+fun xPow(pow: Constant): Expr<Any?> {
     return when (pow) {
         Zero -> One
         is Integer -> xPow(pow.n)
@@ -29,7 +29,7 @@ fun xPow(pow: Expr<Nothing>): Expr<Any?> {
     }
 }
 
-data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
+data class XPow(val pow: Constant) : Expr<Any?> {
     override val isConstant: Boolean = false
 
     override val isSimple = true
@@ -48,11 +48,11 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     }
 }
 
-fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
+fun <T> pow(base: Expr<T>, n: Constant): Expr<T> {
     if (base is XPow) {
-        return xPow(multiply(base.pow, integer(n))) as Expr<T>
+        return xPow(multiply(base.pow, n).asConstant!!) as Expr<T>
     }
-    if (n < 0) return Bottom
-    if (n == 0) return One
-    return multiply(base, pow(base, n - 1))
+    if (n.isNegative == Bool.True) return Bottom
+    if (n.isZero == Bool.True) return One
+    return multiply(base, pow(base, add(n, NegOne) as Constant))
 }

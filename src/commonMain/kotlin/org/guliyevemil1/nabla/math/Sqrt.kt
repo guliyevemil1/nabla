@@ -1,12 +1,5 @@
 package org.guliyevemil1.nabla.math
 
-data class Sqrt<T>(val base: Expr<T>) : Expr<T> {
-    override val isSimple = true
-    override val isConstant: Boolean = base.isConstant
-    override fun render(): String = """\sqrt{${base.render()}}"""
-    override fun toLisp(): String = "(sqrt ${base.toLisp()})"
-}
-
 fun isqrt(n: Int): Int? {
     if (n < 0) throw IllegalArgumentException("Cannot compute square root of negative number: $n")
     if (n < 2) return n
@@ -27,27 +20,27 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
     when (c) {
         is Constant if (c == Zero || c == One) -> c
         is Integer -> {
-            val r = isqrt(c.n) ?: return Sqrt(c)
+            val r = isqrt(c.n) ?: return Pow(c, OneHalf)
             return integer(r)
         }
 
         is Rational -> {
             val n = isqrt(c.numerator)
             val d = isqrt(c.denominator)
-            if (n == null && d == null) return Sqrt(c)
+            if (n == null && d == null) return Pow(c, OneHalf)
             else if (n != null && d != null) return rational(n, d)
             val ni = integer(c.numerator)
             val di = integer(c.denominator)
-            if (n == null && d != null) return divide(Sqrt(ni), di)
+            if (n == null && d != null) return divide(Pow(ni, OneHalf), di)
             if (n != null && d == null) return divide(
-                multiply(ni, Sqrt(di)),
+                multiply(ni, Pow(di, OneHalf)),
                 di
             )
             throw IllegalStateException("Cannot compute square root of $c")
         }
 
-        is Constant -> Sqrt(c)
-        is XPow -> xPow(divide(c.pow, integer(2))) as Expr<T>
+        is Constant -> Pow(c, OneHalf)
+        is XPow -> xPow(divide(c.pow, integer(2)) as Constant) as Expr<T>
         is Multiply if c.multiplicants.size == 2 && c.multiplicants[0] == c.multiplicants[1] -> {
             c.multiplicants[0]
         }
@@ -56,5 +49,5 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
         is Multiply -> multiply(c.multiplicants.map { sqrt(it) })
         is Divide -> divide(sqrt(c.numerator), sqrt(c.denominator))
 
-        else -> Sqrt(c)
+        else -> Pow(c, OneHalf)
     }

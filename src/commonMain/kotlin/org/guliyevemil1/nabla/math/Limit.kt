@@ -16,7 +16,6 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
         is Add -> b.map { lim(it, x) }
         is Multiply -> b.map { lim(it, x) }
         is Divide -> divide(lim(b.numerator, x), lim(b.denominator, x))
-        is Sqrt -> sqrt(lim(b.base, x))
         is Log -> log(lim(b.base, x))
         is Pow -> pow(lim(b.base, x), b.pow)
 

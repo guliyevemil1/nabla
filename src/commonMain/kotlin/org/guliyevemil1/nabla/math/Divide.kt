@@ -26,7 +26,13 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
         r == Zero -> Bottom
         l == Zero -> Zero
         r == One -> l
-        l == One -> Divide(One, r)
+        l == One -> {
+            if (r is XPow) {
+                xPow(negate(r.pow) as Constant) as Expr<T>
+            } else {
+                Divide(One, r)
+            }
+        }
 
         l is Bottom || r is Bottom -> Bottom
         l is Integral && r is Integral -> {
@@ -34,7 +40,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
         }
 
         l.isConstant -> {
-            Scale(l.asConstant!!, Divide(One, r)) as Expr<T>
+            Scale(l.asConstant!!, divide(One, r)) as Expr<T>
         }
 
         l is Divide -> divide(
@@ -47,7 +53,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             expr = divide(l.expr, r.expr),
         ) as Expr<T>
 
-        l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow))) as Expr<T>
+        l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow)) as Constant) as Expr<T>
 
         else -> Divide(l, r)
     }

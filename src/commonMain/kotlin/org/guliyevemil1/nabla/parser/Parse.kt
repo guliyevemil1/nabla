@@ -33,10 +33,10 @@ sealed class SExpr {
             }
 
             "log" if size == 1 -> Log(firstArg)
-            "sqrt" if size == 1 -> Sqrt(firstArg)
+            "sqrt" if size == 1 -> Pow(firstArg, OneHalf)
 
-            "xpow" if size == 1 -> XPow(firstArg as Expr<Nothing>)
-            "pow" if size == 2 -> Pow(firstArg, (secondArg as Integer).n)
+            "xpow" if size == 1 -> XPow(firstArg as Constant)
+            "pow" if size == 2 -> Pow(firstArg, secondArg as Constant)
 
             "ddx" if size == 1 -> Differentiate(firstArg)
             "differentiate" if size == 1 -> Differentiate(firstArg)

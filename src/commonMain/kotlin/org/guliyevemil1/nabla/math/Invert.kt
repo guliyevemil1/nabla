@@ -26,7 +26,6 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Log -> TODO()
 
     is Invert -> b.base
-    is Sqrt -> TODO()
 
     is Differentiate -> TODO()
     is Integrate -> TODO()

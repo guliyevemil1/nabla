@@ -3,6 +3,7 @@ package org.guliyevemil1.nabla.math
 val Zero = integer(0)
 val One = integer(1)
 val NegOne = integer(-1)
+val OneHalf = Rational(1, 2)
 
 enum class Bool {
     True,
