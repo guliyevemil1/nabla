@@ -150,19 +150,21 @@ class MathTest {
     @Test
     fun testMultiply() {
         assertEqualsExpr(
-            "x",
+            "(* (xpow 2) (sin x))",
+            multiply(
+                parse(
+                    """(* x (sin x))"""
+                ),
+                X,
+            ),
+        )
+        assertEqualsExpr(
+            "(* (xpow 2) (sin x))",
             multiply(
                 X,
                 parse(
-                    """
-                        (/ 
-                          (+ 
-                            (scale 2 (* x (sin x))) 
-                            (scale -1 (* (xpow 2) (cos x)))
-                          )
-                          (pow (sin x) 2)
-                        )"""
-                )
+                    """(* x (sin x))"""
+                ),
             ),
         )
     }

@@ -83,11 +83,13 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
         else -> Scale(factor, expr) as Expr<T>
     }
 
+fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
+
 fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
         1 -> multiplicants[0]
-        else -> multiplicants.sortedWith(ExprComparator).reduce(::multiply)
+        else -> multiplicants.sortedWith(ExprComparator).reduce(::multiplyBinary)
     }
 }
 
@@ -101,7 +103,7 @@ fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     )
 }
 
-fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
+fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
     return when {
         l == Zero || r == Zero -> Zero
         l == One -> r
@@ -152,7 +154,7 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
 
         l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
         l is Multiply -> l.multiplicants.foldRight(r) { m, acc -> multiply(m, acc) }
-        r is Multiply -> Multiply(listOf(l) + r.multiplicants)
+        r is Multiply -> multiply(listOf(l) + r.multiplicants)
 
         l is Divide && r is Divide ->
             divide(

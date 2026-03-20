@@ -52,7 +52,7 @@ fun <T> add(summands: List<Expr<T>>): Expr<T> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
-        else -> summands.sortedWith(ExprComparator).reduce(::add)
+        else -> summands.sortedWith(ExprComparator).reduce(::addBinary)
     }
 }
 
@@ -66,7 +66,7 @@ fun add(l: Integral, r: Integral): Expr<Nothing> {
     )
 }
 
-fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> =
+private fun <T> addBinary(l: Expr<T>, r: Expr<T>): Expr<T> =
     when {
         l == Zero -> r
         r == Zero -> l
