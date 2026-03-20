@@ -19,7 +19,7 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Invert::class,
 ).mapIndexed { index, klass -> klass to index }.toMap()
 
-fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
+private fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
     when {
         a is Scale && b is Scale -> compareExpr(a.expr, b.expr)
         a is Scale -> compareExpr(a.expr, b)

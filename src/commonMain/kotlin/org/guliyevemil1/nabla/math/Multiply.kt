@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
+data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override fun render(): String =
         if (factor == integer(-1)) {
             """-${expr.render()}"""
@@ -9,7 +9,7 @@ class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
         }
 
     override fun toLisp(): String = buildString {
-        append("(scale  ${factor.toLisp()} ${expr.toLisp()})")
+        append("(scale ${factor.toLisp()} ${expr.toLisp()})")
     }
 
 }

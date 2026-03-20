@@ -16,8 +16,7 @@ class MathTest {
     fun testDifferentiate() {
         val m = multiply(divide(integer(1), integer(3)), xPow(3))
         val expr = differentiate(m)
-        assertIs<XPow>(expr)
-        assertEquals(expr.pow, integer(2))
+        assertEquals("(xpow 2)", expr.toLisp())
     }
 
     @Test
@@ -83,6 +82,12 @@ class MathTest {
     fun testLatex() {
         val m = Pow(X2, 2)
         assertEquals("""\left(x^{2}\right)^2""", m.render())
+    }
+
+    @Test
+    fun testAdd() {
+        val m = add(listOf(scale(integer(2), X), X))
+        assertEquals("(scale 3 (xpow 1))", m.toLisp())
     }
 
 }
