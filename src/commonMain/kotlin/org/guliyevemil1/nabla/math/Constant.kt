@@ -30,6 +30,8 @@ enum class Bool {
 }
 
 sealed interface Constant : Expr<Nothing> {
+    override val isSimple: Boolean
+        get() = true
     val sign: Sign
 
     val isPositive: Bool

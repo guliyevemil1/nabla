@@ -30,16 +30,8 @@ sealed interface Expr<out T> {
 
     fun toLisp(): String
 
-    val isSimple
-        get() = when (this) {
-            is Constant -> true
-            is ExpX -> true
-            is SinX -> true
-            is CosX -> true
-            is XPow -> true
-            is Log -> true
-            else -> false
-        }
+    val isSimple: Boolean
+        get() = false
 }
 
 object Illegal : Expr<Nothing> {

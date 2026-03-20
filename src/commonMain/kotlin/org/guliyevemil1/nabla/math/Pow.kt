@@ -29,10 +29,10 @@ fun xPow(pow: Expr<Nothing>): Expr<Any?> {
 }
 
 data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
+    override val isSimple = true
     override fun render(): String {
-        if (pow == One) {
-            return "x"
-        }
+        if (pow == One) return "x"
+
         if (pow is Rational && pow.denominator == 2) {
             if (pow.numerator == 1) return """\sqrt{x}"""
             return """\sqrt{x^${pow.numerator}}"""

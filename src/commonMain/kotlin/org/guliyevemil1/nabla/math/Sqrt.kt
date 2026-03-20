@@ -1,6 +1,7 @@
 package org.guliyevemil1.nabla.math
 
 data class Sqrt<T>(val base: Expr<T>) : Expr<T> {
+    override val isSimple = true
     override fun render(): String = """\sqrt{${base.render()}}"""
     override fun toLisp(): String = "(sqrt ${base.toLisp()})"
 }
