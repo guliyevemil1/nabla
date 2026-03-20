@@ -2,10 +2,9 @@ package org.guliyevemil1.nabla.math
 
 data class Pow<T>(val base: Expr<T>, val pow: Int) : Expr<T> {
     override fun render(): String {
-        return when {
-            base.isSimple -> """${base.render()}^$pow"""
-            base is CosX -> """\cos^$pow x"""
-            base is SinX -> """\sin^$pow x"""
+        return when (base) {
+            is CosX -> """\cos^$pow x"""
+            is SinX -> """\sin^$pow x"""
             else -> """\left(${base.render()}\right)^$pow"""
         }
     }

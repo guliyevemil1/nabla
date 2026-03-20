@@ -15,7 +15,7 @@ fun <T> log(c: Expr<T>): Expr<T> {
         is XPow -> multiply(c.pow, Log(X)) as Expr<T>
         is Scale -> add(log(c.factor), log(c.expr)) as Expr<T>
         is Multiply -> add(c.multiplicants.map { log(it) })
-        is Divide -> add(log(c.numerator), negate(c.denominator)) as Expr<T>
+        is Divide -> add(log(c.numerator), negate(log(c.denominator))) as Expr<T>
         else -> Log(c)
     }
 }

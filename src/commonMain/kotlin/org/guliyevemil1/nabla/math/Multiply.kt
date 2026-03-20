@@ -86,14 +86,13 @@ fun <T> multiply(l: Integral, r: Integral): Expr<T> {
 }
 
 fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
-    if (l == Zero || r == Zero) return Zero
-    if (l == One) return r
-    if (r == One) return l
-    if (l is Illegal || r is Illegal) return Illegal
-    if (l is Integral && r is Integral) {
-        return multiply(l, r)
-    }
     return when {
+        l == Zero || r == Zero -> Zero
+        l == One -> r
+        r == One -> l
+        l is Illegal || r is Illegal -> Illegal
+        l is Integral && r is Integral -> multiply(l, r)
+
         l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr) as Expr<T>
         l is Scale && r is Integral -> scale(multiply(l.factor, r), l.expr) as Expr<T>
 
@@ -107,6 +106,11 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         r is Integral -> scale(r, l)
 
         l is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
+
+        l == r -> Pow(l, 2)
+        l is Pow && r is Pow && l.base == r.base -> Pow(l.base, l.pow + r.pow)
+        l is Pow && l.base == r -> Pow(l, l.pow + 1)
+        r is Pow && l == r.base -> Pow(r, r.pow + 1)
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { rs ->
