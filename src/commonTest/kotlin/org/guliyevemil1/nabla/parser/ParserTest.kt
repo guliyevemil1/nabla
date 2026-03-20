@@ -25,7 +25,7 @@ class ParserTest {
 
     @Test
     fun testParseFunctionApplication() {
-        val result = parse("Add[x]")
+        val result = parse("(Add x)")
         assertTrue(result is Add)
 
         assertEquals(1, result.summands.size)
@@ -33,13 +33,13 @@ class ParserTest {
 
     @Test
     fun testParseMultipleArguments() {
-        val result = parse("Plus[1, 2, 3]")
+        val result = parse("(Add 1 2 3)")
         assertTrue(result is Add)
     }
 
     @Test
     fun testParseNestedExpressions() {
-        val result = parse("Add[Sin[x], Cos[x]]")
+        val result = parse("(Add (Sin x) (Cos x))")
         assertTrue(result is Add)
 
         assertEquals(2, result.summands.size)
@@ -49,7 +49,7 @@ class ParserTest {
 
     @Test
     fun testWhitespaceHandling() {
-        val result = parse("  Add [ x , x ]  ")
+        val result = parse("  (  Add  x  x )  ")
         assertTrue(result is Add)
         assertEquals(2, result.summands.size)
     }
@@ -57,21 +57,21 @@ class ParserTest {
     @Test
     fun testInvalidSyntaxThrowsException() {
         assertFails {
-            parse("Add[x")
+            parse("(Add x")
         }
     }
 
     @Test
     fun testMissingClosingBracket() {
         assertFailsWith<ParseException> {
-            parse("Add[x, x")
+            parse("(Add x x")
         }
     }
 
     @Test
     fun testUnexpectedCharacter() {
         assertFailsWith<ParseException> {
-            parse("Add[x] garbage")
+            parse("(Add x) garbage")
         }
     }
 }

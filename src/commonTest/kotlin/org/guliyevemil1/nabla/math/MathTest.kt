@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-import org.guliyevemil1.nabla.parser.Parser
+import org.guliyevemil1.nabla.parser.parse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -8,7 +8,7 @@ import kotlin.test.assertIs
 class MathTest {
     @Test
     fun testDivide() {
-        val expr = divide(Parser.parse("Pow[X, 2]"), X)
+        val expr = divide(parse("(pow x 2)"), X)
         assertEquals(expr, X)
     }
 
