@@ -17,7 +17,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Illegal -> Illegal
         is Constant -> Zero
         is SinX -> CosX
-        is CosX -> multiply(NegOne, SinX)
+        is CosX -> negate(SinX)
         is ExpX -> ExpX
         is XPow -> {
             multiply(b.pow, xPow(add(b.pow, NegOne)))
@@ -32,8 +32,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
                     differentiate(b.numerator),
                     b.denominator,
                 ),
-                multiply(
-                    NegOne,
+                negate(
                     multiply(
                         b.numerator,
                         differentiate(b.denominator),

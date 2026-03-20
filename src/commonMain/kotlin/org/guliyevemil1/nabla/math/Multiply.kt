@@ -38,6 +38,8 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     }
 }
 
+fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
+
 fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
@@ -52,7 +54,6 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
     if (r == One) return l
     if (l is Illegal || r is Illegal) return Illegal
     if (l is Integral && r is Integral) {
-        if (l is Integer && r is Integer) return integer(l.n * r.n)
         val ratL = l.toRational() ?: return Illegal
         val ratR = l.toRational() ?: return Illegal
         return rational(
@@ -108,20 +109,24 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Multiply -> Multiply(l.multiplicants + r)
         r is Multiply -> Multiply(listOf(l) + r.multiplicants)
 
-        l is Divide && r is Divide -> Divide(
-            multiply(l.numerator, r.numerator),
-            multiply(l.denominator, r.denominator)
-        )
+        l is Divide && r is Divide ->
+            divide(
+                multiply(l.numerator, r.numerator),
+                multiply(l.denominator, r.denominator)
+            )
 
         l is Divide -> Divide(
             multiply(l.numerator, r),
             l.denominator,
         )
 
-        r is Divide -> Divide(
-            multiply(l, r.numerator),
-            r.denominator,
-        )
+        r is Divide -> {
+            if (r.numerator == One) Divide(l, r)
+            divide(
+                multiply(l, r.numerator),
+                r.denominator,
+            )
+        }
 
         else -> Multiply(l, r)
     }
