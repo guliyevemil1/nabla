@@ -6,7 +6,7 @@ data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
 }
 
 fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
-    Illegal -> Illegal
+    Bottom -> Bottom
     is Constant -> multiply(b, X)
     CosX -> SinX
     SinX -> Scale(NegOne, CosX)

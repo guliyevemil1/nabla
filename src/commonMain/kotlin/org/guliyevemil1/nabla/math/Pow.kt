@@ -48,7 +48,7 @@ fun <T> pow(base: Expr<T>, n: Int): Expr<T> {
     if (base is XPow) {
         return xPow(multiply(base.pow, integer(n))) as Expr<T>
     }
-    if (n < 0) return Illegal
+    if (n < 0) return Bottom
     if (n == 0) return One
     return multiply(base, pow(base, n - 1))
 }

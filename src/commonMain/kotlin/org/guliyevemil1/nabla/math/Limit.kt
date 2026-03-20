@@ -11,7 +11,7 @@ enum class Limit {
 
 fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
     when (b) {
-        Illegal -> Illegal
+        Bottom -> Bottom
         is Constant -> b
         is Add -> b.map { lim(it, x) }
         is Multiply -> b.map { lim(it, x) }
@@ -26,34 +26,34 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
 
         CosX -> when (x) {
             Limit.Zero -> One
-            Limit.Infinity -> Illegal
-            Limit.NegativeInfinity -> Illegal
+            Limit.Infinity -> Bottom
+            Limit.NegativeInfinity -> Bottom
             Limit.Supremum -> One
             Limit.Infimum -> NegOne
         }
 
         ExpX -> when (x) {
             Limit.Zero -> One
-            Limit.Infinity -> Illegal
+            Limit.Infinity -> Bottom
             Limit.NegativeInfinity -> Zero
-            Limit.Supremum -> Illegal
-            Limit.Infimum -> Illegal
+            Limit.Supremum -> Bottom
+            Limit.Infimum -> Bottom
         }
 
         SinX -> when (x) {
             Limit.Zero -> Zero
-            Limit.Infinity -> Illegal
-            Limit.NegativeInfinity -> Illegal
+            Limit.Infinity -> Bottom
+            Limit.NegativeInfinity -> Bottom
             Limit.Supremum -> One
             Limit.Infimum -> NegOne
         }
 
         is XPow -> when (x) {
             Limit.Zero -> Zero
-            Limit.Infinity -> Illegal
-            Limit.NegativeInfinity -> Illegal
-            Limit.Supremum -> Illegal
-            Limit.Infimum -> Illegal
+            Limit.Infinity -> Bottom
+            Limit.NegativeInfinity -> Bottom
+            Limit.Supremum -> Bottom
+            Limit.Infimum -> Bottom
         }
 
         is Scale -> {

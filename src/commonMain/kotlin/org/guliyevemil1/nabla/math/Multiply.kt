@@ -53,7 +53,7 @@ fun negate(m: Expr<Any?>): Expr<Any?> = multiply(NegOne, m)
 
 fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
     when (factor) {
-        Illegal -> Illegal
+        Bottom -> Bottom
         Zero -> Zero
         One -> expr
         is Integral if expr is Integral -> {
@@ -71,7 +71,7 @@ fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
     return when (multiplicants.size) {
         0 -> One
         1 -> multiplicants[0]
-        else -> multiplicants.reduce(::multiply)
+        else -> multiplicants.sortedWith(ExprComparator).reduce(::multiply)
     }
 }
 
@@ -90,7 +90,7 @@ fun <T> multiply(l: Expr<T>, r: Expr<T>): Expr<T> {
         l == Zero || r == Zero -> Zero
         l == One -> r
         r == One -> l
-        l is Illegal || r is Illegal -> Illegal
+        l is Bottom || r is Bottom -> Bottom
         l is Integral && r is Integral -> multiply(l, r)
 
         l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr) as Expr<T>

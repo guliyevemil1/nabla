@@ -19,10 +19,10 @@ fun divide(l: Integral, r: Integral): Expr<Nothing> {
 
 fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
     when {
-        r == Zero -> Illegal
+        r == Zero -> Bottom
         l == Zero -> Zero
         r == One -> l
-        l is Illegal || r is Illegal -> Illegal
+        l is Bottom || r is Bottom -> Bottom
         l is Integral && r is Integral -> {
             divide(l, r)
         }

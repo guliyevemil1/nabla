@@ -5,58 +5,69 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
+fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(expected).toLisp(), actual.toLisp())
+
 class MathTest {
     @Test
     fun testDivide() {
-        val expr = divide(parse("(pow x 2)"), X)
-        assertEquals(expr, X)
+        assertEqualsExpr(
+            expected = "x",
+            actual = divide(parse("(xpow 2)"), X),
+        )
     }
+
+//    @Test
+//    fun testDivide2() {
+//        assertEqualsExpr(
+//            expected = "x",
+//            actual = divide(parse("(pow (xpow 1) 2)"), X),
+//        )
+//    }
 
     @Test
     fun testDifferentiate() {
-        val m = multiply(divide(integer(1), integer(3)), xPow(3))
-        val expr = differentiate(m)
-        assertEquals("(xpow 2)", expr.toLisp())
+        assertEqualsExpr(
+            expected = "(xpow 2)",
+            actual = differentiate(parse("(scale (/ 1 3) (xpow 3))"))
+        )
     }
 
     @Test
     fun testDifferentiate2() {
-        val m = multiply(
-            listOf(
-                X2,
-                ExpX,
-                SinX,
+        assertEqualsExpr(
+            expected = """
+            (+
+                (scale 2 (* (xpow 1) (exp x) (sin x)))
+                (* (xpow 2) (exp x) (sin x))
+                (* (xpow 2) (exp x) (cos x))
             )
+        """,
+            actual = differentiate(parse("(* (xpow 2) (exp x) (sin x))")),
         )
-        val expr = differentiate(m)
-        assertIs<Add<Any?>>(expr)
-        assertEquals(expr.summands.size, 3)
-        val expr0 = expr.summands[0]
-        val expr1 = expr.summands[1]
-        val expr2 = expr.summands[2]
-        assertIs<Scale>(expr0)
-        assertEquals(expr0.factor, integer(2))
-        assertIs<Multiply<Any?>>(expr1)
-        assertIs<Multiply<Any?>>(expr2)
     }
 
     @Test
     fun testDifferentiate3() {
-        val m = divide(
-            X2,
-            ExpX,
+        assertEqualsExpr(
+            expected = """
+            (/ 
+                (+ 
+                    (scale 2 (* (xpow 1) (exp x))) 
+                    (scale -1 (* (xpow 2) (exp x)))
+                )
+                (pow (exp x) 2)
+            )
+        """,
+            actual = differentiate(parse("(/ (xpow 2) (exp x))"))
         )
-        val expr = differentiate(m)
-        assertIs<Divide<Any?>>(expr)
     }
 
     @Test
     fun testDifferentiate4() {
-        val m = X2
-        val expr = differentiate(m)
-        assertIs<Scale>(expr)
-        assertEquals(integer(2), expr.factor)
-        assertEquals(X, expr.expr)
+        assertEqualsExpr(
+            expected = "(scale 2 (xpow 1))",
+            actual = differentiate(X2),
+        )
     }
 
     @Test
@@ -68,26 +79,36 @@ class MathTest {
 
     @Test
     fun testNegate() {
-        val m = multiply(
-            X,
-            ExpX,
+        assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
+    }
+
+    @Test
+    fun testAdd() {
+        assertEqualsExpr(
+            expected = "(scale 3 (xpow 1))",
+            actual = add(
+                parse("(scale 2 x)"),
+                parse("x"),
+            )
         )
-        val expr = negate(m)
-        assertIs<Scale>(expr)
-        assertEquals(NegOne, expr.factor)
-        assertEquals(m, expr.expr)
+    }
+
+    @Test
+    fun testAdd2() {
+        assertEqualsExpr(
+            expected = "(add (scale 3 (xpow 1)) (exp x))",
+            actual = add(
+                parse("(scale 2 x)"),
+                parse("(exp x)"),
+                parse("x"),
+            )
+        )
     }
 
     @Test
     fun testLatex() {
         val m = Pow(X2, 2)
         assertEquals("""\left(x^{2}\right)^2""", m.render())
-    }
-
-    @Test
-    fun testAdd() {
-        val m = add(listOf(scale(integer(2), X), X))
-        assertEquals("(scale 3 (xpow 1))", m.toLisp())
     }
 
 }

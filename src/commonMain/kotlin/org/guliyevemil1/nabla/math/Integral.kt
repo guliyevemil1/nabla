@@ -22,7 +22,7 @@ data class Integer(val n: Int) : Integral {
     override fun toRational() = Rational(n, 1)
 
     override fun inverse(): Expr<Nothing> = when (isZero) {
-        Bool.True -> Illegal
+        Bool.True -> Bottom
         Bool.False -> Rational(1, n)
         Bool.Unknown -> throw IllegalStateException()
     }
@@ -47,7 +47,7 @@ fun rational(numerator: Int, denominator: Int): Expr<Nothing> {
             -abs(numerator),
             abs(denominator),
         )
-    if (denominator == 0) return Illegal
+    if (denominator == 0) return Bottom
     if (denominator == 1) return integer(numerator)
     val g = gcd(numerator, denominator)
     if (g == 1) return Rational(numerator, denominator)
@@ -62,7 +62,7 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
     }
 
     override fun inverse(): Expr<Nothing> = when (isZero) {
-        Bool.True -> Illegal
+        Bool.True -> Bottom
         Bool.False -> Rational(numerator, denominator)
         Bool.Unknown -> throw IllegalStateException()
     }

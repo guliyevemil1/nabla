@@ -10,15 +10,15 @@ data class Invert(val base: Expr<Any?>) : Expr<Any?> {
 }
 
 fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
-    Illegal -> Illegal
-    is Constant -> Illegal
-    is CosX -> Illegal
+    Bottom -> Bottom
+    is Constant -> Bottom
+    is CosX -> Bottom
     X -> X
 
-    is Add -> Illegal
-    is Divide -> Illegal
-    is Multiply -> Illegal
-    SinX -> Illegal
+    is Add -> Bottom
+    is Divide -> Bottom
+    is Multiply -> Bottom
+    SinX -> Bottom
 
     ExpX -> Log(X)
     is Log -> TODO()

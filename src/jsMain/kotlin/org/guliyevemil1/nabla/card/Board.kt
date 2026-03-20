@@ -2,7 +2,7 @@ package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
-import org.guliyevemil1.nabla.math.Illegal
+import org.guliyevemil1.nabla.math.Bottom
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
@@ -171,7 +171,7 @@ class Board(
         else -> throw IllegalStateException("unrecognized turn: $turn")
     }
 
-    fun Players.checkGameOver() = if (player1.field.contains(Illegal) || player2.field.contains(Illegal)) {
+    fun Players.checkGameOver() = if (player1.field.contains(Bottom) || player2.field.contains(Bottom)) {
         update(transform = { with(field = emptyList()) })
     } else {
         this

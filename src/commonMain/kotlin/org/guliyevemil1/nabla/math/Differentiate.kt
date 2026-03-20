@@ -15,7 +15,7 @@ fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(
 
 fun differentiate(b: Expr<Any?>): Expr<Any?> =
     when (b) {
-        is Illegal -> Illegal
+        is Bottom -> Bottom
         is Constant -> Zero
         is SinX -> CosX
         is CosX -> negate(SinX)

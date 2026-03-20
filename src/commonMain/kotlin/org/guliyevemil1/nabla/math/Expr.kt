@@ -46,7 +46,7 @@ sealed interface Expr<out T> {
         get() = false
 }
 
-object Illegal : Expr<Nothing> {
+object Bottom : Expr<Nothing> {
     override fun render(): String = """\bot"""
     override fun toLisp(): String = "bottom"
 }

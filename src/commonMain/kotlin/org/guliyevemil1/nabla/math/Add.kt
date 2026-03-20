@@ -44,7 +44,7 @@ fun <T> add(summands: List<Expr<T>>): Expr<T> {
     return when (summands.size) {
         0 -> Zero
         1 -> summands[0]
-        else -> summands.reduce(::add)
+        else -> summands.sortedWith(ExprComparator).reduce(::add)
     }
 }
 
@@ -53,7 +53,7 @@ fun <T> add(l: Expr<T>, r: Expr<T>): Expr<T> =
         l == Zero -> r
         r == Zero -> l
 
-        l is Illegal || r is Illegal -> Illegal
+        l is Bottom || r is Bottom -> Bottom
 
         l is Integer && r is Integer -> integer(l.n + r.n)
         l is Integral && r is Integral -> {

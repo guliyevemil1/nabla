@@ -9,6 +9,8 @@ sealed class SExpr {
     data class SInteger(val value: Int) : SExpr()
     data class SList(val head: Symbol, val tail: List<SExpr>) : SExpr() {
         val size = tail.size
+        val firstArg by lazy { tail[0].toExpr() }
+        val secondArg by lazy { tail[1].toExpr() }
     }
 
     private fun SList.argIsX() = size == 1 && tail[0].toExpr() == X
@@ -16,16 +18,36 @@ sealed class SExpr {
     fun toExpr(): Expr<Any?> = when (this) {
         is SInteger -> Integer(value)
         is SList -> when (head.name.lowercase()) {
-            "+", "add", "plus" -> Add(tail.map { it.toExpr() })
-            "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
             "sin" if argIsX() -> SinX
             "cos" if argIsX() -> CosX
             "exp" if argIsX() -> ExpX
-            "xpow" if size == 1 -> XPow(tail[0].toExpr() as Expr<Nothing>)
+
+            "+", "add", "plus" -> Add(tail.map { it.toExpr() })
+            "scale" if size == 2 -> Scale(firstArg as Expr<Nothing>, secondArg)
+            "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
+            "/" if size == 2 -> {
+                val l = firstArg
+                val r = secondArg
+                if (l is Integer && r is Integer) return Rational(l.n, r.n)
+                return Divide(l, r)
+            }
+
+            "log" if size == 1 -> Log(firstArg)
+            "sqrt" if size == 1 -> Sqrt(firstArg)
+
+            "xpow" if size == 1 -> XPow(firstArg as Expr<Nothing>)
+            "pow" if size == 2 -> Pow(firstArg, (secondArg as Integer).n)
+
+            "ddx" if size == 1 -> Differentiate(firstArg)
+            "differentiate" if size == 1 -> Differentiate(firstArg)
+
+            "integrate" if size == 1 -> Integrate(firstArg)
+
             else -> throw IllegalArgumentException("Unrecognized term: ${head.name}")
         }
 
         is Symbol -> when (name.lowercase()) {
+            "bottom" -> Bottom
             "x" -> X
             "expx" -> ExpX
             "sinx" -> SinX
