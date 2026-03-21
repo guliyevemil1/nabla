@@ -23,7 +23,7 @@ sealed class SExpr {
             "exp" if argIsX() -> ExpX
 
             "+", "add", "plus" -> Add(tail.map { it.toExpr() })
-            "scale" if size == 2 -> Scale(firstArg as Expr<Nothing>, secondArg)
+            "scale" if size == 2 -> Scale(firstArg as Constant, secondArg)
             "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
             "/" if size == 2 -> {
                 val l = firstArg

@@ -30,6 +30,6 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Differentiate -> TODO()
     is Integrate -> TODO()
     is Pow -> TODO()
-    is Scale -> Scale(divide(One, b.factor), integrate(b.expr))
+    is Scale -> scale(divide(One, b.factor), integrate(b.expr))
     is XPow -> TODO()
 }

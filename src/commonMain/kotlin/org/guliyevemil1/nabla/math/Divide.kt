@@ -34,7 +34,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
 
         l == One -> {
             if (r is XPow) {
-                xPow(negate(r.pow) as Constant) as Expr<T>
+                xPow(negate(r.pow)) as Expr<T>
             } else {
                 Divide(One, r)
             }
@@ -44,21 +44,17 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             Scale(l.asConstant!!, divide(One, r)) as Expr<T>
         }
 
-//        l is Add -> {
-//            l.map { divide(it, r) }
-//        }
-
         l is Divide -> Divide(
             l.numerator,
             multiply(l.denominator, r),
         )
 
-        l is Scale && r is Scale -> Scale(
+        l is Scale && r is Scale -> scale(
             factor = divide(l.factor, r.factor),
             expr = divide(l.expr, r.expr),
         ) as Expr<T>
 
-        l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow)) as Constant) as Expr<T>
+        l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow))) as Expr<T>
 
         else -> Divide(l, r)
     }

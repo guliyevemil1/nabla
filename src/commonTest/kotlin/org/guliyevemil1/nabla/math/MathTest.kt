@@ -9,9 +9,9 @@ fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(exp
 class MathTest {
     @Test
     fun testEquals() {
-        assertEquals(
-            add(X2, X, One).toLisp(),
-            add(One, X, X2).toLisp(),
+        assertEqualsExpr(
+            "(+ 1 x (xpow 2))",
+            add(parse("(+ (xpow 2) x 1)")),
         )
     }
 

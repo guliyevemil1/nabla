@@ -36,6 +36,6 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
             return multiply(divide(One, p as Integral), xPow(p))
         }
         val p = add(b.pow, One)
-        multiply(divide(One, p), xPow(p as Constant))
+        multiply(divide(One, p), xPow(p))
     }
 }

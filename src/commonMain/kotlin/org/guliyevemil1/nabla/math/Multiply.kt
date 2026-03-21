@@ -2,7 +2,7 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
 
-data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
+data class Scale(val factor: Constant, val expr: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = expr.isConstant
 
     override fun render(): String =
@@ -86,18 +86,7 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
             scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
         }
 
-        else -> Scale(factor, expr) as Expr<T>
-    }
-
-fun <T> multiply(vararg m: Expr<T>): Expr<T> = multiply(m.asList())
-
-fun <T> multiply(m: List<Expr<T>>): Expr<T> =
-    Multiply(m).let {
-        when (it.multiplicants.size) {
-            0 -> One
-            1 -> it.multiplicants[0]
-            else -> it.multiplicants.foldMultiply()
-        }
+        else -> Scale(factor as Constant, expr) as Expr<T>
     }
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {
@@ -109,6 +98,17 @@ fun multiply(l: Integral, r: Integral): Expr<Nothing> {
         denominator = ratL.denominator * ratR.denominator,
     )
 }
+
+fun <T> multiply(vararg m: Expr<T>): Expr<T> = multiply(m.asList())
+
+fun <T> multiply(m: List<Expr<T>>): Expr<T> =
+    Multiply(m).let {
+        when (it.multiplicants.size) {
+            0 -> One
+            1 -> it.multiplicants[0]
+            else -> it.multiplicants.foldMultiply()
+        }
+    }
 
 fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
     return when {
@@ -130,12 +130,12 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Integral -> scale(l, r)
         r is Integral -> scale(r, l)
 
-        l is XPow && r is XPow -> xPow(add(l.pow, r.pow) as Constant) as Expr<T>
+        l is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
 
-        l == r -> Pow(l, integer(2))
-        l is Pow && r is Pow && l.base == r.base -> Pow(l.base, add(l.pow, r.pow) as Constant)
-        l is Pow && l.base == r -> Pow(l, add(l.pow, One) as Constant)
-        r is Pow && l == r.base -> Pow(r, add(r.pow, One) as Constant)
+        l == r -> pow(l, integer(2))
+        l is Pow && r is Pow && l.base == r.base -> pow(l.base, add(l.pow, r.pow))
+        l is Pow && l.base == r -> pow(l, add(l.pow, One))
+        r is Pow && l == r.base -> pow(r, add(r.pow, One))
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { multiply(ls, it) }
@@ -144,9 +144,9 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Add -> l.map { multiply(it, r) }
         r is Add -> r.map { multiply(l, it) }
 
-        l is Scale && r is Scale -> Scale(
-            factor = multiply(l.factor, r.factor),
-            expr = multiply(l.expr, r.expr),
+        l is Scale && r is Scale -> scale(
+            multiply(l.factor, r.factor),
+            multiply(l.expr, r.expr),
         ) as Expr<T>
 
         l is Scale -> Scale(

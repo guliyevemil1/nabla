@@ -62,7 +62,7 @@ sealed interface Constant : Expr<Nothing> {
     val isNonPositive: Bool get() = !isPositive
     val isNonNegative: Bool get() = !isNegative
 
-    fun inverse(): Expr<Constant> = when (isZero) {
+    fun inverse(): Expr<Nothing> = when (isZero) {
         Bool.True -> Bottom
         Bool.False -> Divide(One, this)
         else -> TODO()

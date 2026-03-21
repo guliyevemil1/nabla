@@ -1,6 +1,12 @@
 package org.guliyevemil1.nabla.math
 
+fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> {
+    if (pow == Bottom) return Bottom
+    return Pow(base, pow as Constant)
+}
+
 data class Pow<T>(val base: Expr<T>, val pow: Constant) : Expr<T> {
+    override val isSimple: Boolean = base.isSimple
     override val isConstant: Boolean = base.isConstant
 
     override fun render(): String {
@@ -21,11 +27,12 @@ private val xPowMap = HashMap<Int, XPow>()
 fun xPow(pow: Int): Expr<Any?> =
     xPowMap[pow] ?: XPow(integer(pow)).also { xPowMap[pow] = it }
 
-fun xPow(pow: Constant): Expr<Any?> {
+fun xPow(pow: Expr<Nothing>): Expr<Any?> {
     return when (pow) {
+        Bottom -> Bottom
         Zero -> One
         is Integer -> xPow(pow.n)
-        else -> XPow(pow)
+        else -> XPow(pow as Constant)
     }
 }
 
@@ -50,9 +57,9 @@ data class XPow(val pow: Constant) : Expr<Any?> {
 
 fun <T> pow(base: Expr<T>, n: Constant): Expr<T> {
     if (base is XPow) {
-        return xPow(multiply(base.pow, n).asConstant!!) as Expr<T>
+        return xPow(multiply(base.pow, n)) as Expr<T>
     }
     if (n.isNegative == Bool.True) return Bottom
     if (n.isZero == Bool.True) return One
-    return multiply(base, pow(base, add(n, NegOne) as Constant))
+    return multiply(base, pow(base, add(n, NegOne)))
 }

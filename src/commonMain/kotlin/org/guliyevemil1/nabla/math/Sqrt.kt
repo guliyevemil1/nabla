@@ -20,27 +20,27 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
     when (c) {
         is Constant if (c == Zero || c == One) -> c
         is Integer -> {
-            val r = isqrt(c.n) ?: return Pow(c, OneHalf)
+            val r = isqrt(c.n) ?: return pow(c, OneHalf)
             return integer(r)
         }
 
         is Rational -> {
             val n = isqrt(c.numerator)
             val d = isqrt(c.denominator)
-            if (n == null && d == null) return Pow(c, OneHalf)
+            if (n == null && d == null) return pow(c, OneHalf)
             else if (n != null && d != null) return rational(n, d)
             val ni = integer(c.numerator)
             val di = integer(c.denominator)
-            if (n == null && d != null) return divide(Pow(ni, OneHalf), di)
+            if (n == null && d != null) return divide(pow(ni, OneHalf), di)
             if (n != null && d == null) return divide(
-                multiply(ni, Pow(di, OneHalf)),
+                multiply(ni, pow(di, OneHalf)),
                 di
             )
             throw IllegalStateException("Cannot compute square root of $c")
         }
 
-        is Constant -> Pow(c, OneHalf)
-        is XPow -> xPow(divide(c.pow, integer(2)) as Constant) as Expr<T>
+        is Constant -> pow(c, OneHalf)
+        is XPow -> xPow(divide(c.pow, integer(2))) as Expr<T>
         is Multiply if c.multiplicants.size == 2 && c.multiplicants[0] == c.multiplicants[1] -> {
             c.multiplicants[0]
         }
@@ -49,5 +49,5 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
         is Multiply -> multiply(c.multiplicants.map { sqrt(it) })
         is Divide -> divide(sqrt(c.numerator), sqrt(c.denominator))
 
-        else -> Pow(c, OneHalf)
+        else -> pow(c, OneHalf)
     }

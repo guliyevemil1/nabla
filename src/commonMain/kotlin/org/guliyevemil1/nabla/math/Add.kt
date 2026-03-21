@@ -51,6 +51,16 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     }
 }
 
+fun add(l: Integral, r: Integral): Expr<Nothing> {
+    if (l is Integer && r is Integer) return integer(l.n + r.n)
+    val ratL = l.toRational()
+    val ratR = r.toRational()
+    return rational(
+        numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
+        denominator = ratL.denominator * ratR.denominator,
+    )
+}
+
 fun <T> add(vararg s: Expr<T>): Expr<T> = add(s.asList())
 
 fun <T> add(s: List<Expr<T>>): Expr<T> {
@@ -63,24 +73,15 @@ fun <T> add(s: List<Expr<T>>): Expr<T> {
     }
 }
 
-fun add(l: Integral, r: Integral): Expr<Nothing> {
-    if (l is Integer && r is Integer) return integer(l.n + r.n)
-    val ratL = l.toRational()
-    val ratR = r.toRational()
-    return rational(
-        numerator = ratL.numerator * ratR.denominator + ratR.numerator * ratL.denominator,
-        denominator = ratL.denominator * ratR.denominator,
-    )
-}
-
 private fun <T> addBinary(l: Expr<T>, r: Expr<T>): Expr<T> =
     when {
         l == Zero -> r
         r == Zero -> l
         l is Bottom || r is Bottom -> Bottom
+        l == r -> scale(integer(2), l)
+
         l is Integral && r is Integral -> add(l, r)
 
-        l == r -> scale(integer(2), l)
         l is Scale && r is Scale && l.expr == r.expr ->
             scale(
                 add(l.factor, r.factor),
