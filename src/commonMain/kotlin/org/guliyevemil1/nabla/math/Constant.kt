@@ -30,13 +30,38 @@ enum class Bool {
 
 }
 
+val Expr<Nothing>.sign: Sign
+    get() = when (this) {
+        is Integer -> this.sign
+        is Rational -> this.sign
+        is Pow<Nothing> -> this.base.sign
+
+        is Multiply<Nothing> -> this.multiplicants
+            .map { it.sign }
+            .fold(Sign.Positive, Sign::times)
+
+        is Divide<Nothing> -> this.numerator.sign * this.denominator.sign
+
+        is Add<Nothing> -> TODO()
+        is Log<Nothing> -> TODO()
+
+        is Scale -> Sign.Unknown
+        is Invert -> Sign.Unknown
+        is Differentiate -> Sign.Unknown
+        is Integrate -> Sign.Unknown
+        Bottom -> Sign.Unknown
+        CosX -> Sign.Unknown
+        ExpX -> Sign.Unknown
+        SinX -> Sign.Unknown
+        is XPow -> Sign.Unknown
+    }
+
 sealed interface Constant : Expr<Nothing> {
     override val isSimple: Boolean
         get() = true
 
     override val isConstant: Boolean
         get() = true
-    val sign: Sign
 
     val isPositive: Bool
         get() = when (sign) {
@@ -73,5 +98,12 @@ enum class Sign {
     Zero,
     Positive,
     Negative,
-    Unknown,
+    Unknown;
+
+    operator fun times(b: Sign): Sign {
+        if (this == Unknown || b == Unknown) return Unknown
+        if (this == Zero || b == Zero) return Zero
+        if (this == b) return Positive
+        return Negative
+    }
 }
