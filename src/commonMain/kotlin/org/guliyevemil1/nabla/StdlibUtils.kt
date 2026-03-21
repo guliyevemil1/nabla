@@ -1,7 +1,6 @@
 package org.guliyevemil1.nabla
 
 import kotlin.random.Random
-import kotlin.text.iterator
 
 data class ImmutableRNG(private val seed: Int) {
     fun nextBits(bitCount: Int): Pair<Int, ImmutableRNG> {
@@ -34,38 +33,3 @@ fun <T> List<T>.groupWith(predicate: (T, T) -> Boolean): List<List<T>> =
         }
         acc
     }
-
-fun formatLispExpression(input: String): String {
-    val result = StringBuilder()
-    var indentLevel = 0
-    val indentSize = 2
-
-    for (char in input) {
-        when (char) {
-            '(' -> {
-                result.append('\n')
-                result.append(" ".repeat(indentLevel))
-                result.append(char)
-                indentLevel += indentSize
-            }
-
-            ')' -> {
-                indentLevel -= indentSize
-                result.append(char)
-            }
-
-            ' ' -> {
-                // Skip spaces that are just separators
-                if (result.isNotEmpty() && result.last() != '(' && result.last() != '\n') {
-                    result.append(char)
-                }
-            }
-
-            else -> {
-                result.append(char)
-            }
-        }
-    }
-
-    return result.toString().trim()
-}

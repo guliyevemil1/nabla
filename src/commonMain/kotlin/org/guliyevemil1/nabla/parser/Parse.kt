@@ -1,6 +1,7 @@
 package org.guliyevemil1.nabla.parser
 
 import org.guliyevemil1.nabla.math.*
+import kotlin.text.iterator
 
 class ParseException(message: String) : Exception(message)
 sealed class SExpr {
@@ -137,4 +138,39 @@ private class LispParser(private val input: String) {
 fun parse(input: String): Expr<Any?> {
     if (input == "") throw ParseException("empty input provided")
     return LispParser(input).parse().toExpr()
+}
+
+fun formatLispExpression(input: String): String {
+    val result = StringBuilder()
+    var indentLevel = 0
+    val indentSize = 2
+
+    for (char in input) {
+        when (char) {
+            '(' -> {
+                result.append('\n')
+                result.append(" ".repeat(indentLevel))
+                result.append(char)
+                indentLevel += indentSize
+            }
+
+            ')' -> {
+                indentLevel -= indentSize
+                result.append(char)
+            }
+
+            ' ' -> {
+                // Skip spaces that are just separators
+                if (result.isNotEmpty() && result.last() != '(' && result.last() != '\n') {
+                    result.append(char)
+                }
+            }
+
+            else -> {
+                result.append(char)
+            }
+        }
+    }
+
+    return result.toString().trim()
 }
