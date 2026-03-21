@@ -56,6 +56,11 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
         }
 
         is Scale -> {
-            multiply(b.factor, lim(b.expr, x))
+            val result = when (x) {
+                Limit.Supremum if b.factor.isNegative == Bool.True -> lim(b.expr, Limit.Infimum)
+                Limit.Infimum if b.factor.isNegative == Bool.True -> lim(b.expr, Limit.Supremum)
+                else -> lim(b.expr, x)
+            }
+            multiply(b.factor, result)
         }
     }
