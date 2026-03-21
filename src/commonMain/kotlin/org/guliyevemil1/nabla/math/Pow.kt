@@ -2,6 +2,9 @@ package org.guliyevemil1.nabla.math
 
 fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> {
     if (pow == Bottom) return Bottom
+    if (pow == Zero) return One
+    if (pow == One) return base
+    if (base is XPow) return xPow(multiply(base.pow, pow)) as Expr<T>
     return Pow(base, pow as Constant)
 }
 
@@ -53,13 +56,4 @@ data class XPow(val pow: Constant) : Expr<Any?> {
         if (pow == One) return "x"
         return "(xpow ${pow.toLisp()})"
     }
-}
-
-fun <T> pow(base: Expr<T>, n: Constant): Expr<T> {
-    if (base is XPow) {
-        return xPow(multiply(base.pow, n)) as Expr<T>
-    }
-    if (n.isNegative == Bool.True) return Bottom
-    if (n.isZero == Bool.True) return One
-    return multiply(base, pow(base, add(n, NegOne)))
 }

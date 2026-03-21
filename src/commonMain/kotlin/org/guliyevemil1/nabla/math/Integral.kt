@@ -10,7 +10,8 @@ sealed interface Integral : Constant {
 
 private val integerMap = HashMap<Int, Integer>()
 
-fun integer(n: Int): Integer = Integer(n)
+fun integer(n: Int): Integer =
+    integerMap[n] ?: Integer(n).also { integerMap[n] = it }
 
 data class Integer(val n: Int) : Integral {
     override val sign: Sign = when {
