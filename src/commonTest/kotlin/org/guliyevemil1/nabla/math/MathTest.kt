@@ -3,7 +3,6 @@ package org.guliyevemil1.nabla.math
 import org.guliyevemil1.nabla.parser.parse
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(expected).toLisp(), actual.toLisp())
 
@@ -93,9 +92,10 @@ class MathTest {
 
     @Test
     fun testDifferentiate5() {
-        val m = divide(scale(integer(2), X), ExpX)
-        val expr = differentiate(m)
-        assertIs<Divide<Any?>>(expr)
+        assertEqualsExpr(
+            "(+ (/ (scale 2 (exp x)) (pow (exp x) 2)) (/ (scale -2 (* x (exp x))) (pow (exp x) 2)))",
+            differentiate(parse("(/ (scale 2 x) (exp x))"))
+        )
     }
 
     @Test

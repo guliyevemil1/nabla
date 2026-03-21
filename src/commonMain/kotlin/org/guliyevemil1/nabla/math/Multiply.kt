@@ -47,11 +47,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
         }
         .sortedWith(ExprComparator)
         .groupWith(::equalsUpToConstant)
-        .map {
-            it.fold<Expr<Any?>, Expr<Any?>>(One) { acc, v ->
-                multiplyBinary(acc, v)
-            } as Expr<T>
-        }
+        .map { it.fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary) }
 
     override val isSimple: Boolean = multiplicants.all { it.isSimple }
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
@@ -102,10 +98,7 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
 
 fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
 
-fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> =
-    Multiply(multiplicants)
-        .multiplicants
-        .reduce(::multiplyBinary)
+fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> = Multiply(multiplicants)
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)

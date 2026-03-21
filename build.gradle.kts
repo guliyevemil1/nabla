@@ -10,6 +10,9 @@ repositories {
 }
 
 kotlin {
+    jvm {
+    }
+
     js {
         browser {
         }
@@ -29,6 +32,9 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+    }
+    sourceSets.commonTest.dependencies {
+        implementation(kotlin("test"))
     }
 }
 

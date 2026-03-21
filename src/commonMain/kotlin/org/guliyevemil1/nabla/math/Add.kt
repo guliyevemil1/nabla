@@ -10,7 +10,6 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             summands.zip(other.summands).all { (a, b) -> a == b }
 
     override fun hashCode(): Int = summands.fold(0) { acc, x -> acc + 31 * x.hashCode() }
-
     val summands: List<Expr<T>> =
         s.flatMap {
             if (it is Add) {
@@ -19,6 +18,8 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
                 listOf(it)
             }
         }.sortedWith(ExprComparator)
+            .groupWith(::equalsUpToConstant)
+            .map { it.fold<Expr<T>, Expr<T>>(One, ::addBinary) }
 
     override val isConstant: Boolean = summands.all { it.isConstant }
 
@@ -48,13 +49,7 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
 
 fun <T> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())
 
-fun <T> add(summands: List<Expr<T>>): Expr<T> {
-    return when (summands.size) {
-        0 -> Zero
-        1 -> summands[0]
-        else -> summands.sortedWith(ExprComparator).reduce(::addBinary)
-    }
-}
+fun <T> add(summands: List<Expr<T>>): Expr<T> = Add(summands)
 
 fun add(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n + r.n)
@@ -93,7 +88,7 @@ private fun <T> addBinary(l: Expr<T>, r: Expr<T>): Expr<T> =
             )
 
         l is Add && r is Add -> add(l.summands + r.summands)
-        l is Add -> l.summands.foldRight(r) { ls, acc -> add(ls, acc) }
+        l is Add -> Add(l.summands + r)
         r is Add -> Add(listOf(l) + r.summands)
         else -> Add(l, r)
     }

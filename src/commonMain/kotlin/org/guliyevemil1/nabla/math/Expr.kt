@@ -23,6 +23,17 @@ fun equalsUpToConstant(a: Expr<*>, b: Expr<*>): Boolean =
         a is Scale && b is Scale -> equalsUpToConstant(a.expr, b.expr)
         a is Scale -> equalsUpToConstant(a.expr, b)
         b is Scale -> equalsUpToConstant(a, b.expr)
+        a == Zero && b == Zero -> true
+        a == Zero || b == Zero -> false
+        a.isConstant && b.isConstant -> true
+        else -> a == b
+    }
+
+fun equalBases(a: Expr<*>, b: Expr<*>): Boolean =
+    when {
+        a is Scale && b is Scale -> equalBases(a.expr, b.expr)
+        a is Scale -> equalBases(a.expr, b)
+        b is Scale -> equalBases(a, b.expr)
         a.isConstant && b.isConstant -> true
         else -> a == b
     }
@@ -47,13 +58,10 @@ fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
                 return compareExpr(a.pow, b.pow)
             }
             if (a is Multiply && b is Multiply) {
-                a.multiplicants.zip(b.multiplicants).forEach { (a, b) ->
-                    val cmp2 = compareExpr(a, b)
-                    if (cmp2 != 0) return cmp2
-                }
-                if (a.multiplicants.size != b.multiplicants.size) {
-                    return compareValuesBy(a.multiplicants.size, b.multiplicants.size)
-                }
+                if (a == b) return 0
+                a.multiplicants
+                    .zip(b.multiplicants)
+                    .forEach { (a, b) -> compareExpr(a, b).also { if (it != 0) return it } }
             }
             return 0
         }

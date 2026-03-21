@@ -47,7 +47,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             l.map { divide(it, r) }
         }
 
-        l is Divide -> divide(
+        l is Divide -> Divide(
             l.numerator,
             multiply(l.denominator, r),
         )
