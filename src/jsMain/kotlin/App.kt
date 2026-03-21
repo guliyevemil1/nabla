@@ -5,8 +5,10 @@ import kotlinx.html.js.button
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.title
+import org.guliyevemil1.nabla.ImmutableRNG
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.card.*
+import org.guliyevemil1.nabla.formatLispExpression
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import kotlin.random.Random

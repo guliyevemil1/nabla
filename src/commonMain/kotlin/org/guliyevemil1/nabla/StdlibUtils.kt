@@ -1,6 +1,7 @@
-package org.guliyevemil1.nabla.card
+package org.guliyevemil1.nabla
 
 import kotlin.random.Random
+import kotlin.text.iterator
 
 data class ImmutableRNG(private val seed: Int) {
     fun nextBits(bitCount: Int): Pair<Int, ImmutableRNG> {
@@ -23,6 +24,16 @@ fun <T, U : T> List<U>.replaceAt(index: Int, item: U): List<T> =
 
 fun <T, U : T> List<U>.replaceAt(index: Int, transform: (U) -> T): List<T> =
     this.replaceAt(index, transform(this[index]))
+
+fun <T> List<T>.groupWith(predicate: (T, T) -> Boolean): List<List<T>> =
+    foldIndexed(mutableListOf<MutableList<T>>()) { index, acc, value ->
+        if (index == 0 || !predicate(this[index - 1], value)) {
+            acc.add(mutableListOf(value))
+        } else {
+            acc.last().add(value)
+        }
+        acc
+    }
 
 fun formatLispExpression(input: String): String {
     val result = StringBuilder()

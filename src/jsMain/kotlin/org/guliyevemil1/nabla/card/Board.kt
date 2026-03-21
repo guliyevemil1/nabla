@@ -1,5 +1,6 @@
 package org.guliyevemil1.nabla.card
 
+import org.guliyevemil1.nabla.ImmutableRNG
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Bottom
@@ -7,6 +8,7 @@ import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.replaceAt
 
 interface Event {
     val player: Player

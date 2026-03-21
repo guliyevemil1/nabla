@@ -8,6 +8,53 @@ fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(exp
 
 class MathTest {
     @Test
+    fun testAdd() {
+        assertEqualsExpr(
+            expected = "(scale 3 (xpow 1))",
+            actual = add(
+                parse("(scale 2 x)"),
+                parse("x"),
+            )
+        )
+    }
+
+    @Test
+    fun testAddInts() {
+        assertEqualsExpr(
+            expected = "3",
+            actual = add(
+                parse("1"),
+                parse("2"),
+            )
+        )
+    }
+
+    @Test
+    fun testAdd2() {
+        assertEqualsExpr(
+            expected = "(add (scale 3 (xpow 1)) (exp x))",
+            actual = add(
+                parse("(scale 2 x)"),
+                parse("(exp x)"),
+                parse("x"),
+            )
+        )
+    }
+
+    @Test
+    fun testAdd3() {
+        assertEqualsExpr(
+            expected = "(+ (scale 2 (cos x)) (scale -4 (* x (sin x))) (scale -1 (* (xpow 2) (cos x))))",
+            actual = add(
+                parse("(scale 2 (cos x)) "),
+                parse("(scale -2 (* x (sin x))) "),
+                parse("(scale -2 (* x (sin x))) "),
+                parse("(scale -1 (* (xpow 2) (cos x)))"),
+            ),
+        )
+    }
+
+    @Test
     fun testDivide() {
         assertEqualsExpr(
             expected = "x",
@@ -116,42 +163,6 @@ class MathTest {
     @Test
     fun testNegate() {
         assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
-    }
-
-    @Test
-    fun testAdd() {
-        assertEqualsExpr(
-            expected = "(scale 3 (xpow 1))",
-            actual = add(
-                parse("(scale 2 x)"),
-                parse("x"),
-            )
-        )
-    }
-
-    @Test
-    fun testAdd2() {
-        assertEqualsExpr(
-            expected = "(add (scale 3 (xpow 1)) (exp x))",
-            actual = add(
-                parse("(scale 2 x)"),
-                parse("(exp x)"),
-                parse("x"),
-            )
-        )
-    }
-
-    @Test
-    fun testAdd3() {
-        assertEqualsExpr(
-            expected = "(+ (scale 2 (cos x)) (scale -4 (* x (sin x))) (scale -1 (* (xpow 2) (cos x))))",
-            actual = add(
-                parse("(scale 2 (cos x)) "),
-                parse("(scale -2 (* x (sin x))) "),
-                parse("(scale -2 (* x (sin x))) "),
-                parse("(scale -1 (* (xpow 2) (cos x)))"),
-            ),
-        )
     }
 
     @Test

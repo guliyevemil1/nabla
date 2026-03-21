@@ -1,14 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-fun <T> List<T>.groupWith(predicate: (T, T) -> Boolean): List<List<T>> =
-    foldIndexed(mutableListOf<MutableList<T>>()) { index, acc, value ->
-        if (index == 0 || this[index - 1] != value) {
-            acc.add(mutableListOf(value))
-        } else {
-            acc.last().add(value)
-        }
-        acc
-    }
+import org.guliyevemil1.nabla.groupWith
 
 data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = expr.isConstant
@@ -28,6 +20,8 @@ data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
 
 }
 
+fun <T> List<Expr<T>>.foldMultiply(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
+
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     constructor(vararg m: Expr<T>) : this(m.asList())
 
@@ -46,8 +40,8 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
             }
         }
         .sortedWith(ExprComparator)
-        .groupWith(::equalsUpToConstant)
-        .map { it.fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary) }
+        .groupWith(::equalBases)
+        .map { it.foldMultiply() }
 
     override val isSimple: Boolean = multiplicants.all { it.isSimple }
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
@@ -72,7 +66,6 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
         multiplicants.joinTo(this, separator = " ") { it.toLisp() }
         append(")")
     }
-
 }
 
 fun <T> negate(m: Expr<T>): Expr<T> = multiply(NegOne, m)
@@ -96,9 +89,16 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
         else -> Scale(factor, expr) as Expr<T>
     }
 
-fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
+fun <T> multiply(vararg m: Expr<T>): Expr<T> = multiply(m.asList())
 
-fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> = Multiply(multiplicants)
+fun <T> multiply(m: List<Expr<T>>): Expr<T> =
+    Multiply(m).let {
+        when (it.multiplicants.size) {
+            0 -> One
+            1 -> it.multiplicants[0]
+            else -> it.multiplicants.foldMultiply()
+        }
+    }
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)

@@ -1,5 +1,7 @@
 package org.guliyevemil1.nabla.card
 
+import org.guliyevemil1.nabla.ImmutableRNG
+
 interface Card
 
 interface Deck<C : Card> {

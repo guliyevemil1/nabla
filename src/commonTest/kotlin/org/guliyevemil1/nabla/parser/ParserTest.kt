@@ -12,6 +12,8 @@ class ParserTest {
 
     @Test
     fun testParseNumber() {
+        assertEquals(integer(1), parse("1"))
+        assertEquals(integer(2), parse("2"))
         assertEquals(integer(42), parse("42"))
     }
 

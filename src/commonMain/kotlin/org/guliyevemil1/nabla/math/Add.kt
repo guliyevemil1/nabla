@@ -2,6 +2,10 @@
 
 package org.guliyevemil1.nabla.math
 
+import org.guliyevemil1.nabla.groupWith
+
+fun <T> List<Expr<T>>.foldAdd(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = Zero, ::addBinary)
+
 class Add<T>(s: List<Expr<T>>) : Expr<T> {
     constructor(vararg s: Expr<T>) : this(s.asList())
 
@@ -19,7 +23,7 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             }
         }.sortedWith(ExprComparator)
             .groupWith(::equalsUpToConstant)
-            .map { it.fold<Expr<T>, Expr<T>>(One, ::addBinary) }
+            .map(List<Expr<T>>::foldAdd)
 
     override val isConstant: Boolean = summands.all { it.isConstant }
 
@@ -47,9 +51,17 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
     }
 }
 
-fun <T> add(vararg summands: Expr<T>): Expr<T> = add(summands.asList())
+fun <T> add(vararg s: Expr<T>): Expr<T> = add(s.asList())
 
-fun <T> add(summands: List<Expr<T>>): Expr<T> = Add(summands)
+fun <T> add(s: List<Expr<T>>): Expr<T> {
+    return Add(s).let {
+        when (it.summands.size) {
+            0 -> Zero
+            1 -> it.summands[0]
+            else -> it.summands.foldAdd()
+        }
+    }
+}
 
 fun add(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n + r.n)
