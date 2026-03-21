@@ -182,6 +182,15 @@ class MathTest {
                 ),
             ),
         )
+        assertEqualsExpr(
+            "(* (xpow 7) (sin x))",
+            multiply(
+                X,
+                parse(
+                    """(* x x x x x x (sin x))"""
+                ),
+            ),
+        )
     }
 
     @Test

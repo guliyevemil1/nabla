@@ -1,5 +1,15 @@
 package org.guliyevemil1.nabla.math
 
+fun <T> List<T>.groupWith(predicate: (T, T) -> Boolean): List<List<T>> =
+    foldIndexed(mutableListOf<MutableList<T>>()) { index, acc, value ->
+        if (index == 0 || this[index - 1] != value) {
+            acc.add(mutableListOf(value))
+        } else {
+            acc.last().add(value)
+        }
+        acc
+    }
+
 data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = expr.isConstant
 
@@ -27,14 +37,21 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 
     override fun hashCode(): Int = multiplicants.fold(0) { acc, x -> acc + 31 * x.hashCode() }
 
-    val multiplicants: List<Expr<T>> =
-        m.flatMap {
+    val multiplicants: List<Expr<T>> = m
+        .flatMap {
             if (it is Multiply) {
                 it.multiplicants
             } else {
                 listOf(it)
             }
-        }.sortedWith(ExprComparator)
+        }
+        .sortedWith(ExprComparator)
+        .groupWith(::equalsUpToConstant)
+        .map {
+            it.fold<Expr<Any?>, Expr<Any?>>(One) { acc, v ->
+                multiplyBinary(acc, v)
+            } as Expr<T>
+        }
 
     override val isSimple: Boolean = multiplicants.all { it.isSimple }
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
@@ -85,13 +102,10 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
 
 fun <T> multiply(vararg multiplicants: Expr<T>): Expr<T> = multiply(multiplicants.asList())
 
-fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> {
-    return when (multiplicants.size) {
-        0 -> One
-        1 -> multiplicants[0]
-        else -> multiplicants.sortedWith(ExprComparator).reduce(::multiplyBinary)
-    }
-}
+fun <T> multiply(multiplicants: List<Expr<T>>): Expr<T> =
+    Multiply(multiplicants)
+        .multiplicants
+        .reduce(::multiplyBinary)
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)
@@ -153,8 +167,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         ) as Expr<T>
 
         l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
-        l is Multiply -> l.multiplicants.foldRight(r) { m, acc -> multiply(m, acc) }
-        r is Multiply -> multiply(listOf(l) + r.multiplicants)
+        l is Multiply -> Multiply(l.multiplicants + r)
+        r is Multiply -> Multiply(listOf(l) + r.multiplicants)
 
         l is Divide && r is Divide ->
             divide(

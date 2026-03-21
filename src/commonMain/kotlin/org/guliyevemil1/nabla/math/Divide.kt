@@ -43,6 +43,10 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             Scale(l.asConstant!!, divide(One, r)) as Expr<T>
         }
 
+        l is Add -> {
+            l.map { divide(it, r) }
+        }
+
         l is Divide -> divide(
             l.numerator,
             multiply(l.denominator, r),
