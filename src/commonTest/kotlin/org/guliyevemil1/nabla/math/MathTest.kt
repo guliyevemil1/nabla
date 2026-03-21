@@ -8,6 +8,14 @@ fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(exp
 
 class MathTest {
     @Test
+    fun testEquals() {
+        assertEquals(
+            add(X2, X, One).toLisp(),
+            add(One, X, X2).toLisp(),
+        )
+    }
+
+    @Test
     fun testAdd() {
         assertEqualsExpr(
             expected = "(scale 3 (xpow 1))",
@@ -51,6 +59,14 @@ class MathTest {
                 parse("(scale -2 (* x (sin x))) "),
                 parse("(scale -1 (* (xpow 2) (cos x)))"),
             ),
+        )
+    }
+
+    @Test
+    fun testLog() {
+        assertEqualsExpr(
+            "(xpow (/ 1 2))",
+            sqrt(parse("x")),
         )
     }
 
@@ -163,14 +179,6 @@ class MathTest {
     @Test
     fun testNegate() {
         assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
-    }
-
-    @Test
-    fun testEquals() {
-        assertEquals(
-            add(X2, X, One).toLisp(),
-            add(One, X, X2).toLisp(),
-        )
     }
 
     @Test
