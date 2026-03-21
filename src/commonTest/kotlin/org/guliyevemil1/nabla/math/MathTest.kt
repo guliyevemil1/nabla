@@ -100,12 +100,13 @@ class MathTest {
         )
     }
 
-    //    fun testDivide3() {
-    //        assertEqualsExpr(
-    //            expected = "x",
-    //            actual = divide(parse("(pow (xpow 1) 2)"), X),
-    //        )
-    //    }
+    @Test
+    fun testDivide3() {
+        assertEqualsExpr(
+            expected = "x",
+            actual = divide(parse("(pow (xpow 1) 2)"), X),
+        )
+    }
 
     @Test
     fun testDifferentiate() {
@@ -164,7 +165,18 @@ class MathTest {
     @Test
     fun testDifferentiate6() {
         assertEqualsExpr(
-            expected = "(xpow 2)",
+            expected = """
+                (/ 
+                    (+ 
+                        (* x (exp x) (sin x)) 
+                        (scale -1 (* x (exp x) (cos x))) 
+                        (* (exp x) (cos x))
+                    ) 
+                    (* 
+                        (pow (exp x) 2) 
+                        (pow (cos x) 2)
+                    )
+                )""".trimIndent(),
             actual = differentiate(
                 parse(
                     """(/ x
