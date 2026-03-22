@@ -69,6 +69,8 @@ val Expr<Nothing>.sign: Sign
         CosX -> Sign.Unknown
         SinX -> Sign.Unknown
         is XPow -> Sign.Unknown
+        Infinity -> Sign.Positive
+        NegativeInfinity -> Sign.Negative
     }
 
 val Expr<Nothing>.isPositive: Bool

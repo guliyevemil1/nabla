@@ -5,6 +5,7 @@ fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> {
     if (pow == Zero) return One
     if (pow == One) return base
     if (base is XPow) return xPow(multiply(base.pow, pow)) as Expr<T>
+    if (base is Exp) return Exp(multiply(base.base, pow)) as Expr<T>
     return Pow(base, pow)
 }
 

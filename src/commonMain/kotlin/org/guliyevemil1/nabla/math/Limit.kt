@@ -9,12 +9,12 @@ enum class Limit {
     Infimum,
 }
 
-private object Infinity : Constant {
+internal object Infinity : Constant {
     override fun render(): String = """\infty"""
     override fun toLisp(): String = """inf"""
 }
 
-private object NegativeInfinity : Constant {
+internal object NegativeInfinity : Constant {
     override fun render(): String = """-\infty"""
     override fun toLisp(): String = """-inf"""
 }

@@ -81,8 +81,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Bottom || r is Bottom -> Bottom
         l is Integral && r is Integral -> multiply(l, r)
 
-        l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr) as Expr<T>
-        l is Scale && r is Integral -> scale(multiply(l.factor, r), l.expr) as Expr<T>
+        l is Integral && r is Scale -> scale(multiply(l, r.factor), r.expr)
+        l is Scale && r is Integral -> scale(multiply(l.factor, r), l.expr)
 
         l is Integral && r is Multiply -> scale(l, r)
         l is Multiply && r is Integral -> scale(r, l)
@@ -110,17 +110,17 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Scale && r is Scale -> scale(
             multiply(l.factor, r.factor),
             multiply(l.expr, r.expr),
-        ) as Expr<T>
+        )
 
         l is Scale -> scale(
             factor = l.factor,
             expr = multiply(l.expr, r),
-        ) as Expr<T>
+        )
 
         r is Scale -> scale(
             factor = r.factor,
             expr = multiply(l, r.expr),
-        ) as Expr<T>
+        )
 
         l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
         l is Multiply -> Multiply(l.multiplicants + r)
