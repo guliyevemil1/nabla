@@ -82,20 +82,27 @@ class MathTest {
     fun testDivide2() {
         assertEqualsExpr(
             expected = """
-                (/ 
-                    (+ 
+                (+ 
+                    (/ 
                         (exp x) 
+                        (pow (exp x) 2)
+                    )
+                    (/ 
                         (scale -1 (* 
                             (xpow -2) 
                             (exp x)
                         ))
+                        (pow (exp x) 2)
+                    )
+                    (/ 
                         (scale -1 (* 
                             (xpow -1) 
                             (exp x)
                         ))
+                        (pow (exp x) 2)
                     )
-                    (pow (exp x) 2)
-                )""".trimIndent(),
+                )
+            """.trimIndent(),
             actual = differentiate(parse("(/ (add -1 (xpow -1)) (exp x))")),
         )
     }
@@ -134,12 +141,15 @@ class MathTest {
     fun testDifferentiate3() {
         assertEqualsExpr(
             expected = """
-            (/ 
-                (+ 
+            (+ 
+                (/ 
                     (scale 2 (* (xpow 1) (exp x))) 
-                    (scale -1 (* (xpow 2) (exp x)))
+                    (pow (exp x) 2)
                 )
-                (pow (exp x) 2)
+                (/ 
+                    (scale -1 (* (xpow 2) (exp x)))
+                    (pow (exp x) 2)
+                )
             )
         """,
             actual = differentiate(parse("(/ (xpow 2) (exp x))"))
@@ -166,17 +176,31 @@ class MathTest {
     fun testDifferentiate6() {
         assertEqualsExpr(
             expected = """
-                (/ 
-                    (+ 
+                (+ 
+                    (/ 
                         (* x (exp x) (sin x)) 
-                        (scale -1 (* x (exp x) (cos x))) 
-                        (* (exp x) (cos x))
-                    ) 
-                    (* 
-                        (pow (exp x) 2) 
-                        (pow (cos x) 2)
+                        (* 
+                            (pow (exp x) 2) 
+                            (pow (cos x) 2)
+                        )
                     )
-                )""".trimIndent(),
+                    (/ 
+                        (scale -1 (* x (exp x) (cos x))) 
+                        (* 
+                            (pow (exp x) 2) 
+                            (pow (cos x) 2)
+                        )
+                    )
+                    (/ 
+                        (* (exp x) (cos x))
+                        (* 
+                            (pow (exp x) 2) 
+                            (pow (cos x) 2)
+                        )
+                    )
+                ) 
+
+                """.trimIndent(),
             actual = differentiate(
                 parse(
                     """(/ x
