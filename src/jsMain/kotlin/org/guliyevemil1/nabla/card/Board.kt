@@ -2,11 +2,14 @@ package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.ImmutableRNG
 import org.guliyevemil1.nabla.card.BoardState.*
+import org.guliyevemil1.nabla.groupWith
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Bottom
+import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
+import org.guliyevemil1.nabla.math.equalsUpToConstant
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.replaceAt
 
@@ -94,7 +97,14 @@ data class Player(
         field: List<Expr<Any?>> = this.field,
     ) = copy(
         hand = hand.sortedWith(NablaCardComparator),
-        field = field.mapNotNull { it.takeIf { it != Zero } },
+        field = run {
+            val nub = field.sortedWith(ExprComparator)
+                .groupWith(::equalsUpToConstant)
+                .map { it.first() }
+            return@run field
+                .mapNotNull { it.takeIf { it != Zero } }
+                .mapNotNull { it.takeIf { it in nub } }
+        },
     )
 }
 

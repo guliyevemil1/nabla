@@ -3,19 +3,13 @@ package org.guliyevemil1.nabla
 import kotlin.random.Random
 
 data class ImmutableRNG(private val seed: Int) {
-    fun nextBits(bitCount: Int): Pair<Int, ImmutableRNG> {
-        return Pair(
-            Random(seed).nextBits(bitCount),
-            ImmutableRNG(Random(seed).nextInt())
-        )
-    }
+    private fun nextRng() = ImmutableRNG(Random(seed).nextInt())
 
-    fun nextInt(until: Int): Pair<Int, ImmutableRNG> {
-        return Pair(
-            Random(seed).nextInt(until),
-            ImmutableRNG(Random(seed).nextInt())
-        )
-    }
+    fun nextBits(bitCount: Int): Pair<Int, ImmutableRNG> =
+        Random(seed).nextBits(bitCount) to nextRng()
+
+    fun nextInt(until: Int): Pair<Int, ImmutableRNG> =
+        Random(seed).nextInt(until) to nextRng()
 }
 
 fun <T, U : T> List<U>.replaceAt(index: Int, item: U): List<T> =

@@ -28,7 +28,7 @@
 }
 
 .card-button {
-    width: 90px;
+    width: 75px;
     height: 84px; /* Standard card ratio 5:7 (2.5" x 3.5") */
     border: 2px solid #333;
     cursor: pointer;

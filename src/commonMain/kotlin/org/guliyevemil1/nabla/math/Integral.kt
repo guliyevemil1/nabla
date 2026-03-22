@@ -58,6 +58,10 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
     }
 
     override fun toRational() = this
-    override fun render(): String = """\frac{$numerator}{$denominator}"""
+    override fun render(): String {
+        if (sign == Sign.Negative) return """-${Rational(-numerator, denominator).render()}"""
+        return """\frac{$numerator}{$denominator}"""
+    }
+
     override fun toLisp(): String = "(/ $numerator $denominator)"
 }
