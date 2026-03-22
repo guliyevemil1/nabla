@@ -46,7 +46,7 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
             c.multiplicants[0]
         }
 
-        is Scale -> multiply(sqrt(c.factor), sqrt(c.expr)) as Expr<T>
+        is Scale -> scale(sqrt(c.factor), sqrt(c.expr)) as Expr<T>
         is Multiply -> multiply(c.multiplicants.map { sqrt(it) })
         is Divide -> divide(sqrt(c.numerator), sqrt(c.denominator))
 

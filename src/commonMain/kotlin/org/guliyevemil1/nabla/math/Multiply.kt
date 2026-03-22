@@ -2,24 +2,6 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
 
-data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
-    override val isConstant: Boolean = expr.isConstant
-
-    override fun render(): String =
-        if (factor == integer(-1)) {
-            """-${expr.render()}"""
-        } else if (expr.isSimple) {
-            """${factor.render()} ${expr.render()}"""
-        } else {
-            """${factor.render()} \left(${expr.render()}\right)"""
-        }
-
-    override fun toLisp(): String = buildString {
-        append("(scale ${factor.toLisp()} ${expr.toLisp()})")
-    }
-
-}
-
 fun <T> List<Expr<T>>.foldMultiply(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
 
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
@@ -69,25 +51,6 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
 }
 
 fun <T> negate(m: Expr<T>): Expr<T> = multiply(NegOne, m)
-
-fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
-    when {
-        factor == Bottom -> Bottom
-        factor == Zero -> Zero
-        factor == One -> expr
-
-        expr is Add -> expr.map { scale(factor, it) }
-
-        factor is Integral && expr is Integral -> {
-            multiply(factor, expr)
-        }
-
-        factor is Integral && expr is Scale -> {
-            scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
-        }
-
-        else -> Scale(factor, expr) as Expr<T>
-    }
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {
     if (l is Integer && r is Integer) return integer(l.n * r.n)

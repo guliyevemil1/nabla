@@ -40,10 +40,6 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             }
         }
 
-        l.isConstant -> {
-            Scale(l as Expr<Nothing>, divide(One, r)) as Expr<T>
-        }
-
         l is Add -> l.map { divide(it, r) }
 
         l is Divide -> Divide(

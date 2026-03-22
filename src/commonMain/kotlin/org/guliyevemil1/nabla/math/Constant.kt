@@ -70,36 +70,36 @@ val Expr<Nothing>.sign: Sign
         is XPow -> Sign.Unknown
     }
 
+val Expr<Nothing>.isPositive: Bool
+    get() = when (sign) {
+        Sign.Positive -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+val Expr<Nothing>.isZero: Bool
+    get() = when (sign) {
+        Sign.Zero -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+val Expr<Nothing>.isNegative: Bool
+    get() = when (sign) {
+        Sign.Negative -> Bool.True
+        Sign.Unknown -> Bool.Unknown
+        else -> Bool.False
+    }
+
+val Expr<Nothing>.isNonPositive: Bool get() = !isPositive
+val Expr<Nothing>.isNonNegative: Bool get() = !isNegative
+
 sealed interface Constant : Expr<Nothing> {
     override val isSimple: Boolean
         get() = true
 
     override val isConstant: Boolean
         get() = true
-
-    val isPositive: Bool
-        get() = when (sign) {
-            Sign.Positive -> Bool.True
-            Sign.Unknown -> Bool.Unknown
-            else -> Bool.False
-        }
-
-    val isZero: Bool
-        get() = when (sign) {
-            Sign.Zero -> Bool.True
-            Sign.Unknown -> Bool.Unknown
-            else -> Bool.False
-        }
-
-    val isNegative: Bool
-        get() = when (sign) {
-            Sign.Negative -> Bool.True
-            Sign.Unknown -> Bool.Unknown
-            else -> Bool.False
-        }
-
-    val isNonPositive: Bool get() = !isPositive
-    val isNonNegative: Bool get() = !isNegative
 
     fun inverse(): Expr<Nothing> = when (isZero) {
         Bool.True -> Bottom

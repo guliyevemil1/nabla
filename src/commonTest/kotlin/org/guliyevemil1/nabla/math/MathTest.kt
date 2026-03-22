@@ -189,11 +189,13 @@ class MathTest {
     }
 
     @Test
-    fun testDifferentiate7() {
+    fun testSqrt() {
 
         assertEqualsExpr(
-            expected = """
-x
+            expected = """(scale 
+                    (/ (pow 24 (/ 1 2)) 24)
+                    (xpow 2)
+                )
                 """.trimIndent(),
             actual = sqrt(
                 parse(
