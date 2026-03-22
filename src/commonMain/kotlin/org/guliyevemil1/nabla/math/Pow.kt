@@ -13,6 +13,7 @@ data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override val isConstant: Boolean = base.isConstant
 
     override fun render(): String {
+        if (pow is Rational && pow.denominator == 2) return """\sqrt{${pow(base, integer(pow.numerator)).render()}}"""
         return when (base) {
             is CosX -> """\cos^{${pow.render()}} x"""
             is SinX -> """\sin^{${pow.render()}} x"""
