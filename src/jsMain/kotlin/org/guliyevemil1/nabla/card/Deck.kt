@@ -33,8 +33,11 @@ data class Shuffler<C>(
     private val discardPile: List<C>,
 ) {
 
-    fun draw(): Pair<C, Shuffler<C>> {
+    fun draw(): Pair<C?, Shuffler<C>> {
         if (drawPile.isEmpty()) {
+            if (discardPile.isEmpty()) {
+                return null to this
+            }
             val s = shuffler(rng, discardPile)
             return s.draw()
         }
@@ -48,8 +51,10 @@ data class Shuffler<C>(
         val l = buildList {
             repeat(n) {
                 val (c, newShuffler) = shuffler.draw()
-                add(c)
-                shuffler = newShuffler
+                if (c != null) {
+                    add(c)
+                    shuffler = newShuffler
+                }
             }
         }
         return l to shuffler
