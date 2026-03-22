@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
+data class Scale<T>(val factor: Expr<Nothing>, val expr: Expr<T>) : Expr<T> {
     override val isConstant: Boolean = expr.isConstant
 
     override fun render(): String =
@@ -22,7 +22,7 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
         factor == Bottom -> Bottom
         factor == Zero -> Zero
         factor == One -> expr
-//        factor is Scale -> scale(multiply(factor.factor, factor.expr as Expr<Nothing>), expr)
+        factor is Scale -> scale(multiply(factor.factor, factor.expr), expr)
 
         expr is Add -> expr.map { scale(factor, it) }
 
@@ -30,7 +30,7 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
             multiply(factor, expr)
 
         expr is Scale ->
-            scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
+            scale(multiply(factor, expr.factor), expr.expr)
 
         expr is Rational -> divide(
             multiply(
@@ -40,7 +40,13 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
             integer(expr.denominator)
         )
 
-        expr is Divide && expr.numerator == One -> divide(factor, expr.denominator)
+        expr is Divide -> divide(
+            multiply(
+                factor,
+                expr.numerator,
+            ),
+            expr.denominator,
+        )
 
         else -> Scale(factor, expr) as Expr<T>
     }

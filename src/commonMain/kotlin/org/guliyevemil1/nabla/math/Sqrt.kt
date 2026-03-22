@@ -33,10 +33,7 @@ fun <T> sqrt(c: Expr<T>): Expr<T> =
             val ni = integer(c.numerator)
             val di = integer(c.denominator)
             if (n == null && d != null) return divide(pow(ni, OneHalf), di)
-            if (n != null && d == null) return divide(
-                multiply(ni, pow(di, OneHalf)),
-                di
-            )
+            if (n != null && d == null) return pow(di, negate(OneHalf))
             throw IllegalStateException("Cannot compute square root of $c")
         }
 

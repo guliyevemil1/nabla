@@ -37,10 +37,10 @@ private fun gcdInner(a: Int, b: Int): Int {
 fun rational(numerator: Int, denominator: Int): Expr<Nothing> {
     if (numerator < 0 && denominator < 0)
         return rational(-numerator, -denominator)
-    if (numerator < 0 || denominator < 0)
+    if (denominator < 0)
         return rational(
-            -abs(numerator),
-            abs(denominator),
+            -numerator,
+            -denominator,
         )
     if (denominator == 0) return Bottom
     if (denominator == 1) return integer(numerator)

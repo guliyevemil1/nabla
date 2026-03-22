@@ -193,7 +193,7 @@ class MathTest {
 
         assertEqualsExpr(
             expected = """(scale 
-                    (/ (pow 24 (/ 1 2)) 24)
+                    (pow 24 (/ -1 2))
                     (xpow 2)
                 )
                 """.trimIndent(),
