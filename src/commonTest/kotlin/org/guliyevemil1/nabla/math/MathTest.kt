@@ -189,6 +189,21 @@ class MathTest {
     }
 
     @Test
+    fun testDifferentiate7() {
+
+        assertEqualsExpr(
+            expected = """
+x
+                """.trimIndent(),
+            actual = differentiate(
+                parse(
+                    """(scale 2 (/ 1 x))"""
+                )
+            )
+        )
+    }
+
+    @Test
     fun testNegate() {
         assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
     }

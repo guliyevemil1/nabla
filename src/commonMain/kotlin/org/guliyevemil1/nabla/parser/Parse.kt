@@ -10,39 +10,45 @@ sealed class SExpr {
     data class SInteger(val value: Int) : SExpr()
     data class SList(val head: Symbol, val tail: List<SExpr>) : SExpr() {
         val size = tail.size
-        val firstArg by lazy { tail[0].toExpr() }
-        val secondArg by lazy { tail[1].toExpr() }
+        val firstArg by lazy {
+            require(size >= 1)
+            tail[0].toExpr()
+        }
+        val secondArg by lazy {
+            require(size >= 2)
+            tail[1].toExpr()
+        }
     }
-
-    private fun SList.argIsX() = size == 1 && tail[0].toExpr() == X
 
     fun toExpr(): Expr<Any?> = when (this) {
         is SInteger -> Integer(value)
         is SList -> when (head.name.lowercase()) {
-            "sin" if argIsX() -> SinX
-            "cos" if argIsX() -> CosX
-            "exp" if argIsX() -> ExpX
+            "sin" if firstArg == X -> SinX
+            "cos" if firstArg == X -> CosX
+            "exp" if firstArg == X -> ExpX
 
             "+", "add", "plus" -> Add(tail.map { it.toExpr() })
-            "scale" if size == 2 -> Scale(firstArg as Constant, secondArg)
+            "scale" -> Scale(firstArg as Constant, secondArg)
             "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
-            "/" if size == 2 -> {
+            "/", "divide" -> {
                 val l = firstArg
                 val r = secondArg
                 if (l is Integer && r is Integer) return Rational(l.n, r.n)
                 return Divide(l, r)
             }
 
-            "log" if size == 1 -> Log(firstArg)
-            "sqrt" if size == 1 -> Pow(firstArg, OneHalf)
+            "log" -> Log(firstArg)
+            "sqrt" -> Pow(firstArg, OneHalf)
 
-            "xpow" if size == 1 -> XPow(firstArg as Constant)
-            "pow" if size == 2 -> Pow(firstArg, secondArg as Constant)
+            "xpow" -> XPow(firstArg as Constant)
+            "pow" -> {
+                Pow(firstArg, secondArg as Constant)
+            }
 
-            "ddx" if size == 1 -> Differentiate(firstArg)
-            "differentiate" if size == 1 -> Differentiate(firstArg)
+            "ddx" -> Differentiate(firstArg)
+            "differentiate" -> Differentiate(firstArg)
 
-            "integrate" if size == 1 -> Integrate(firstArg)
+            "integrate" -> Integrate(firstArg)
 
             else -> throw IllegalArgumentException("Unrecognized term: ${head.name}")
         }
