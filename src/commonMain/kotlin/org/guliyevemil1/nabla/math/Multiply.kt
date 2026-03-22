@@ -149,12 +149,12 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
             multiply(l.expr, r.expr),
         ) as Expr<T>
 
-        l is Scale -> Scale(
+        l is Scale -> scale(
             factor = l.factor,
             expr = multiply(l.expr, r),
         ) as Expr<T>
 
-        r is Scale -> Scale(
+        r is Scale -> scale(
             factor = r.factor,
             expr = multiply(l, r.expr),
         ) as Expr<T>

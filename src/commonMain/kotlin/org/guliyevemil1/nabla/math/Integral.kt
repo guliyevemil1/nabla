@@ -14,12 +14,6 @@ fun integer(n: Int): Integer =
     integerMap[n] ?: Integer(n).also { integerMap[n] = it }
 
 data class Integer(val n: Int) : Integral {
-    override val sign: Sign = when {
-        n < 0 -> Sign.Negative
-        n == 0 -> Sign.Zero
-        else -> Sign.Positive
-    }
-
     override fun toRational() = Rational(n, 1)
 
     override fun inverse(): Expr<Nothing> = when (isZero) {
@@ -56,11 +50,6 @@ fun rational(numerator: Int, denominator: Int): Expr<Nothing> {
 }
 
 data class Rational(val numerator: Int, val denominator: Int) : Integral {
-    override val sign: Sign = when {
-        numerator == 0 -> Sign.Zero
-        numerator > 0 -> Sign.Positive
-        else -> Sign.Negative
-    }
 
     override fun inverse(): Expr<Nothing> = when (isZero) {
         Bool.True -> Bottom

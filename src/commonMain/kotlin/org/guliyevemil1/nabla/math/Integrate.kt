@@ -24,9 +24,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Multiply<*> -> TODO()
     is Pow -> TODO()
 
-    is Scale -> {
-        Scale(b.factor, integrate(b.expr))
-    }
+    is Scale -> scale(b.factor, integrate(b.expr))
 
     is XPow -> {
         if (b.pow == NegOne) return Log(X)

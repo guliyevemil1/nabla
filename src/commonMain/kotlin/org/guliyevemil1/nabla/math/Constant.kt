@@ -1,5 +1,7 @@
 package org.guliyevemil1.nabla.math
 
+import kotlin.math.sign
+
 val Zero = integer(0)
 val One = integer(1)
 val NegOne = integer(-1)
@@ -32,8 +34,20 @@ enum class Bool {
 
 val Expr<Nothing>.sign: Sign
     get() = when (this) {
-        is Integer -> this.sign
-        is Rational -> this.sign
+        is Integer -> when {
+            n < 0 -> Sign.Negative
+            n == 0 -> Sign.Zero
+            else -> Sign.Positive
+        }
+
+        is Rational -> {
+            if (numerator == 0) return Sign.Zero
+            if (denominator == 0) return Sign.Unknown
+            val m = numerator.sign * denominator.sign
+            if (m > 0) Sign.Positive
+            else Sign.Negative
+        }
+
         is Pow<Nothing> -> this.base.sign
 
         is Multiply<Nothing> -> this.multiplicants
