@@ -50,7 +50,32 @@ data class Players(
             player2 = p2,
         ) to s2
     }
+
+    fun draw(): Players = Players(
+        player1 = player1.draw(),
+        player2 = player2.draw(),
+    )
 }
+
+private val allCards = listOf(
+    CardOne,
+    CardX,
+    CardExpX,
+    CardSinX,
+    CardCosX,
+    Over,
+    Times,
+    DDx,
+    Integrate,
+    Lim0,
+    LimInf,
+    LimInfimum,
+    LimNegInf,
+    LimSupremum,
+    Log,
+    Sqrt,
+    Nabla,
+)
 
 data class Player(
     val idx: Int,
@@ -61,6 +86,8 @@ data class Player(
         val (cs, s2) = s.draw(7 - hand.size)
         return with(hand = hand + cs) to s2
     }
+
+    fun draw(): Player = with(hand = allCards)
 
     fun with(
         hand: List<NablaCard> = this.hand,
@@ -107,9 +134,10 @@ class Board(
 ) {
 
     fun draw(): Board {
-        val (ps, s1) = players.draw(shuffler)
+//        val (ps, s1) = players.draw(shuffler)
+        val ps = players.draw()
         return Board(
-            shuffler = s1,
+            shuffler = shuffler,
             players = ps,
             state = state,
             previous = previous,

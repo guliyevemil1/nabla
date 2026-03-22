@@ -231,7 +231,10 @@ class MathTest {
 
     @Test
     fun testNegate() {
-        assertEqualsExpr("(scale -1 (* (xpow 1) (exp x)))", negate(multiply(X, ExpX)))
+        assertEqualsExpr(
+            expected = "(scale -1 (* (xpow 1) (exp x)))",
+            actual = negate(multiply(X, ExpX))
+        )
     }
 
     @Test

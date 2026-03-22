@@ -63,4 +63,6 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
             }
             multiply(b.factor, result)
         }
+
+        is Exp<*> -> TODO()
     }

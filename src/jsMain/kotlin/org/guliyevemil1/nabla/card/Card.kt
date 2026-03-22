@@ -1,7 +1,7 @@
 package org.guliyevemil1.nabla.card
 
 import org.guliyevemil1.nabla.math.CosX
-import org.guliyevemil1.nabla.math.ExpX
+import org.guliyevemil1.nabla.math.Exp
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Limit
 import org.guliyevemil1.nabla.math.SinX
@@ -54,7 +54,7 @@ object CardZero : BaseCard(integer(0))
 object CardOne : BaseCard(integer(1))
 object CardX : BaseCard(X)
 object CardX2 : BaseCard(X2)
-object CardExpX : BaseCard(ExpX)
+object CardExpX : BaseCard(Exp(X))
 object CardSinX : BaseCard(SinX)
 object CardCosX : BaseCard(CosX)
 

@@ -22,7 +22,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> {
         is Bottom -> Bottom
         is SinX -> CosX
         is CosX -> negate(SinX)
-        is ExpX -> ExpX
+        is Exp -> TODO()
         is XPow -> multiply(b.pow, xPow(add(b.pow, NegOne)))
         is Add -> b.map { differentiate(it) }
         is Multiply -> differentiate(b)

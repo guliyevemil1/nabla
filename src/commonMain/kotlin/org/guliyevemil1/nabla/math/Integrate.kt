@@ -11,7 +11,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Constant -> multiply(b, X)
     CosX -> SinX
     SinX -> Scale(NegOne, CosX)
-    ExpX -> ExpX
+    is Exp -> TODO()
     is Add -> b.map { integrate(it) }
     is Differentiate -> b.base
 

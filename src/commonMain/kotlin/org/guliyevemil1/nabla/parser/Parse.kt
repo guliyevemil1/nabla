@@ -25,7 +25,6 @@ sealed class SExpr {
         is SList -> when (head.name.lowercase()) {
             "sin" if firstArg == X -> SinX
             "cos" if firstArg == X -> CosX
-            "exp" if firstArg == X -> ExpX
 
             "+", "add", "plus" -> Add(tail.map { it.toExpr() })
             "scale" -> Scale(firstArg as Expr<Nothing>, secondArg)
@@ -37,6 +36,7 @@ sealed class SExpr {
                 return Divide(l, r)
             }
 
+            "exp" -> Exp(firstArg)
             "log" -> Log(firstArg)
             "sqrt" -> Pow(firstArg, OneHalf)
 
@@ -56,9 +56,6 @@ sealed class SExpr {
         is Symbol -> when (name.lowercase()) {
             "bottom" -> Bottom
             "x" -> X
-            "expx" -> ExpX
-            "sinx" -> SinX
-            "cosx" -> CosX
             else -> throw IllegalArgumentException("Unrecognized term: $name")
         }
     }

@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Scale::class,
     XPow::class,
-    ExpX::class,
+    Exp::class,
     SinX::class,
     CosX::class,
     Log::class,

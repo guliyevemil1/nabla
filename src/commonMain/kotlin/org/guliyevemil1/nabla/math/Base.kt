@@ -3,6 +3,8 @@ package org.guliyevemil1.nabla.math
 val X = xPow(One)
 val X2 = xPow(integer(2))
 
+val ExpX = Exp(X)
+
 object CosX : Expr<Any?> {
     override val isSimple = true
     override val isConstant: Boolean = false
@@ -17,12 +19,4 @@ object SinX : Expr<Any?> {
 
     override fun render(): String = """\sin(x)"""
     override fun toLisp(): String = "(sin x)"
-}
-
-object ExpX : Expr<Any?> {
-    override val isSimple = true
-    override val isConstant: Boolean = false
-
-    override fun render(): String = """e^x"""
-    override fun toLisp(): String = "(exp x)"
 }

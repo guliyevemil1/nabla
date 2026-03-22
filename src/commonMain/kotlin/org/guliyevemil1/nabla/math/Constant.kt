@@ -56,6 +56,8 @@ val Expr<Nothing>.sign: Sign
 
         is Divide<Nothing> -> this.numerator.sign * this.denominator.sign
 
+        is Exp<Nothing> -> Sign.Positive
+
         is Add<Nothing> -> TODO()
         is Log<Nothing> -> TODO()
 
@@ -65,7 +67,6 @@ val Expr<Nothing>.sign: Sign
         is Integrate -> Sign.Unknown
         Bottom -> Sign.Unknown
         CosX -> Sign.Unknown
-        ExpX -> Sign.Unknown
         SinX -> Sign.Unknown
         is XPow -> Sign.Unknown
     }
