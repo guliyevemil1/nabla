@@ -9,7 +9,17 @@ enum class Limit {
     Infimum,
 }
 
-fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
+private object Infinity : Constant {
+    override fun render(): String = """\infty"""
+    override fun toLisp(): String = """inf"""
+}
+
+private object NegativeInfinity : Constant {
+    override fun render(): String = """-\infty"""
+    override fun toLisp(): String = """-inf"""
+}
+
+private fun limInner(b: Expr<Any?>, x: Limit): Expr<Nothing> =
     when (b) {
         Bottom -> Bottom
         is Constant -> b
@@ -31,14 +41,6 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
             Limit.Infimum -> NegOne
         }
 
-        ExpX -> when (x) {
-            Limit.Zero -> One
-            Limit.Infinity -> Bottom
-            Limit.NegativeInfinity -> Zero
-            Limit.Supremum -> Bottom
-            Limit.Infimum -> Bottom
-        }
-
         SinX -> when (x) {
             Limit.Zero -> Zero
             Limit.Infinity -> Bottom
@@ -48,11 +50,44 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
         }
 
         is XPow -> when (x) {
-            Limit.Zero -> Zero
-            Limit.Infinity -> Bottom
-            Limit.NegativeInfinity -> Bottom
-            Limit.Supremum -> Bottom
-            Limit.Infimum -> Bottom
+            Limit.Zero -> {
+                if (b.pow is Integer) {
+                    return when {
+                        b.pow.n == 0 -> One
+                        b.pow.n < 0 && b.pow.n % 2 == 0 -> Infinity
+                        b.pow.n < 0 -> Bottom
+                        else -> Zero
+                    }
+                }
+                TODO()
+            }
+
+            Limit.Infinity -> {
+                if (b.pow is Integer) {
+                    return when {
+                        b.pow.n == 0 -> One
+                        b.pow.n < 0 -> Bottom
+                        b.pow.n % 2 == 0 -> Infinity
+                        else -> NegativeInfinity
+                    }
+                }
+                TODO()
+            }
+
+            Limit.NegativeInfinity -> {
+                if (b.pow is Integer) {
+                    return when {
+                        b.pow.n == 0 -> One
+                        b.pow.n < 0 -> Bottom
+                        b.pow.n % 2 == 0 -> Infinity
+                        else -> NegativeInfinity
+                    }
+                }
+                TODO()
+            }
+
+            Limit.Supremum -> Infinity
+            Limit.Infimum -> Infinity
         }
 
         is Scale -> {
@@ -66,3 +101,10 @@ fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> =
 
         is Exp<*> -> TODO()
     }
+
+fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> = limInner(b, x).let {
+    if (it == Infinity || it == NegativeInfinity)
+        Bottom
+    else
+        it
+}

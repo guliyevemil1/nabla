@@ -22,7 +22,11 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Multiply -> Bottom
     SinX -> Bottom
 
-    is Exp -> TODO()
+    is Exp -> {
+        if (b.base == X) return Log(X)
+        TODO()
+    }
+
     is Log -> TODO()
 
     is Invert -> b.base
