@@ -15,20 +15,17 @@ fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(
     }
 )
 
-fun differentiate(b: Expr<Any?>): Expr<Any?> =
-    when (b) {
-        is Bottom -> Bottom
+fun differentiate(b: Expr<Any?>): Expr<Any?> {
+    if (b.isConstant) return Zero
+    return when (b) {
         is Constant -> Zero
+        is Bottom -> Bottom
         is SinX -> CosX
         is CosX -> negate(SinX)
         is ExpX -> ExpX
-        is XPow -> {
-            multiply(b.pow, xPow(add(b.pow, NegOne).asConstant!!))
-        }
-
+        is XPow -> multiply(b.pow, xPow(add(b.pow, NegOne)))
         is Add -> b.map { differentiate(it) }
         is Multiply -> differentiate(b)
-
         is Divide<*> -> {
             val f = b.numerator
             val g = b.denominator
@@ -45,11 +42,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> =
         is Integrate -> b.base
         is Invert -> TODO()
         is Log -> divide(differentiate(b.base), b.base)
-        is Pow -> {
-            multiply(multiply(b.pow, b.base), differentiate(b.base))
-        }
-
-        is Scale -> {
-            multiply(b.factor, differentiate(b.expr))
-        }
+        is Pow -> multiply(multiply(b.pow, b.base), differentiate(b.base))
+        is Scale -> multiply(b.factor, differentiate(b.expr))
     }
+}

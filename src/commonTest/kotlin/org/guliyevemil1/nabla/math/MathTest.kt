@@ -195,9 +195,9 @@ class MathTest {
             expected = """
 x
                 """.trimIndent(),
-            actual = differentiate(
+            actual = sqrt(
                 parse(
-                    """(scale 2 (/ 1 x))"""
+                    """(scale (/ 1 24) (xpow 4))"""
                 )
             )
         )

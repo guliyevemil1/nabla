@@ -72,11 +72,6 @@ val ExprComparator: Comparator<Expr<*>> = Comparator { a, b -> compareExpr(a, b)
 sealed interface Expr<out T> {
     val isConstant: Boolean
 
-    val asConstant: Constant?
-        get() = if (isConstant) {
-            this as Constant
-        } else null
-
     fun render(): String
 
     fun toLisp(): String

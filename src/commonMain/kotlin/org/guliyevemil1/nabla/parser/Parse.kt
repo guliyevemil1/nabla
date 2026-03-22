@@ -28,7 +28,7 @@ sealed class SExpr {
             "exp" if firstArg == X -> ExpX
 
             "+", "add", "plus" -> Add(tail.map { it.toExpr() })
-            "scale" -> Scale(firstArg as Constant, secondArg)
+            "scale" -> Scale(firstArg as Expr<Nothing>, secondArg)
             "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
             "/", "divide" -> {
                 val l = firstArg
@@ -40,9 +40,9 @@ sealed class SExpr {
             "log" -> Log(firstArg)
             "sqrt" -> Pow(firstArg, OneHalf)
 
-            "xpow" -> XPow(firstArg as Constant)
+            "xpow" -> XPow(firstArg as Expr<Nothing>)
             "pow" -> {
-                Pow(firstArg, secondArg as Constant)
+                Pow(firstArg, secondArg as Expr<Nothing>)
             }
 
             "ddx" -> Differentiate(firstArg)

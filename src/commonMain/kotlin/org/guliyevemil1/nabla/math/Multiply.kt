@@ -2,7 +2,7 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
 
-data class Scale(val factor: Constant, val expr: Expr<Any?>) : Expr<Any?> {
+data class Scale(val factor: Expr<Nothing>, val expr: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = expr.isConstant
 
     override fun render(): String =
@@ -86,7 +86,7 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
             scale(multiply(factor, expr.factor), expr.expr) as Expr<T>
         }
 
-        else -> Scale(factor as Constant, expr) as Expr<T>
+        else -> Scale(factor, expr) as Expr<T>
     }
 
 fun multiply(l: Integral, r: Integral): Expr<Nothing> {

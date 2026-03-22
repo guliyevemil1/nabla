@@ -18,7 +18,8 @@ fun isqrt(n: Int): Int? {
 
 fun <T> sqrt(c: Expr<T>): Expr<T> =
     when (c) {
-        is Constant if (c == Zero || c == One) -> c
+        Zero -> Zero
+        One -> One
         is Integer -> {
             val r = isqrt(c.n) ?: return pow(c, OneHalf)
             return integer(r)

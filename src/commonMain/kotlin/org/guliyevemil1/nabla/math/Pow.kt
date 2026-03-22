@@ -5,10 +5,10 @@ fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> {
     if (pow == Zero) return One
     if (pow == One) return base
     if (base is XPow) return xPow(multiply(base.pow, pow)) as Expr<T>
-    return Pow(base, pow as Constant)
+    return Pow(base, pow)
 }
 
-data class Pow<T>(val base: Expr<T>, val pow: Constant) : Expr<T> {
+data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override val isSimple: Boolean = base.isSimple
     override val isConstant: Boolean = base.isConstant
 
@@ -35,11 +35,11 @@ fun xPow(pow: Expr<Nothing>): Expr<Any?> {
         Bottom -> Bottom
         Zero -> One
         is Integer -> xPow(pow.n)
-        else -> XPow(pow as Constant)
+        else -> XPow(pow)
     }
 }
 
-data class XPow(val pow: Constant) : Expr<Any?> {
+data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     override val isConstant: Boolean = false
 
     override val isSimple = true
