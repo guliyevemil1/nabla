@@ -1,13 +1,17 @@
 package org.guliyevemil1.nabla.math
 
-fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> {
-    if (pow == Bottom) return Bottom
-    if (pow == Zero) return One
-    if (pow == One) return base
-    if (base is XPow) return xPow(multiply(base.pow, pow)) as Expr<T>
-    if (base is Exp) return Exp(multiply(base.base, pow))
-    return Pow(base, pow)
-}
+fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> =
+    when (pow) {
+        Bottom -> Bottom
+        Zero -> One
+        One -> base
+        else -> when (base) {
+            is Pow -> pow(base.base, multiply(base.pow, pow))
+            is XPow -> xPow(multiply(base.pow, pow)) as Expr<T>
+            is Exp -> Exp(multiply(base.base, pow))
+            else -> Pow(base, pow)
+        }
+    }
 
 data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override val isSimple: Boolean = base.isSimple
@@ -16,8 +20,15 @@ data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override fun render(): String {
         if (pow is Rational && pow.denominator == 2) return """\sqrt{${pow(base, integer(pow.numerator)).render()}}"""
         return when (base) {
-            is CosX -> """\cos^{${pow.render()}} x"""
-            is SinX -> """\sin^{${pow.render()}} x"""
+            is CosX, SinX -> {
+                val f = if (base is CosX) """\cos""" else """\sin"""
+                if (pow.isNegative == Bool.True) {
+                    """\left($f x\right)^{${pow.render()}}"""
+                } else {
+                    """$f^{${pow.render()}} x"""
+                }
+            }
+
             else -> """\left(${base.render()}\right)^{${pow.render()}}"""
         }
     }
