@@ -42,7 +42,11 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> {
         is Integrate -> b.base
         is Invert -> TODO()
         is Log -> divide(differentiate(b.base), b.base)
-        is Pow -> multiply(multiply(b.pow, b.base), differentiate(b.base))
+        is Pow -> multiply(
+            multiply(b.pow, Pow(b.base, add(b.pow, NegOne))),
+            differentiate(b.base)
+        )
+
         is Scale -> multiply(b.factor, differentiate(b.expr))
     }
 }

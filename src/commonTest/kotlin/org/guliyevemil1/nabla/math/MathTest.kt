@@ -213,6 +213,21 @@ class MathTest {
     }
 
     @Test
+    fun testDifferentiate7() {
+        assertEqualsExpr(
+            expected = """
+                (scale 
+                    (/ -1 2) 
+                    (* 
+                        (sin x)
+                        (pow (cos x) (/ -1 2))
+                    ) 
+                )""".trimIndent(),
+            differentiate(parse("(pow (cos x) (/ 1 2))"))
+        )
+    }
+
+    @Test
     fun testSqrt() {
 
         assertEqualsExpr(
