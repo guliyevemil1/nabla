@@ -14,8 +14,8 @@ fun divide(l: Integral, r: Integral): Expr<Nothing> {
     val ratL = l.toRational()
     val ratR = l.toRational()
     return rational(
-        numerator = ratL.numerator * ratR.denominator,
-        denominator = ratL.denominator * ratR.numerator,
+        numerator = ratL.numerator * ratR.numerator,
+        denominator = ratL.denominator * ratR.denominator,
     )
 }
 

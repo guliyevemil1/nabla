@@ -86,7 +86,7 @@ private fun <T> addBinary(l: Expr<T>, r: Expr<T>): Expr<T> =
             scale(
                 add(l.factor, r.factor),
                 add(l.expr, r.expr),
-            ) as Expr<T>
+            )
 
         l is Scale && l.expr == r ->
             scale(

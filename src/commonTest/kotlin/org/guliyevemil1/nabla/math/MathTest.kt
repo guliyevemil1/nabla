@@ -245,6 +245,16 @@ class MathTest {
     }
 
     @Test
+    fun testSqrt2() {
+        assertEqualsExpr(
+            expected = """
+                (xpow (/ 1 4))
+                """.trimIndent(),
+            sqrt(sqrt(X))
+        )
+    }
+
+    @Test
     fun testNegate() {
         assertEqualsExpr(
             expected = "(scale -1 (* (xpow 1) (exp x)))",
