@@ -5,11 +5,13 @@ fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> =
         Bottom -> Bottom
         Zero -> One
         One -> base
-        else -> when (base) {
-            is Pow -> pow(base.base, multiply(base.pow, pow))
-            is XPow -> xPow(multiply(base.pow, pow)) as Expr<T>
-            is Exp -> Exp(multiply(base.pow, pow))
-            else -> Pow(base, pow)
+        else -> {
+            when (base) {
+                is Pow -> pow(base.base, multiply(base.pow, pow))
+                is XPow -> xPow(multiply(base.pow, pow)) as Expr<T>
+                is Exp -> Exp(multiply(base.pow, pow))
+                else -> Pow(base, pow)
+            }
         }
     }
 

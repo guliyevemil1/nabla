@@ -26,9 +26,13 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
                                 else -> true
                             }
                         }
-                    Divide(multiply(n), multiply(d.map { pow(it, integer(-1)) }))
-                } else
+                    Divide(
+                        multiply(n),
+                        multiply(d.map { pow(it, integer(-1)) })
+                    )
+                } else {
                     e
+                }
             }
     }
 }
@@ -89,6 +93,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
     }.let {
         if (it is Divide) {
             it.simplify()
+//            it
         } else {
             it
         }

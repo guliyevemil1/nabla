@@ -99,8 +99,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
 
         l == r -> pow(l, integer(2))
         l is Pow && r is Pow && l.base == r.base -> pow(l.base, add(l.pow, r.pow))
-        l is Pow && l.base == r -> pow(l, add(l.pow, One))
-        r is Pow && l == r.base -> pow(r, add(r.pow, One))
+        l is Pow && l.base == r -> pow(l.base, add(l.pow, One))
+        r is Pow && l == r.base -> pow(r.base, add(r.pow, One))
 
         l is Add && r is Add -> add(l.summands.flatMap { ls ->
             r.summands.map { multiply(ls, it) }

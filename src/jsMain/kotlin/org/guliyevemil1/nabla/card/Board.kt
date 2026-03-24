@@ -4,11 +4,15 @@ import org.guliyevemil1.nabla.util.ImmutableRNG
 import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Bottom
+import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
+import org.guliyevemil1.nabla.math.equalsUpToConstant
+import org.guliyevemil1.nabla.math.flattenAdd
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.unwrapScale
+import org.guliyevemil1.nabla.util.groupWith
 import org.guliyevemil1.nabla.util.replaceAt
 
 interface Event {
@@ -97,14 +101,13 @@ data class Player(
         hand = hand.sortedWith(NablaCardComparator),
         field = field
             .filter { it != Zero }
-//            .flattenAdd()
+            .flattenAdd()
             .let { result ->
-//                val nub = result
-//                    .sortedWith(ExprComparator)
-//                    .groupWith(::equalsUpToConstant)
-//                    .map { it.first() }
-//                result.mapNotNull { it.takeIf { it in nub } }
-                result
+                val nub = result
+                    .sortedWith(ExprComparator)
+                    .groupWith(::equalsUpToConstant)
+                    .map { it.first() }
+                result.mapNotNull { it.takeIf { it in nub } }
             }
             .map { it.unwrapScale() },
     )

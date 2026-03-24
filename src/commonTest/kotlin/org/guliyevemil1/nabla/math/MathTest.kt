@@ -136,6 +136,17 @@ class MathTest {
     }
 
     @Test
+    fun testDivide6() {
+        assertEqualsExpr(
+            expected = "(/ 1 (cos x))",
+            actual = divide(
+                parse("(cos x)"),
+                parse("(pow (cos x) 2)"),
+            ),
+        )
+    }
+
+    @Test
     fun testDifferentiate() {
         assertEqualsExpr(
             expected = "(xpow 2)",
@@ -244,6 +255,14 @@ class MathTest {
                     ) 
                 )""".trimIndent(),
             differentiate(parse("(pow (cos x) (/ 1 2))"))
+        )
+    }
+
+    @Test
+    fun testDifferentiate8() {
+        assertEqualsExpr(
+            "(+ (pow (cos x) -1) (/ (* x (sin x)) (pow (cos x) 2)))",
+            differentiate(parse("(/ x (cos x))"))
         )
     }
 
