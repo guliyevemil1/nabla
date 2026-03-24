@@ -1,6 +1,7 @@
 package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
+import kotlin.math.exp
 
 fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
     if (it is Multiply) {
@@ -123,6 +124,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
             factor = r.factor,
             expr = multiply(l, r.expr),
         )
+
+        l is Exp && r is Exp -> e(add(l.base, r.base))
 
         l is Multiply && r is Multiply -> multiply(l.multiplicants + r.multiplicants)
         l is Multiply -> Multiply(l.multiplicants + r)

@@ -99,17 +99,18 @@ data class Player(
         field: List<Expr<Any?>> = this.field,
     ) = copy(
         hand = hand.sortedWith(NablaCardComparator),
-        field = run {
-            val nub = field
-                .filter { it != Zero }
-                .flattenAdd()
-                .sortedWith(ExprComparator)
-                .groupWith(::equalsUpToConstant)
-                .map { it.first() }
-            return@run field
-                .mapNotNull { it.takeIf { it in nub } }
-                .map { it.unwrapScale() }
-        },
+        field = field
+            .filter { it != Zero }
+//            .flattenAdd()
+            .let { result ->
+//                val nub = result
+//                    .sortedWith(ExprComparator)
+//                    .groupWith(::equalsUpToConstant)
+//                    .map { it.first() }
+//                result.mapNotNull { it.takeIf { it in nub } }
+                result
+            }
+            .map { it.unwrapScale() },
     )
 }
 

@@ -46,6 +46,16 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             expr = divide(l.expr, r.expr),
         )
 
+        l is Scale -> scale(
+            factor = l.factor,
+            expr = divide(l.expr, r),
+        )
+
+        r is Scale -> scale(
+            factor = r.factor,
+            expr = divide(l, r.expr),
+        )
+
         l is XPow && r is XPow -> xPow(add(l.pow, multiply(NegOne, r.pow))) as Expr<T>
 
         l is Pow && r is Pow && l.base == r.base -> pow(l.base, add(l.pow, multiply(NegOne, r.pow)))

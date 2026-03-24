@@ -33,6 +33,12 @@ fun equalBases(a: Expr<*>, b: Expr<*>): Boolean =
         a is Scale && b is Scale -> equalBases(a.expr, b.expr)
         a is Scale -> equalBases(a.expr, b)
         b is Scale -> equalBases(a, b.expr)
+        a is XPow && b is XPow -> true
+        a is Pow && b is XPow -> equalBases(a.base, X)
+        a is XPow && b is Pow -> equalBases(b.base, X)
+        a is Pow && b is Pow -> equalBases(a.base, b.base)
+        a is Pow -> equalBases(a.base, b)
+        b is Pow -> equalBases(a, b.base)
         a.isConstant && b.isConstant -> true
         else -> a == b
     }
