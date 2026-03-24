@@ -19,9 +19,9 @@ class MathTest {
     @Test
     fun testAdd() {
         assertEqualsExpr(
-            expected = "(scale 3 (xpow 1))",
+            expected = "(* 3 (xpow 1))",
             actual = add(
-                parse("(scale 2 x)"),
+                parse("(* 2 x)"),
                 parse("x"),
             )
         )
@@ -41,9 +41,9 @@ class MathTest {
     @Test
     fun testAdd2() {
         assertEqualsExpr(
-            expected = "(add (scale 3 (xpow 1)) (exp x))",
+            expected = "(add (* 3 (xpow 1)) (exp x))",
             actual = add(
-                parse("(scale 2 x)"),
+                parse("(* 2 x)"),
                 parse("(exp x)"),
                 parse("x"),
             )
@@ -53,12 +53,12 @@ class MathTest {
     @Test
     fun testAdd3() {
         assertEqualsExpr(
-            expected = "(+ (scale 2 (cos x)) (scale -4 (* x (sin x))) (scale -1 (* (xpow 2) (cos x))))",
+            expected = "(+ (* 2 (cos x)) (* -4 (* x (sin x))) (* -1 (* (xpow 2) (cos x))))",
             actual = add(
-                parse("(scale 2 (cos x)) "),
-                parse("(scale -2 (* x (sin x))) "),
-                parse("(scale -2 (* x (sin x))) "),
-                parse("(scale -1 (* (xpow 2) (cos x)))"),
+                parse("(* 2 (cos x)) "),
+                parse("(* -2 (* x (sin x))) "),
+                parse("(* -2 (* x (sin x))) "),
+                parse("(* -1 (* (xpow 2) (cos x)))"),
             ),
         )
     }
@@ -89,14 +89,14 @@ class MathTest {
                         (pow (exp x) 2)
                     )
                     (/ 
-                        (scale -1 (* 
+                        (* -1 (* 
                             (xpow -2) 
                             (exp x)
                         ))
                         (pow (exp x) 2)
                     )
                     (/ 
-                        (scale -1 (* 
+                        (* -1 (* 
                             (xpow -1) 
                             (exp x)
                         ))
@@ -119,7 +119,7 @@ class MathTest {
     @Test
     fun testDivide4() {
         assertEqualsExpr(
-            expected = "(scale -1 (divide 1 x))",
+            expected = "(* -1 (xpow -1))",
             actual = divide(NegOne, X),
         )
     }
@@ -127,7 +127,7 @@ class MathTest {
     @Test
     fun testDivide5() {
         assertEqualsExpr(
-            expected = "(/ x (exp x))",
+            expected = "(* x (exp (* -1 x)))",
             actual = divide(
                 parse("(* x (exp x))"),
                 parse("(pow (exp x) 2)"),
@@ -161,7 +161,7 @@ class MathTest {
     fun testDifferentiate() {
         assertEqualsExpr(
             expected = "(xpow 2)",
-            actual = differentiate(parse("(scale (/ 1 3) (xpow 3))"))
+            actual = differentiate(parse("(* (/ 1 3) (xpow 3))"))
         )
     }
 
@@ -170,7 +170,7 @@ class MathTest {
         assertEqualsExpr(
             expected = """
             (+
-                (scale 2 (* (xpow 1) (exp x) (sin x)))
+                (* 2 (* (xpow 1) (exp x) (sin x)))
                 (* (xpow 2) (exp x) (sin x))
                 (* (xpow 2) (exp x) (cos x))
             )
@@ -184,14 +184,8 @@ class MathTest {
         assertEqualsExpr(
             expected = """
             (+ 
-                (/ 
-                    (scale 2 (* (xpow 1) (exp x))) 
-                    (pow (exp x) 2)
-                )
-                (/ 
-                    (scale -1 (* (xpow 2) (exp x)))
-                    (pow (exp x) 2)
-                )
+                (* 2 (* (xpow 1) (exp (* -1 x)))) 
+                (* -1 (* (xpow 2) (exp (* -1 x))))
             )
         """,
             actual = differentiate(parse("(/ (xpow 2) (exp x))"))
@@ -201,7 +195,7 @@ class MathTest {
     @Test
     fun testDifferentiate4() {
         assertEqualsExpr(
-            expected = "(scale 2 (xpow 1))",
+            expected = "(* 2 (xpow 1))",
             actual = differentiate(X2),
         )
     }
@@ -211,15 +205,15 @@ class MathTest {
         assertEqualsExpr(
             """
                 (+ 
-                    (scale 2 (exp (scale -1 x))) 
-                    (scale -2 
-                        (/
+                    (* 2 (exp (* -1 x))) 
+                    (* -2 
+                        (*
                             x 
-                            (exp x)
+                            (exp (* -1 x))
                         )
                     )
                 )""".trimIndent(),
-            differentiate(parse("(/ (scale 2 x) (exp x))"))
+            differentiate(parse("(/ (* 2 x) (exp x))"))
         )
     }
 
@@ -235,7 +229,7 @@ class MathTest {
                             (pow (cos x) 2)
                         )
                     )
-                    (scale -1
+                    (* -1
                         (/ 
                             x
                             (* 
@@ -269,7 +263,7 @@ class MathTest {
     fun testDifferentiate7() {
         assertEqualsExpr(
             expected = """
-                (scale 
+                (* 
                     (/ -1 2) 
                     (* 
                         (sin x)
@@ -283,7 +277,7 @@ class MathTest {
     @Test
     fun testDifferentiate8() {
         assertEqualsExpr(
-            "(+ (pow (cos x) -1) (/ (* x (sin x)) (pow (cos x) 2)))",
+            "(+ (pow (cos x) -1) (* (* x (sin x)) (pow (cos x) -2)))",
             differentiate(parse("(/ x (cos x))"))
         )
     }
@@ -292,14 +286,14 @@ class MathTest {
     fun testSqrt() {
 
         assertEqualsExpr(
-            expected = """(scale 
+            expected = """(* 
                     (pow 24 (/ -1 2))
                     (xpow 2)
                 )
                 """.trimIndent(),
             actual = sqrt(
                 parse(
-                    """(scale (/ 1 24) (xpow 4))"""
+                    """(* (/ 1 24) (xpow 4))"""
                 )
             )
         )
@@ -319,7 +313,7 @@ class MathTest {
     fun testIntegrate() {
         assertEqualsExpr(
             expected = """
-                (scale (/ 1 4) (xpow 4))
+                (* (/ 1 4) (xpow 4))
                 """.trimIndent(),
             integrate(xPow(integer(3)))
         )
@@ -338,7 +332,7 @@ class MathTest {
     @Test
     fun testNegate() {
         assertEqualsExpr(
-            expected = "(scale -1 (* (xpow 1) (exp x)))",
+            expected = "(* -1 (* (xpow 1) (exp x)))",
             actual = negate(multiply(X, ExpX))
         )
     }

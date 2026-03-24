@@ -13,7 +13,7 @@ data class Scale<T>(val factor: Expr<Nothing>, val expr: Expr<T>) : Expr<T> {
         }
 
     override fun toLisp(): String = buildString {
-        append("(scale ${factor.toLisp()} ${expr.toLisp()})")
+        append("(* ${factor.toLisp()} ${expr.toLisp()})")
     }
 }
 

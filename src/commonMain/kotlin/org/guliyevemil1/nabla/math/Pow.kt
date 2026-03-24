@@ -6,9 +6,16 @@ fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> =
         Zero -> One
         One -> base
         else -> {
+            if (base is Integral && pow is Integer && pow.n > 0) {
+                val b2 = multiply(base, base)
+                val b2n = pow(b2, integer(pow.n / 2))
+                if (pow.n % 2 == 0) return b2n
+                return multiply(b2n, base)
+            }
             when (base) {
-                is Pow -> pow(base.base, multiply(base.pow, pow))
+                is Multiply -> Multiply(base.multiplicants.map { pow(it, pow) })
                 is XPow -> xPow(multiply(base.pow, pow)) as Expr<T>
+                is Pow -> pow(base.base, multiply(base.pow, pow))
                 is Exp -> Exp(multiply(base.pow, pow))
                 else -> Pow(base, pow)
             }

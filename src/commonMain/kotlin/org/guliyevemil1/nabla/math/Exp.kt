@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.math
 
-data class Exp<T>(val pow: Expr<T>) : Expr<T> {
+data class Exp<T> constructor(val pow: Expr<T>) : Expr<T> {
     override val isConstant = pow.isConstant
     override val isSimple = true
 

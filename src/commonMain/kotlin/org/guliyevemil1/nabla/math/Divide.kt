@@ -49,18 +49,25 @@ fun divide(l: Integral, r: Integral): Expr<Nothing> {
     )
 }
 
-fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> = multiply(l, pow(r, integer(-1)))
-//    when {
-//        l == Bottom || r == Bottom -> Bottom
-//        l == r -> One
-//        r == Zero -> Bottom
-//        l == Zero -> Zero
-//        r == One -> l
-//
-//        l is Bottom || r is Bottom -> Bottom
-//        l is Integral && r is Integral -> {
-//            divide(l, r)
-//        }
+private fun <T> inverse(e: Expr<T>): Expr<T> = when {
+    e is Exp -> Exp(negate(e.pow))
+    else -> pow(e, integer(-1))
+}
+
+fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> = when {
+    l == Bottom || r == Bottom -> Bottom
+    l == r -> One
+    r == Zero -> Bottom
+    l == Zero -> Zero
+    r == One -> l
+
+    l is Bottom || r is Bottom -> Bottom
+    l is Integral && r is Integral -> {
+        divide(l, r)
+    }
+
+    else -> multiply(l, inverse(r))
+}
 //
 //        l.isConstant -> scale(l as Expr<Nothing>, Divide(One, r))
 //

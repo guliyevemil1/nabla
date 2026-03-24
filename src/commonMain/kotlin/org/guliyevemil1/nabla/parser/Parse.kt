@@ -28,12 +28,19 @@ sealed class SExpr {
 
             "+", "add", "plus" -> Add(tail.map { it.toExpr() })
             "scale" -> Scale(firstArg as Expr<Nothing>, secondArg)
-            "*", "multiply", "times" -> Multiply(tail.map { it.toExpr() })
+            "*", "multiply", "times" -> {
+                if (firstArg.isConstant) return Scale(
+                    firstArg as Expr<Nothing>,
+                    secondArg
+                )
+                Multiply(tail.map { it.toExpr() })
+            }
+
             "/", "divide" -> {
                 val l = firstArg
                 val r = secondArg
                 if (l is Integer && r is Integer) return Rational(l.n, r.n)
-                return Multiply(l, Pow(r, NegOne))
+                return multiply(l, pow(r, NegOne))
             }
 
             "exp" -> Exp(firstArg)

@@ -12,22 +12,34 @@ fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
     }
 }
 
-fun <T> List<Expr<T>>.foldMultiply(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
+fun <T> List<Expr<T>>.foldMultiply(): Expr<T> =
+    if (isEmpty()) One
+    else if (size == 1) first()
+    else fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
 
-class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
-    constructor(vararg m: Expr<T>) : this(m.asList())
+class Multiply<T>(val multiplicants: List<Expr<T>>, unit: Unit = Unit) : Expr<T> {
+
+    constructor(l: Expr<T>, r: Expr<T>) : this(multiplicants = listOf(l, r))
+
+    constructor(m: List<Expr<T>>) : this(
+        multiplicants = m
+            .flattenMultiply()
+            .sortedWith(ExprComparator)
+            .groupWith(::equalBases)
+            .map {
+                if (it.size == 1) {
+                    it.first()
+                } else {
+                    it.foldMultiply()
+                }
+            }
+    )
 
     override fun equals(other: Any?): Boolean = other is Multiply<*> &&
             multiplicants.size == other.multiplicants.size &&
             multiplicants.zip(other.multiplicants).all { (a, b) -> a == b }
 
     override fun hashCode(): Int = multiplicants.fold(0) { acc, x -> acc + 31 * x.hashCode() }
-
-    val multiplicants: List<Expr<T>> = m
-        .flattenMultiply()
-        .sortedWith(ExprComparator)
-        .groupWith(::equalBases)
-        .map { it.foldMultiply() }
 
     override val isSimple: Boolean = multiplicants.all { it.isSimple }
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
@@ -101,6 +113,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
 
         l == r -> pow(l, integer(2))
         l is Pow && r is Pow && l.base == r.base -> pow(l.base, add(l.pow, r.pow))
+        l is Pow && l.base is XPow && r is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
+        r is Pow && r.base is XPow && l is XPow -> xPow(add(l.pow, r.pow)) as Expr<T>
         l is Pow && l.base == r -> pow(l.base, add(l.pow, One))
         r is Pow && l == r.base -> pow(r.base, add(r.pow, One))
 
@@ -152,22 +166,5 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         }
 
         else -> Multiply(l, r)
-    }.let { e ->
-        if (e is Multiply) {
-            val (n, d) = e
-                .multiplicants
-                .splitBy {
-                    when (it) {
-                        is Pow if it.pow.isNegative == Bool.True -> false
-                        is Exp if it.pow is Scale && it.pow.factor.isNegative == Bool.True -> false
-                        else -> true
-                    }
-                }
-            val nn = multiply(n)
-            val dd = multiply(d.map { pow(it, integer(-1)) })
-            if (dd == One) nn else Divide(nn, dd)
-        } else {
-            e
-        }
     }
 }
