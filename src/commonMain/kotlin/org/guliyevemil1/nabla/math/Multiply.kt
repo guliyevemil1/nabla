@@ -1,6 +1,8 @@
 package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.util.groupWith
+import org.guliyevemil1.nabla.util.splitBy
+import kotlin.let
 
 fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
     if (it is Multiply) {
@@ -150,5 +152,22 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         }
 
         else -> Multiply(l, r)
+    }.let { e ->
+        if (e is Multiply) {
+            val (n, d) = e
+                .multiplicants
+                .splitBy {
+                    when (it) {
+                        is Pow if it.pow.isNegative == Bool.True -> false
+                        is Exp if it.pow is Scale && it.pow.factor.isNegative == Bool.True -> false
+                        else -> true
+                    }
+                }
+            val nn = multiply(n)
+            val dd = multiply(d.map { pow(it, integer(-1)) })
+            if (dd == One) nn else Divide(nn, dd)
+        } else {
+            e
+        }
     }
 }

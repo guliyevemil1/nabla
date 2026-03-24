@@ -33,7 +33,7 @@ sealed class SExpr {
                 val l = firstArg
                 val r = secondArg
                 if (l is Integer && r is Integer) return Rational(l.n, r.n)
-                return Divide(l, r)
+                return Multiply(l, Pow(r, NegOne))
             }
 
             "exp" -> Exp(firstArg)
