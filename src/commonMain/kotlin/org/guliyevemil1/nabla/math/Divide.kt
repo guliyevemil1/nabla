@@ -1,5 +1,7 @@
 package org.guliyevemil1.nabla.math
 
+import org.guliyevemil1.nabla.util.splitBy
+
 data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
     override val isConstant: Boolean = numerator.isConstant && denominator.isConstant
 
@@ -7,6 +9,28 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
         """\frac{${numerator.render()}}{${denominator.render()}}"""
 
     override fun toLisp(): String = "(/ ${numerator.toLisp()} ${denominator.toLisp()})"
+    fun simplify(): Expr<T> {
+        val ns = listOf(numerator).flattenMultiply()
+        val ds = listOf(denominator).flattenMultiply().map { pow(it, integer(-1)) }
+        return (ns + ds)
+            .sortedWith(ExprComparator)
+            .foldMultiply()
+            .let { e ->
+                if (e is Multiply) {
+                    val (n, d) = e
+                        .multiplicants
+                        .splitBy {
+                            when (it) {
+                                is Pow if it.pow.isNegative == Bool.True -> false
+                                is Exp if it.pow is Scale && it.pow.factor.isNegative == Bool.True -> false
+                                else -> true
+                            }
+                        }
+                    Divide(multiply(n), multiply(d.map { pow(it, integer(-1)) }))
+                } else
+                    e
+            }
+    }
 }
 
 fun divide(l: Integral, r: Integral): Expr<Nothing> {
@@ -62,4 +86,10 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
         l is Pow && l.base == r -> pow(l.base, add(l.pow, NegOne))
 
         else -> Divide(l, r)
+    }.let {
+        if (it is Divide) {
+            it.simplify()
+        } else {
+            it
+        }
     }

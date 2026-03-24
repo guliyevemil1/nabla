@@ -14,7 +14,7 @@ fun <T> log(c: Expr<T>): Expr<T> {
         is Integral if c.isNonPositive == Bool.True -> Bottom
         is Rational -> add(log(integer(c.numerator)), negate(log(integer(c.denominator))))
         is Bottom -> Bottom
-        is Exp -> c.base
+        is Exp -> c.pow
         is XPow -> multiply(c.pow, Log(X)) as Expr<T>
         is Scale -> add(log(c.factor), log(c.expr))
         is Multiply -> add(c.multiplicants.map { log(it) })

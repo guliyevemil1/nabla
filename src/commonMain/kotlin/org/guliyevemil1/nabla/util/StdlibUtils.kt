@@ -1,4 +1,4 @@
-package org.guliyevemil1.nabla
+package org.guliyevemil1.nabla.util
 
 import kotlin.random.Random
 
@@ -27,3 +27,12 @@ fun <T> List<T>.groupWith(predicate: (T, T) -> Boolean): List<List<T>> =
         }
         acc
     }
+
+fun <T> List<T>.splitBy(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
+    val trues = mutableListOf<T>()
+    val falses = mutableListOf<T>()
+    for (e in this) {
+        if (predicate(e)) trues.add(e) else falses.add(e)
+    }
+    return trues to falses
+}

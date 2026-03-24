@@ -39,6 +39,7 @@ fun equalBases(a: Expr<*>, b: Expr<*>): Boolean =
         a is Pow && b is Pow -> equalBases(a.base, b.base)
         a is Pow -> equalBases(a.base, b)
         b is Pow -> equalBases(a, b.base)
+        a is Exp && b is Exp -> true
         a.isConstant && b.isConstant -> true
         else -> a == b
     }
@@ -48,6 +49,11 @@ fun compareExpr(a: Expr<*>, b: Expr<*>): Int =
         a is Scale && b is Scale -> compareExpr(a.expr, b.expr)
         a is Scale -> compareExpr(a.expr, b)
         b is Scale -> compareExpr(a, b.expr)
+
+        a is Pow && b is Pow -> compareExpr(a.base, b.base)
+        a is Pow -> compareExpr(a.base, b)
+        b is Pow -> compareExpr(a, b.base)
+
         a is Integral && b is Integral -> {
             val ar = a.toRational()
             val br = b.toRational()

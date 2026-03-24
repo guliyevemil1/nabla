@@ -2,7 +2,7 @@
 
 package org.guliyevemil1.nabla.math
 
-import org.guliyevemil1.nabla.groupWith
+import org.guliyevemil1.nabla.util.groupWith
 
 fun <T> List<Expr<T>>.flattenAdd(): List<Expr<T>> = flatMap {
     if (it is Add) {

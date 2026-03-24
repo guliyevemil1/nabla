@@ -1,12 +1,12 @@
 package org.guliyevemil1.nabla.math
 
-data class Exp<T>(val base: Expr<T>) : Expr<T> {
-    override val isConstant = base.isConstant
+data class Exp<T>(val pow: Expr<T>) : Expr<T> {
+    override val isConstant = pow.isConstant
     override val isSimple = true
 
-    override fun render(): String = "e^{${base.render()}}"
+    override fun render(): String = "e^{${pow.render()}}"
 
-    override fun toLisp(): String = "(exp ${base.toLisp()})"
+    override fun toLisp(): String = "(exp ${pow.toLisp()})"
 }
 
 fun <T> e(base: Expr<T>): Expr<T> =

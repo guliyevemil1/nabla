@@ -1,19 +1,15 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.ImmutableRNG
+import org.guliyevemil1.nabla.util.ImmutableRNG
 import org.guliyevemil1.nabla.card.BoardState.*
-import org.guliyevemil1.nabla.groupWith
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Bottom
-import org.guliyevemil1.nabla.math.ExprComparator
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
-import org.guliyevemil1.nabla.math.equalsUpToConstant
-import org.guliyevemil1.nabla.math.flattenAdd
 import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.unwrapScale
-import org.guliyevemil1.nabla.replaceAt
+import org.guliyevemil1.nabla.util.replaceAt
 
 interface Event {
     val player: Player

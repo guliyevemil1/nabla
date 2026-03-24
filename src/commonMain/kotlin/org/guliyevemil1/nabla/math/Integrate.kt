@@ -12,7 +12,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     CosX -> SinX
     SinX -> Scale(NegOne, CosX)
     is Exp -> {
-        if (b.base == X) return b
+        if (b.pow == X) return b
         TODO()
     }
 

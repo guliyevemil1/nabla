@@ -125,6 +125,17 @@ class MathTest {
     }
 
     @Test
+    fun testDivide5() {
+        assertEqualsExpr(
+            expected = "(/ x (exp x))",
+            actual = divide(
+                parse("(* x (exp x))"),
+                parse("(pow (exp x) 2)"),
+            ),
+        )
+    }
+
+    @Test
     fun testDifferentiate() {
         assertEqualsExpr(
             expected = "(xpow 2)",

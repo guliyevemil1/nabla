@@ -1,6 +1,6 @@
 package org.guliyevemil1.nabla.card
 
-import org.guliyevemil1.nabla.ImmutableRNG
+import org.guliyevemil1.nabla.util.ImmutableRNG
 
 interface Card
 
