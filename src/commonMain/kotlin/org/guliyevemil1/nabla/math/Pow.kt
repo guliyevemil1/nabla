@@ -27,15 +27,26 @@ data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override val isConstant: Boolean = base.isConstant
 
     override fun render(): String {
-        if (pow is Rational && pow.denominator == 2) return """\sqrt{${pow(base, integer(pow.numerator)).render()}}"""
+        if (pow.isNegative == Bool.True) {
+            val denominator = Pow(base, multiply(integer(-1), pow)).render()
+            return """\frac{1}{$denominator}"""
+        }
+        if (pow is Rational) {
+            if (pow.denominator == 2) {
+                return """\sqrt{${Pow(base, integer(pow.numerator)).render()}}"""
+            }
+            return """\sqrt[${pow.denominator}]{${Pow(base, integer(pow.numerator)).render()}}"""
+        }
         return when (base) {
             is CosX, SinX -> {
                 val f = if (base is CosX) """\cos""" else """\sin"""
-                if (pow.isNegative == Bool.True) {
-                    """\left($f x\right)^{${pow.render()}}"""
-                } else {
-                    """$f^{${pow.render()}} x"""
-                }
+                if (pow == One) "$f(x)" else """$f^{${pow.render()}} x"""
+            }
+
+            is XPow -> {
+                val pow = multiply(base.pow, pow)
+                if (pow == One) "x"
+                else """x^{${pow.render()}}"""
             }
 
             else -> """\left(${base.render()}\right)^{${pow.render()}}"""
@@ -65,17 +76,7 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     override val isConstant: Boolean = false
 
     override val isSimple = true
-    override fun render(): String {
-        if (pow == One) return "x"
-        if (pow is Rational && pow.denominator == 2) {
-            if (pow.numerator == 1) return """\sqrt{x}"""
-            return """\sqrt{x^${pow.numerator}}"""
-        }
-        if (pow is Rational && pow.numerator == 1)
-            return """\sqrt[${pow.denominator}]{x}"""
-
-        return """x^{${pow.render()}}"""
-    }
+    override fun render(): String = Pow(X, pow).render()
 
     override fun toLisp(): String {
         if (pow == One) return "x"
