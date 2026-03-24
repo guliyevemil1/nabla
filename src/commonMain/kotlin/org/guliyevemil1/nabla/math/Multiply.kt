@@ -89,8 +89,8 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
         l is Integral && r is Multiply -> scale(l, r)
         l is Multiply && r is Integral -> scale(r, l)
 
-        l is Integral && r is Divide -> Divide(multiply(l, r.numerator), r.denominator)
-        l is Divide && r is Integral -> Divide(multiply(l.numerator, r), l.denominator)
+        l is Integral && r is Divide -> divide(multiply(l, r.numerator), r.denominator)
+        l is Divide && r is Integral -> divide(multiply(l.numerator, r), l.denominator)
 
         l is Integral -> scale(l, r)
         r is Integral -> scale(r, l)
@@ -136,13 +136,13 @@ fun <T> multiplyBinary(l: Expr<T>, r: Expr<T>): Expr<T> {
                 multiply(l.denominator, r.denominator)
             )
 
-        l is Divide -> Divide(
+        l is Divide -> divide(
             multiply(l.numerator, r),
             l.denominator,
         )
 
         r is Divide -> {
-            if (r.numerator == One) Divide(l, r)
+            if (r.numerator == One) divide(l, r)
             divide(
                 multiply(l, r.numerator),
                 r.denominator,

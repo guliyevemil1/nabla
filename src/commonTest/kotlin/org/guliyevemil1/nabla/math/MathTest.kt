@@ -138,10 +138,21 @@ class MathTest {
     @Test
     fun testDivide6() {
         assertEqualsExpr(
-            expected = "(/ 1 (cos x))",
+            expected = "(pow (cos x) -1)",
             actual = divide(
                 parse("(cos x)"),
                 parse("(pow (cos x) 2)"),
+            ),
+        )
+    }
+
+    @Test
+    fun testDivide7() {
+        assertEqualsExpr(
+            expected = "(cos x)",
+            actual = divide(
+                parse("(* x (cos x))"),
+                parse("x"),
             ),
         )
     }
@@ -198,7 +209,16 @@ class MathTest {
     @Test
     fun testDifferentiate5() {
         assertEqualsExpr(
-            "(+ (/ (scale 2 (exp x)) (pow (exp x) 2)) (/ (scale -2 (* x (exp x))) (pow (exp x) 2)))",
+            """
+                (+ 
+                    (scale 2 (exp (scale -1 x))) 
+                    (scale -2 
+                        (/
+                            x 
+                            (exp x)
+                        )
+                    )
+                )""".trimIndent(),
             differentiate(parse("(/ (scale 2 x) (exp x))"))
         )
     }
@@ -209,24 +229,26 @@ class MathTest {
             expected = """
                 (+ 
                     (/ 
-                        (* x (exp x) (sin x)) 
+                        (* x (sin x)) 
                         (* 
-                            (pow (exp x) 2) 
+                            (exp x) 
                             (pow (cos x) 2)
                         )
                     )
-                    (/ 
-                        (scale -1 (* x (exp x) (cos x))) 
-                        (* 
-                            (pow (exp x) 2) 
-                            (pow (cos x) 2)
+                    (scale -1
+                        (/ 
+                            x
+                            (* 
+                                (exp x) 
+                                (cos x)
+                            )
                         )
                     )
                     (/ 
-                        (* (exp x) (cos x))
+                        1
                         (* 
-                            (pow (exp x) 2) 
-                            (pow (cos x) 2)
+                            (exp x) 
+                            (cos x)
                         )
                     )
                 ) 

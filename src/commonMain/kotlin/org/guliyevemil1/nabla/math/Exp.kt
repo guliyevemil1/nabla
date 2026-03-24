@@ -11,6 +11,7 @@ data class Exp<T>(val pow: Expr<T>) : Expr<T> {
 
 fun <T> e(base: Expr<T>): Expr<T> =
     when (base) {
+        Zero -> One
         is Log<T> -> base.base
         else -> Exp(base)
     }

@@ -102,14 +102,20 @@ data class Player(
         field = field
             .filter { it != Zero }
             .flattenAdd()
+            .map { it.unwrapScale() }
             .let { result ->
                 val nub = result
                     .sortedWith(ExprComparator)
                     .groupWith(::equalsUpToConstant)
                     .map { it.first() }
-                result.mapNotNull { it.takeIf { it in nub } }
+                buildList {
+                    result.forEach { e ->
+                        if (e in nub && e !in this) {
+                            add(e)
+                        }
+                    }
+                }
             }
-            .map { it.unwrapScale() },
     )
 }
 
