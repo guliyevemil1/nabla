@@ -1,6 +1,7 @@
 package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.util.groupWith
+import org.guliyevemil1.nabla.util.splitBy
 import kotlin.let
 
 fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
@@ -17,6 +18,25 @@ fun <T> List<Expr<T>>.foldMultiply(): Expr<T> =
     else reduce<Expr<T>, Expr<T>>(::multiplyBinary)
 
 class Multiply<T>(val multiplicants: List<Expr<T>>, unit: Unit = Unit) : Expr<T> {
+
+    companion object {
+        fun <T> render(m: Expr<T>): String =
+            if (m !is Multiply) {
+                m.render()
+            } else {
+                buildString {
+                    if (m.multiplicants.size == 1) {
+                        m.multiplicants[0].render()
+                    } else {
+                        m.multiplicants.forEach { m ->
+                            if (!m.isSimple) append("""\left(""")
+                            append(m.render().trim())
+                            if (!m.isSimple) append("""\right)""")
+                        }
+                    }
+                }
+            }
+    }
 
     constructor(l: Expr<T>, r: Expr<T>) : this(multiplicants = listOf(l, r))
 
@@ -46,16 +66,18 @@ class Multiply<T>(val multiplicants: List<Expr<T>>, unit: Unit = Unit) : Expr<T>
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =
         multiply(multiplicants.map(f))
 
-    override fun render(): String = buildString {
-        if (multiplicants.size == 1) {
-            multiplicants[0].render()
-        } else {
-            multiplicants.forEachIndexed { index, m ->
-                if (!m.isSimple) append("""\left(""")
-                append(m.render().trim())
-                if (!m.isSimple) append("""\right)""")
+    override fun render(): String {
+        val (n, d) = multiplicants
+            .splitBy {
+                when (it) {
+                    is Pow if it.pow.isNegative == Bool.True -> false
+                    is Exp if it.pow is Scale && it.pow.factor.isNegative == Bool.True -> false
+                    else -> true
+                }
             }
-        }
+        val nn = multiply(n)
+        val dd = multiply(d.map { pow(it, integer(-1)) })
+        return if (dd == One) render(nn) else """\frac{${render(nn)}}{${render(dd)}}"""
     }
 
     override fun toLisp(): String = buildString {
