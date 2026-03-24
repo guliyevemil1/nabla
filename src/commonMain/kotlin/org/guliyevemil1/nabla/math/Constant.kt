@@ -104,11 +104,7 @@ sealed interface Constant : Expr<Nothing> {
     override val isConstant: Boolean
         get() = true
 
-    fun inverse(): Expr<Nothing> = when (isZero) {
-        Bool.True -> Bottom
-        Bool.False -> Divide(One, this)
-        else -> TODO()
-    }
+    fun inverse(): Expr<Nothing> = divide(One, this)
 }
 
 enum class Sign {

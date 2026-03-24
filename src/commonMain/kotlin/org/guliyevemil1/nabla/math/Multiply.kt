@@ -1,7 +1,6 @@
 package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.util.groupWith
-import org.guliyevemil1.nabla.util.splitBy
 import kotlin.let
 
 fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
@@ -15,7 +14,7 @@ fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
 fun <T> List<Expr<T>>.foldMultiply(): Expr<T> =
     if (isEmpty()) One
     else if (size == 1) first()
-    else fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
+    else reduce<Expr<T>, Expr<T>>(::multiplyBinary)
 
 class Multiply<T>(val multiplicants: List<Expr<T>>, unit: Unit = Unit) : Expr<T> {
 
