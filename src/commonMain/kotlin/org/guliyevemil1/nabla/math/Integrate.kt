@@ -2,7 +2,7 @@ package org.guliyevemil1.nabla.math
 
 data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = base == Zero
-    override fun render(): String = """\int{${base.render()}}"""
+    override fun render(): String = """\displaystyle\int{${base.render()}}"""
     override fun toLisp(): String = "(integrate ${base.toLisp()})"
 }
 
@@ -13,20 +13,20 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
     SinX -> Scale(NegOne, CosX)
     is Exp -> {
         if (b.pow == X) return b
-        TODO()
+        Integrate(b)
     }
 
     is Add -> b.map { integrate(it) }
     is Differentiate -> b.base
 
     is Divide<Any?> if b.numerator == One && b.denominator == X -> Log(X)
-    is Divide<Any?> -> TODO()
+    is Divide<Any?> -> Integrate(b)
 
-    is Integrate -> TODO()
+    is Integrate -> Integrate(b)
     is Invert -> TODO()
-    is Log -> TODO()
-    is Multiply<*> -> TODO()
-    is Pow -> TODO()
+    is Log -> Integrate(b)
+    is Multiply<*> -> Integrate(b)
+    is Pow -> Integrate(b)
 
     is Scale -> scale(b.factor, integrate(b.expr))
 

@@ -6,9 +6,8 @@ data class Invert(val base: Expr<Any?>) : Expr<Any?> {
     override fun render(): String =
         TODO("Not yet implemented")
 
-    override fun toLisp(): String {
-        TODO("Not yet implemented")
-    }
+    override fun toLisp(): String =
+        "(invert ${base.toLisp()})"
 }
 
 fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {

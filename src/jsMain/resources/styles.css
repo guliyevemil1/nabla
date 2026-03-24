@@ -18,7 +18,7 @@
 }
 
 .field-button {
-    height: 42px;
+    height: 64px;
     margin-bottom: 10px;
     /*flex-shrink: 0; !* Prevents cards from shrinking *!*/
 }

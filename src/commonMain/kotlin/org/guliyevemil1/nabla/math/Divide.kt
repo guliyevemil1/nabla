@@ -2,7 +2,10 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.util.splitBy
 
-data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T> {
+data class Divide<T>(
+    val numerator: Expr<T>,
+    val denominator: Expr<T>,
+) : Expr<T> {
     override val isConstant: Boolean = numerator.isConstant && denominator.isConstant
 
     override fun render(): String =
@@ -28,7 +31,7 @@ data class Divide<T>(val numerator: Expr<T>, val denominator: Expr<T>) : Expr<T>
                         }
                     Divide(
                         multiply(n),
-                        multiply(d.map { pow(it, integer(-1)) })
+                        multiply(d.map { pow(it, integer(-1)) }),
                     )
                 } else {
                     e
@@ -93,7 +96,6 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
     }.let {
         if (it is Divide) {
             it.simplify()
-//            it
         } else {
             it
         }
