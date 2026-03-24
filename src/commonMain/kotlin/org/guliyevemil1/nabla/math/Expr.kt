@@ -18,16 +18,15 @@ val ExprOrdering: Map<KClass<out Expr<*>>, Int> = listOf(
     Invert::class,
 ).mapIndexed { index, klass -> klass to index }.toMap()
 
-fun equalsUpToConstant(a: Expr<*>, b: Expr<*>): Boolean =
+fun <T> Expr<T>.unwrapScale(): Expr<T> =
     when {
-        a is Scale && b is Scale -> equalsUpToConstant(a.expr, b.expr)
-        a is Scale -> equalsUpToConstant(a.expr, b)
-        b is Scale -> equalsUpToConstant(a, b.expr)
-        a == Zero && b == Zero -> true
-        a == Zero || b == Zero -> false
-        a.isConstant && b.isConstant -> true
-        else -> a == b
+        this is Scale -> this.expr
+        this == Zero -> Zero
+        this.isConstant -> One
+        else -> this
     }
+
+fun equalsUpToConstant(a: Expr<*>, b: Expr<*>): Boolean = a.unwrapScale() == b.unwrapScale()
 
 fun equalBases(a: Expr<*>, b: Expr<*>): Boolean =
     when {

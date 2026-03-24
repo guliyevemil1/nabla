@@ -40,13 +40,5 @@ fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =
             integer(expr.denominator)
         )
 
-        expr is Divide -> divide(
-            multiply(
-                factor,
-                expr.numerator,
-            ),
-            expr.denominator,
-        )
-
         else -> Scale(factor, expr) as Expr<T>
     }

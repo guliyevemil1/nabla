@@ -32,13 +32,7 @@ fun <T> divide(l: Expr<T>, r: Expr<T>): Expr<T> =
             divide(l, r)
         }
 
-        l == One -> {
-            if (r is XPow) {
-                xPow(negate(r.pow)) as Expr<T>
-            } else {
-                Divide(One, r)
-            }
-        }
+        l.isConstant -> scale(l as Expr<Nothing>, Divide(One, r))
 
         l is Add -> l.map { divide(it, r) }
 

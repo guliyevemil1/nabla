@@ -47,6 +47,7 @@ fun xPow(pow: Expr<Nothing>): Expr<Any?> {
     return when (pow) {
         Bottom -> Bottom
         Zero -> One
+        is Integer if pow.n < 0 -> Divide(One, xPow(-pow.n))
         is Integer -> xPow(pow.n)
         else -> XPow(pow)
     }

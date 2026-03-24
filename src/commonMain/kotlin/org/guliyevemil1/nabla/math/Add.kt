@@ -4,6 +4,14 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
 
+fun <T> List<Expr<T>>.flattenAdd(): List<Expr<T>> = flatMap {
+    if (it is Add) {
+        it.summands
+    } else {
+        listOf(it)
+    }
+}
+
 fun <T> List<Expr<T>>.foldAdd(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = Zero, ::addBinary)
 
 class Add<T>(s: List<Expr<T>>) : Expr<T> {
@@ -14,16 +22,11 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
             summands.zip(other.summands).all { (a, b) -> a == b }
 
     override fun hashCode(): Int = summands.fold(0) { acc, x -> acc + 31 * x.hashCode() }
-    val summands: List<Expr<T>> =
-        s.flatMap {
-            if (it is Add) {
-                it.summands
-            } else {
-                listOf(it)
-            }
-        }.sortedWith(ExprComparator)
-            .groupWith(::equalsUpToConstant)
-            .map(List<Expr<T>>::foldAdd)
+    val summands: List<Expr<T>> = s
+        .flattenAdd()
+        .sortedWith(ExprComparator)
+        .groupWith(::equalsUpToConstant)
+        .map(List<Expr<T>>::foldAdd)
 
     override val isConstant: Boolean = summands.all { it.isConstant }
 

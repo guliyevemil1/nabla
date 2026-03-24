@@ -2,6 +2,14 @@ package org.guliyevemil1.nabla.math
 
 import org.guliyevemil1.nabla.groupWith
 
+fun <T> List<Expr<T>>.flattenMultiply(): List<Expr<T>> = flatMap {
+    if (it is Multiply) {
+        it.multiplicants
+    } else {
+        listOf(it)
+    }
+}
+
 fun <T> List<Expr<T>>.foldMultiply(): Expr<T> = fold<Expr<T>, Expr<T>>(initial = One, ::multiplyBinary)
 
 class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
@@ -14,13 +22,7 @@ class Multiply<T>(m: List<Expr<T>>) : Expr<T> {
     override fun hashCode(): Int = multiplicants.fold(0) { acc, x -> acc + 31 * x.hashCode() }
 
     val multiplicants: List<Expr<T>> = m
-        .flatMap {
-            if (it is Multiply) {
-                it.multiplicants
-            } else {
-                listOf(it)
-            }
-        }
+        .flattenMultiply()
         .sortedWith(ExprComparator)
         .groupWith(::equalBases)
         .map { it.foldMultiply() }

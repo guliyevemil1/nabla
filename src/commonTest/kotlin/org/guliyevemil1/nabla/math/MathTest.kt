@@ -3,6 +3,7 @@ package org.guliyevemil1.nabla.math
 import org.guliyevemil1.nabla.parser.parse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(expected).toLisp(), actual.toLisp())
 
@@ -112,6 +113,14 @@ class MathTest {
         assertEqualsExpr(
             expected = "x",
             actual = divide(parse("(pow (xpow 1) 2)"), X),
+        )
+    }
+
+    @Test
+    fun testDivide4() {
+        assertEqualsExpr(
+            expected = "(scale -1 (divide 1 x))",
+            actual = divide(NegOne, X),
         )
     }
 
@@ -251,6 +260,26 @@ class MathTest {
                 (xpow (/ 1 4))
                 """.trimIndent(),
             sqrt(sqrt(X))
+        )
+    }
+
+    @Test
+    fun testIntegrate() {
+        assertEqualsExpr(
+            expected = """
+                (scale (/ 1 4) (xpow 4))
+                """.trimIndent(),
+            integrate(xPow(integer(3)))
+        )
+    }
+
+    @Test
+    fun testEqualsUpToConstant() {
+        assertFalse(
+            equalsUpToConstant(
+                xPow(integer(3)),
+                xPow(integer(1)),
+            )
         )
     }
 

@@ -10,7 +10,9 @@ import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.equalsUpToConstant
+import org.guliyevemil1.nabla.math.flattenAdd
 import org.guliyevemil1.nabla.math.integer
+import org.guliyevemil1.nabla.math.unwrapScale
 import org.guliyevemil1.nabla.replaceAt
 
 interface Event {
@@ -98,12 +100,15 @@ data class Player(
     ) = copy(
         hand = hand.sortedWith(NablaCardComparator),
         field = run {
-            val nub = field.sortedWith(ExprComparator)
+            val nub = field
+                .filter { it != Zero }
+                .flattenAdd()
+                .sortedWith(ExprComparator)
                 .groupWith(::equalsUpToConstant)
                 .map { it.first() }
             return@run field
-                .mapNotNull { it.takeIf { it != Zero } }
                 .mapNotNull { it.takeIf { it in nub } }
+                .map { it.unwrapScale() }
         },
     )
 }
