@@ -106,5 +106,16 @@ private fun <T> addBinary(l: Expr<T>, r: Expr<T>): Expr<T> =
         l is Add && r is Add -> add(l.summands + r.summands)
         l is Add -> Add(l.summands + r)
         r is Add -> Add(listOf(l) + r.summands)
+
+        l is Pow && r is Pow
+                && l.base == SinX && l.pow == integer(2)
+                && r.base == CosX && r.pow == integer(2)
+            -> One
+
+        l is Pow && r is Pow
+                && l.base == CosX && l.pow == integer(2)
+                && r.base == SinX && r.pow == integer(2)
+            -> One
+
         else -> Add(l, r)
     }

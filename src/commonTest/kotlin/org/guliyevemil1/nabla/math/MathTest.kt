@@ -283,6 +283,18 @@ class MathTest {
     }
 
     @Test
+    fun testDifferentiate9() {
+        assertEqualsExpr(
+            "(pow (cos x) -2)",
+            differentiate(
+                parse(
+                    "(/ (sin x) (cos x))"
+                )
+            )
+        )
+    }
+
+    @Test
     fun testSqrt() {
 
         assertEqualsExpr(

@@ -42,10 +42,11 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> {
         is Integrate -> b.base
         is Invert -> TODO()
         is Log -> divide(differentiate(b.base), b.base)
-        is Pow -> multiply(
-            multiply(b.pow, Pow(b.base, add(b.pow, NegOne))),
-            differentiate(b.base)
-        )
+        is Pow -> {
+            val x = multiply(b.pow, Pow(b.base, add(b.pow, NegOne)))
+            val y = differentiate(b.base)
+            multiply(x, y)
+        }
 
         is Scale -> multiply(b.factor, differentiate(b.expr))
     }

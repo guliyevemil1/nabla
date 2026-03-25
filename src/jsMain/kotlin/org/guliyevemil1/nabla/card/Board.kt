@@ -5,12 +5,11 @@ import org.guliyevemil1.nabla.card.BoardState.*
 import org.guliyevemil1.nabla.math.Expr
 import org.guliyevemil1.nabla.math.Bottom
 import org.guliyevemil1.nabla.math.ExprComparator
+import org.guliyevemil1.nabla.math.One
 import org.guliyevemil1.nabla.math.X
 import org.guliyevemil1.nabla.math.X2
 import org.guliyevemil1.nabla.math.Zero
 import org.guliyevemil1.nabla.math.equalsUpToConstant
-import org.guliyevemil1.nabla.math.flattenAdd
-import org.guliyevemil1.nabla.math.integer
 import org.guliyevemil1.nabla.math.unwrapScale
 import org.guliyevemil1.nabla.util.groupWith
 import org.guliyevemil1.nabla.util.replaceAt
@@ -32,7 +31,7 @@ data class FieldItem(
 ) : Event
 
 val startingField: List<Expr<Any?>> = listOf(
-    integer(1),
+    One,
     X,
     X2,
 )
@@ -101,7 +100,6 @@ data class Player(
         hand = hand.sortedWith(NablaCardComparator),
         field = field
             .filter { it != Zero }
-            .flattenAdd()
             .map { it.unwrapScale() }
             .let { result ->
                 val nub = result
@@ -109,10 +107,9 @@ data class Player(
                     .groupWith(::equalsUpToConstant)
                     .map { it.first() }
                 buildList {
-                    result.forEach { e ->
-                        if (e in nub && e !in this) {
-                            add(e)
-                        }
+                    result.forEach {
+                        if (it in nub && it !in this)
+                            add(it)
                     }
                 }
             }
@@ -120,7 +117,6 @@ data class Player(
 }
 
 sealed interface BoardState {
-
     object None : BoardState
     object GameOver : BoardState
 
@@ -142,10 +138,13 @@ sealed interface BoardState {
     ) : BoardState
 }
 
-fun board(rng: ImmutableRNG): Board {
-    val s = shuffler(rng = rng, cards = NablaDeck.cards)
-    return Board(shuffler = s).draw()
-}
+fun board(rng: ImmutableRNG): Board =
+    Board(
+        shuffler = shuffler(
+            rng = rng,
+            cards = NablaDeck.cards,
+        ),
+    ).draw()
 
 class Board(
     private val shuffler: Shuffler<NablaCard>,
@@ -251,9 +250,7 @@ class Board(
                     return this
                 }
 
-                val clickedCard = handCard.card
-
-                when (clickedCard) {
+                when (val clickedCard = handCard.card) {
                     is BaseCard -> {
                         return copy(
                             state = None,
