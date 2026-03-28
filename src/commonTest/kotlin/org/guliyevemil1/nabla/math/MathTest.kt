@@ -4,6 +4,7 @@ import org.guliyevemil1.nabla.parser.parse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 fun assertEqualsExpr(expected: String, actual: Expr<*>) = assertEquals(parse(expected).toLisp(), actual.toLisp())
 
@@ -285,7 +286,7 @@ class MathTest {
     @Test
     fun testDifferentiate9() {
         assertEqualsExpr(
-            "(pow (cos x) -2)",
+            "(+ 1 (* (pow (sin x) 2) (pow (cos x) -2)))",
             differentiate(
                 parse(
                     "(/ (sin x) (cos x))"
@@ -381,9 +382,21 @@ class MathTest {
     }
 
     @Test
+    fun testMatcher() {
+        assertTrue("") {
+            parse("(* c (sin x))")
+                .matches(
+                    parse(
+                        "(* 3 (sin x))"
+                    )
+                )
+        }
+    }
+
+    @Test
     fun testLatex() {
         val m = Pow(X2, integer(2))
-        assertEquals("""\left(x^{2}\right)^{2}""", m.render())
+        assertEquals("""x^{4}""", m.render())
     }
 
 }

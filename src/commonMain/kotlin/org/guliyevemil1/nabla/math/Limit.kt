@@ -12,11 +12,13 @@ enum class Limit {
 internal object Infinity : Constant {
     override fun render(): String = """\infty"""
     override fun toLisp(): String = """inf"""
+    override fun matches(other: Expr<*>): Boolean = other is Infinity
 }
 
 internal object NegativeInfinity : Constant {
     override fun render(): String = """-\infty"""
     override fun toLisp(): String = """-inf"""
+    override fun matches(other: Expr<*>): Boolean = other is NegativeInfinity
 }
 
 private fun limInner(b: Expr<Any?>, x: Limit): Expr<Nothing> =
@@ -100,6 +102,8 @@ private fun limInner(b: Expr<Any?>, x: Limit): Expr<Nothing> =
         }
 
         is Exp<*> -> TODO()
+        is ConstantMatcher -> b
+        is Matcher<*> -> TODO()
     }
 
 fun lim(b: Expr<Any?>, x: Limit): Expr<Nothing> = limInner(b, x).let {

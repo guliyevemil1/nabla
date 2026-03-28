@@ -8,6 +8,9 @@ data class Invert(val base: Expr<Any?>) : Expr<Any?> {
 
     override fun toLisp(): String =
         "(invert ${base.toLisp()})"
+
+    override fun matches(other: Expr<*>): Boolean = other is Differentiate &&
+            base.matches(other.base)
 }
 
 fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
@@ -35,4 +38,5 @@ fun invert(b: Expr<Any?>): Expr<Any?> = when (b) {
     is Pow -> TODO()
     is Scale -> scale(divide(One, b.factor), integrate(b.expr))
     is XPow -> TODO()
+    is Matcher<*> -> TODO()
 }

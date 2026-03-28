@@ -7,6 +7,8 @@ data class Exp<T> constructor(val pow: Expr<T>) : Expr<T> {
     override fun render(): String = "e^{${pow.render()}}"
 
     override fun toLisp(): String = "(exp ${pow.toLisp()})"
+    override fun matches(other: Expr<*>): Boolean = other is Exp &&
+            pow.matches(other.pow)
 }
 
 fun <T> e(base: Expr<T>): Expr<T> =

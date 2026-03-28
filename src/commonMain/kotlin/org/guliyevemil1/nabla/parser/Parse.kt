@@ -63,6 +63,7 @@ sealed class SExpr {
         is Symbol -> when (name.lowercase()) {
             "bottom" -> Bottom
             "x" -> X
+            "c" -> ConstantMatcher
             else -> throw IllegalArgumentException("Unrecognized term: $name")
         }
     }

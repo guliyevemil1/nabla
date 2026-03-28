@@ -4,6 +4,8 @@ data class Integrate(val base: Expr<Any?>) : Expr<Any?> {
     override val isConstant: Boolean = base == Zero
     override fun render(): String = """\displaystyle\int{${base.render()}} dx"""
     override fun toLisp(): String = "(integrate ${base.toLisp()})"
+    override fun matches(other: Expr<*>): Boolean = other is Integrate &&
+            base.matches(other.base)
 }
 
 fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
@@ -40,4 +42,7 @@ fun integrate(b: Expr<Any?>): Expr<Any?> = when (b) {
         val p = add(b.pow, One)
         multiply(divide(One, p), xPow(p))
     }
+
+    is ConstantMatcher -> Scale(b, X)
+    is Matcher -> TODO()
 }

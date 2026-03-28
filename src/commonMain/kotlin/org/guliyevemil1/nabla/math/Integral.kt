@@ -24,6 +24,8 @@ data class Integer(val n: Int) : Integral {
 
     override fun render(): String = """$n"""
     override fun toLisp(): String = "$n"
+    override fun matches(other: Expr<*>): Boolean = other is Integer &&
+            toRational() == other.toRational()
 }
 
 fun gcd(a: Int, b: Int): Int {
@@ -64,4 +66,5 @@ data class Rational(val numerator: Int, val denominator: Int) : Integral {
     }
 
     override fun toLisp(): String = "(/ $numerator $denominator)"
+    override fun matches(other: Expr<*>): Boolean = other is Rational && toRational() == other.toRational()
 }

@@ -61,6 +61,10 @@ class Multiply<T>(val multiplicants: List<Expr<T>>, unit: Unit = Unit) : Expr<T>
     override fun hashCode(): Int = multiplicants.fold(0) { acc, x -> acc + 31 * x.hashCode() }
 
     override val isSimple: Boolean = multiplicants.all { it.isSimple }
+    override fun matches(other: Expr<*>): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override val isConstant: Boolean = multiplicants.all { it.isConstant }
 
     fun <U> map(f: (Expr<T>) -> Expr<U>): Expr<U> =

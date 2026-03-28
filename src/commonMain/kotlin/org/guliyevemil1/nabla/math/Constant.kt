@@ -71,6 +71,7 @@ val Expr<Nothing>.sign: Sign
         is XPow -> Sign.Unknown
         Infinity -> Sign.Positive
         NegativeInfinity -> Sign.Negative
+        is Matcher -> Sign.Unknown
     }
 
 val Expr<Nothing>.isPositive: Bool

@@ -15,6 +15,10 @@ data class Scale<T>(val factor: Expr<Nothing>, val expr: Expr<T>) : Expr<T> {
     override fun toLisp(): String = buildString {
         append("(* ${factor.toLisp()} ${expr.toLisp()})")
     }
+
+    override fun matches(other: Expr<*>): Boolean = other is Scale &&
+            factor.matches(other.factor) &&
+            expr.matches(other.expr)
 }
 
 fun <T> scale(factor: Expr<Nothing>, expr: Expr<T>): Expr<T> =

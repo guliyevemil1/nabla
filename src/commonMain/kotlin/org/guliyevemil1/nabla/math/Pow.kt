@@ -24,6 +24,9 @@ fun <T> pow(base: Expr<T>, pow: Expr<Nothing>): Expr<T> =
 
 data class Pow<T>(val base: Expr<T>, val pow: Expr<Nothing>) : Expr<T> {
     override val isSimple: Boolean = base.isSimple
+    override fun matches(other: Expr<*>): Boolean = other is Pow &&
+            base.matches(other.base) && pow.matches(other.pow)
+
     override val isConstant: Boolean = base.isConstant
 
     override fun render(): String {
@@ -76,6 +79,8 @@ data class XPow(val pow: Expr<Nothing>) : Expr<Any?> {
     override val isConstant: Boolean = false
 
     override val isSimple = true
+    override fun matches(other: Expr<*>): Boolean = other is XPow && pow.matches(other.pow)
+
     override fun render(): String = Pow(X, pow).render()
 
     override fun toLisp(): String {

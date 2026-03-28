@@ -5,6 +5,8 @@ data class Differentiate(val base: Expr<Any?>) : Expr<Any?> {
 
     override fun render(): String = """\frac{d}{dx}\left(${base.render()}\right)"""
     override fun toLisp(): String = "(ddx ${base.toLisp()})"
+    override fun matches(other: Expr<*>): Boolean = other is Differentiate &&
+            base.matches(other.base)
 }
 
 fun differentiate(m: Multiply<Any?>): Expr<Any?> = add(
@@ -49,5 +51,7 @@ fun differentiate(b: Expr<Any?>): Expr<Any?> {
         }
 
         is Scale -> multiply(b.factor, differentiate(b.expr))
+        is ConstantMatcher -> Zero
+        is Matcher -> TODO()
     }
 }

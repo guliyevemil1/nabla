@@ -52,6 +52,9 @@ class Add<T>(s: List<Expr<T>>) : Expr<T> {
         summands.joinTo(this, separator = " ") { it.toLisp() }
         append(")")
     }
+
+    override fun matches(other: Expr<*>): Boolean = other is Add<*> &&
+            summands.zip(other.summands).all { (a, b) -> a.matches(b) }
 }
 
 fun add(l: Integral, r: Integral): Expr<Nothing> {

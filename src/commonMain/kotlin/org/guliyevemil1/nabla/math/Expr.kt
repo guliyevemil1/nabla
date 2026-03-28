@@ -89,10 +89,13 @@ sealed interface Expr<out T> {
 
     val isSimple: Boolean
         get() = false
+
+    fun matches(other: Expr<*>): Boolean
 }
 
 object Bottom : Expr<Nothing> {
     override val isConstant: Boolean = false
     override fun render(): String = """\bot"""
     override fun toLisp(): String = "bottom"
+    override fun matches(other: Expr<*>): Boolean = other is Bottom
 }

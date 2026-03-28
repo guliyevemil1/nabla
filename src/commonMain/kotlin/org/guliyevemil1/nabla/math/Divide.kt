@@ -10,6 +10,9 @@ data class Divide<T> constructor(
         """\frac{${numerator.render()}}{${denominator.render()}}"""
 
     override fun toLisp(): String = "(/ ${numerator.toLisp()} ${denominator.toLisp()})"
+    override fun matches(other: Expr<*>): Boolean {
+        TODO("Not yet implemented")
+    }
 }
 
 fun divide(l: Integral, r: Integral): Expr<Nothing> {

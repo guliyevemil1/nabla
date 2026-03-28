@@ -129,8 +129,7 @@ sealed interface BoardState {
         val binaryOperator: BinaryOperator,
         val rhs: BaseCard,
         val playedCards: List<Int>,
-    ) :
-        BoardState
+    ) : BoardState
 
     class StateOperator(
         val card: Operator,
